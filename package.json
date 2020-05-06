@@ -1,0 +1,16 @@
+{
+    "name": "opendap",
+    "version": "1.0.0",
+    "description": "The purpose of this Git repository is to capture the current known working OPeNDAP processing",
+    "main": "index.js",
+    "scripts": {
+      "create-ecr": "aws ecr create-repository --repository-name $ECR_NAME --region ${AWS_REGION}",
+      "build-docker": "docker build -t ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_NAME .",
+      "login-ecr": "LOGIN=$(aws ecr get-login --no-include-email --region ${AWS_REGION}); $LOGIN",
+      "push-docker": "npm run create-ecr; npm run login-ecr; docker push ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_REGION}.amazonaws.com/$ECR_NAME",
+      "build-push-docker": "export ECR_NAME=opendap && npm run build-docker && npm run push-docker"
+    },
+    "keywords": ["GHRC", "CLOUD", "OPeNDAP"],
+    "author": "Abdelhak Marouane",
+    "license": "ISC"
+  }
