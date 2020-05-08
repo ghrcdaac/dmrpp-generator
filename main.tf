@@ -10,10 +10,16 @@ provider "aws" {
   profile = var.aws_profile
 }
 
+locals {
+  default_tags = {
+    Deployment = var.prefix
+  }
+}
+
 module "dmrpp_service" {
   source = "./modules/dmrpp_service"
   prefix = var.prefix
-  tags = var.default_tags
+  tags = local.default_tags
   cluster_arn                           = var.cluster_arn
   desired_count                         = var.desired_count
   log2elasticsearch_lambda_function_arn = var.log2elasticsearch_lambda_function_arn

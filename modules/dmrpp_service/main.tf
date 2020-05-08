@@ -1,6 +1,15 @@
+
+
+locals {
+  default_tags = {
+    Deployment = var.prefix
+  }
+}
+
 module "dmrpp_ecs_task_module" {
   source = "../dmrpp_task"
   name = "${var.prefix}-dmrpp-generator"
+  tags = local.default_tags
 }
 
 module "dmrpp_service" {
@@ -9,7 +18,7 @@ module "dmrpp_service" {
 
   prefix = var.prefix
   name   = "${var.prefix}_dmrpp_generator"
-  tags   = var.default_tags
+  tags   = local.default_tags
 
   cluster_arn                           = var.cluster_arn
   desired_count                         = var.desired_count

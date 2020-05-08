@@ -14,12 +14,7 @@ variable "prefix" {
   type = string
   description = "Cumulus stack prefix"
 }
-variable "default_tags" {
-  type = string
-  default = {
-    Deployment = var.prefix
-  }
-}
+
 variable "desired_count" {
   default = 1
 }
