@@ -1,5 +1,4 @@
 variable "prefix" {}
-variable "default_tags" {}
 variable "desired_count" {}
 variable "cpu" {}
 variable "memory_reservation" {}
