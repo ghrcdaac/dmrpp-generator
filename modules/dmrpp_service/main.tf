@@ -9,7 +9,6 @@ locals {
 module "dmrpp_ecs_task_module" {
   source = "../dmrpp_task"
   name = "${var.prefix}-dmrpp-generator"
-  tags = local.default_tags
 }
 
 module "dmrpp_service" {
