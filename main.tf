@@ -20,5 +20,4 @@ module "dmrpp_service" {
   docker_image = var.docker_image
   cpu                = var.cpu
   memory_reservation = var.memory_reservation
-  region = var.region
 }
