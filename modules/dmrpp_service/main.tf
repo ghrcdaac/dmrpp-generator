@@ -1,0 +1,38 @@
+module "dmrpp_ecs_task_module" {
+  source = "../dmrpp_task"
+  name = "${var.prefix}-dmrpp-generator"
+}
+
+module "dmrpp_service" {
+  source = "https://github.com/nasa/cumulus/releases/download/v1.21.0/terraform-aws-cumulus-ecs-service.zip"
+
+
+  prefix = var.prefix
+  name   = "${var.prefix}_dmrpp_generator"
+  tags   = var.default_tags
+
+  cluster_arn                           = var.cluster_arn
+  desired_count                         = var.desired_count
+  image                                 = var.docker_image
+  log2elasticsearch_lambda_function_arn = var.log2elasticsearch_lambda_function_arn
+
+  cpu                = var.cpu
+  memory_reservation = var.memory_reservation
+
+  environment = var.environement
+  command = [
+    "dmrpp-generator",
+    "activity",
+    "--arn",
+    module.dmrpp_ecs_task_module.task_id
+  ]
+  alarms = {
+    TaskCountHight = {
+      comparison_operator = "GreaterThanThreshold"
+      evaluation_periods  = 1
+      metric_name         = "MemoryUtilization"
+      statistic           = "SampleCount"
+      threshold           = 1
+    }
+  }
+}
