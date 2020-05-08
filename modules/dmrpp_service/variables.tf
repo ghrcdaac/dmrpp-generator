@@ -6,7 +6,3 @@ variable "region" {}
 variable "cluster_arn" {}
 variable "log2elasticsearch_lambda_function_arn" {}
 variable "docker_image" {}
-variable "environement" {
-  type = object({})
-  description = "Environement variables passed to DMP++ service"
-}
