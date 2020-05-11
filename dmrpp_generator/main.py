@@ -69,6 +69,7 @@ class DMRPPGenerator(Process):
             )
 
         final_output = list(granule_data.values())
+        self.clean_all()
         return {"granules": final_output, "input": uploaded_files}
 
     def get_data_access(self, key, bucket_destination):
