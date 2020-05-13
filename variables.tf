@@ -27,11 +27,6 @@ variable "memory_reservation" {
 }
 variable "cluster_arn" {}
 variable "log2elasticsearch_lambda_function_arn" {}
-variable "environement" {
-  default = {
-    AWS_DEFAULT_REGION = "us-west-2"
-  }
-}
 variable "docker_image" {
   default = "ghrcdaac/dmrpp-generator:latest"
 }

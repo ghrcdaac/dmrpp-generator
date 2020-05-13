@@ -11,12 +11,20 @@ In [main.tf](https://github.com/nasa/cumulus-template-deploy/blob/master/cumulus
  (where you defined cumulus module) add 
  ```code
 module "dmrpp-generator" {
+  // Required parameters
   source = "git::https://github.com/ghrcdaac/dmrpp-generator.git"
   cluster_arn = module.cumulus.ecs_cluster_arn
   log2elasticsearch_lambda_function_arn = module.cumulus.log2elasticsearch_lambda_function_arn
   region = var.region
   prefix = var.prefix
   docker_image = var.dmrpp-generator-docker-image
+
+  // Optional parameters
+  cpu = 800 // default to 800
+  memory_reservation = 900 // default to 900
+  prefix = "Cumulus stack prefix" // default Cumulus stack prefix
+  desired_count = 1  // Default to 1
+  docker_image = "ghrcdaac/dmrpp-generator:latest" // Default to ghrcdaac/dmrpp-generator:latest
 } 
 ```
 In [variables.tf](https://github.com/nasa/cumulus-template-deploy/blob/master/cumulus-tf/variables.tf) 
