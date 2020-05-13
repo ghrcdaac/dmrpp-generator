@@ -1,6 +1,6 @@
 from cumulus_process import Process, s3
 from os import environ, path
-from re import match
+from re import match, search
 
 
 class DMRPPGenerator(Process):
