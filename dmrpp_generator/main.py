@@ -65,7 +65,7 @@ class DMRPPGenerator(Process):
                 {
                     "path": self.config.get('fileStagingDir'),
                     "url_path": self.config.get('fileStagingDir'),
-                    "bucket": self.get_bucket(granule_id, collection.get('files', [])),
+                    "bucket": self.get_bucket(filename, collection.get('files', [])),
                     "filename": uploaded_file,
                     "name": uploaded_file
                 }
