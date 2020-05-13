@@ -11,13 +11,16 @@ class DMRPPGenerator(Process):
     """
 
     def __init__(self, **kwargs):
+        self.processing_regex = '.*\\.(h(e)?5|nc(4)?)(\\.bz2|\\.gz|\\.Z)?'
         super(DMRPPGenerator, self).__init__(**kwargs)
         self.path = self.path.rstrip('/') + "/"
 
+
     @property
     def input_keys(self):
+
         return {
-            'input_files': '.*\\.(h(e)?5|nc(4)?)(\\.bz2|\\.gz|\\.Z)?$'
+            'input_files': f"{self.processing_regex}(\\.cmr\\.xml|\\.json)?$"
         }
 
     def get_bucket(self, filename, files):
@@ -87,6 +90,9 @@ class DMRPPGenerator(Process):
         """
         outputs = []
         for input_file in input_files:
+            if not match(f"{self.processing_regex}$", input_file):
+                outputs += [input_file]
+                continue
             cmd = f"get_dmrpp -b {self.path} -o {input_file}.dmrpp {path.basename(input_file)}"
             self.run_command(cmd)
             outputs += [input_file, f"{input_file}.dmrpp"]
