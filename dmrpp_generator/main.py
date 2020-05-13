@@ -58,7 +58,8 @@ class DMRPPGenerator(Process):
             if uploaded_file is None or not uploaded_file.startswith('s3'):
                 continue
             filename = uploaded_file.split('/')[-1]
-            granule_id = filename.split('.cmr.xml')[0]
+            potential_extensions = f"({self.processing_regex})(\\.cmr.xml|\\.json.xml|\\.dmrpp)?"
+            granule_id = match(potential_extensions, filename).group(1)
             if granule_id not in granule_data.keys():
                 granule_data[granule_id] = {'granuleId': granule_id, 'files': []}
             granule_data[granule_id]['files'].append(
