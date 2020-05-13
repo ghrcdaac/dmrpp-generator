@@ -69,7 +69,12 @@ class DMRPPGenerator(Process):
             )
 
         final_output = list(granule_data.values())
-        self.clean_all()
+        try:
+            # Try to clean the outputs
+            self.clean_all()
+        except:
+            pass
+
         return {"granules": final_output, "input": uploaded_files}
 
     def get_data_access(self, key, bucket_destination):
@@ -88,7 +93,7 @@ class DMRPPGenerator(Process):
         """
         outputs = []
         for input_file in input_files:
-            cmd = f"get_dmrpp -c /dmrpp.conf -o {input_file}.dmrpp -u OPeNDAP_DMRpp_DATA_ACCESS_URL -d {self.path} {path.basename(input_file)}"
+            cmd = f"get_dmrpp -b {self.path} -o {input_file}.dmrpp {path.basename(input_file)}"
             self.run_command(cmd)
             outputs += [input_file, f"{input_file}.dmrpp"]
         return outputs

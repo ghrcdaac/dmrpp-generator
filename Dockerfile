@@ -11,7 +11,7 @@ RUN  bash Miniconda3-latest-Linux-x86_64.sh -b
 ENV PATH="/root/miniconda3/bin:${PATH}"
 # Save some space
 RUN rm Miniconda3-latest-Linux-x86_64.sh
-COPY config/dmrpp.conf dmrpp.conf
+
 
 RUN mkdir /build
 
