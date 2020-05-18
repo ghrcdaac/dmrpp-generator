@@ -31,7 +31,7 @@ In [variables.tf](https://github.com/nasa/cumulus-template-deploy/blob/master/cu
 file you need to define 
 ```code
 variable "dmrpp-generator-docker-image" {
-  default = "ghrcdaac/dmrpp-generator:dev"
+  default = "ghrcdaac/dmrpp-generator:latest"
 }
 ```
 Assuming you already defined the region and the prefix 
