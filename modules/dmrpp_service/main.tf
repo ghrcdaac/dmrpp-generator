@@ -12,7 +12,7 @@ module "dmrpp_ecs_task_module" {
 }
 
 module "dmrpp_service" {
-  source = "https://github.com/nasa/cumulus/releases/download/v1.21.0/terraform-aws-cumulus-ecs-service.zip"
+  source = "https://github.com/nasa/cumulus/releases/download/v2.0.1/terraform-aws-cumulus-ecs-service.zip"
 
 
   prefix = var.prefix
