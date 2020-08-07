@@ -45,6 +45,7 @@ class DMRPPGenerator(Process):
             return s3.upload(filename, info['s3'], extra={}) if info.get('s3', False) else None
         except Exception as e:
             self.logger.error("Error uploading file %s: %s" % (path.basename(path.basename(filename)), str(e)))
+
     def process(self):
         """
         Override the processing wrapper
