@@ -21,4 +21,5 @@ module "dmrpp_service" {
   cpu                = var.cpu
   memory_reservation = var.memory_reservation
   region = var.region
+  volumes = var.volumes
 }

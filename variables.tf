@@ -30,3 +30,10 @@ variable "log2elasticsearch_lambda_function_arn" {}
 variable "docker_image" {
   default = "ghrcdaac/dmrpp-generator:latest"
 }
+
+variable "volumes" {
+  description = "Volumes to make accessible to the container(s)"
+  type    = list(object({ name = string, host_path = string, container_path = string }))
+  default = []
+}
+
