@@ -24,6 +24,7 @@ module "dmrpp_service" {
   log2elasticsearch_lambda_function_arn = var.log2elasticsearch_lambda_function_arn
   cpu                = var.cpu
   memory_reservation = var.memory_reservation
+  volumes            = var.volumes
 
   environment = {
     AWS_DEFAULT_REGION = var.region
