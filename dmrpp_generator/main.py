@@ -48,6 +48,7 @@ class DMRPPGenerator(Process):
             return s3.upload(filename, info['s3'], extra={}) if info.get('s3', False) else None
         except Exception as e:
             self.logger.error("Error uploading file %s: %s" % (path.basename(path.basename(filename)), str(e)))
+
     def process(self):
         """
         Override the processing wrapper
@@ -61,7 +62,6 @@ class DMRPPGenerator(Process):
         files_sizes = {}
         for output_file_path in self.output:
             files_sizes[output_file_path.split('/')[-1]] = path.getsize(output_file_path)
-
         granule_data = {}
         for uploaded_file in uploaded_files:
             if uploaded_file is None or not uploaded_file.startswith('s3'):
