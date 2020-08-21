@@ -23,7 +23,7 @@ class DMRPPGenerator(Process):
             'input_files': f"{self.processing_regex}(\\.cmr\\.xml|\\.json)?$"
         }
 
-    def get_bucket(self, filename, files):
+    def get_bucket(self, filename, files, buckets):
         """
         Extract the bucket from the files
         :param filename: Granule file name
@@ -32,9 +32,10 @@ class DMRPPGenerator(Process):
         """
         for file in files:
             if match(file.get('regex', '*.'),filename):
-                return file['bucket']
+                self.logger.debug("bucket %s file %s" % (buckets[file['bucket']]['name'], file))
+                return buckets[file['bucket']]['name']
         return 'public'
-    
+
     def upload_file(self, filename):
         """ Upload a local file to s3 if collection payload provided """
         info = self.get_publish_info(filename)
@@ -44,6 +45,7 @@ class DMRPPGenerator(Process):
             return s3.upload(filename, info['s3'], extra={}) if info.get('s3', False) else None
         except Exception as e:
             self.logger.error("Error uploading file %s: %s" % (path.basename(path.basename(filename)), str(e)))
+
     def process(self):
         """
         Override the processing wrapper
@@ -53,6 +55,8 @@ class DMRPPGenerator(Process):
         self.output = self.dmrpp_generate(input_files)
         uploaded_files = self.upload_output_files()
         collection = self.config.get('collection')
+        buckets = self.config.get('buckets')
+        self.logger.debug(buckets)
         granule_data = {}
         for uploaded_file in uploaded_files:
             if uploaded_file is None or not uploaded_file.startswith('s3'):
@@ -66,7 +70,7 @@ class DMRPPGenerator(Process):
                 {
                     "path": self.config.get('fileStagingDir'),
                     "url_path": self.config.get('fileStagingDir'),
-                    "bucket": self.get_bucket(filename, collection.get('files', [])),
+                    "bucket": self.get_bucket(filename, collection.get('files', []), buckets),
                     "filename": uploaded_file,
                     "name": uploaded_file
                 }
