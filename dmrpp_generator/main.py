@@ -23,17 +23,21 @@ class DMRPPGenerator(Process):
             'input_files': f"{self.processing_regex}(\\.cmr\\.xml|\\.json)?$"
         }
 
-    def get_bucket(self, filename, files):
+    def get_bucket(self, filename, files, buckets):
         """
         Extract the bucket from the files
         :param filename: Granule file name
         :param files: list of collection files
-        :return: Bucket name
+        :param buckets: Object holding buckets info
+        :return: Bucket object
         """
+        bucket_type = "public"
         for file in files:
-            if match(file.get('regex', '*.'),filename):
-                return file['bucket']
-        return 'public'
+            if match(file.get('regex', '*.'), filename):
+                bucket_type = file['bucket']
+                break
+        return buckets[bucket_type]
+
     
     def upload_file(self, filename):
         """ Upload a local file to s3 if collection payload provided """
@@ -53,6 +57,11 @@ class DMRPPGenerator(Process):
         self.output = self.dmrpp_generate(input_files)
         uploaded_files = self.upload_output_files()
         collection = self.config.get('collection')
+        buckets = self.config.get('buckets')
+        files_sizes = {}
+        for output_file_path in self.output:
+            files_sizes[output_file_path.split('/')[-1]] = path.getsize(output_file_path)
+
         granule_data = {}
         for uploaded_file in uploaded_files:
             if uploaded_file is None or not uploaded_file.startswith('s3'):
@@ -66,9 +75,11 @@ class DMRPPGenerator(Process):
                 {
                     "path": self.config.get('fileStagingDir'),
                     "url_path": self.config.get('fileStagingDir'),
-                    "bucket": self.get_bucket(filename, collection.get('files', [])),
+                    "bucket": self.get_bucket(filename, collection.get('files', []),
+                                              buckets)['name'],
                     "filename": uploaded_file,
-                    "name": uploaded_file
+                    "name": uploaded_file,
+                    "size": files_sizes.get(filename, 0)
                 }
             )
 

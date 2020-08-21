@@ -6,12 +6,16 @@ RUN yum -y update && \
 RUN yum install -y centos-release-scl 
 # Using miniconda because rh-python is terrible
 # Using a pre-downloaded Miniconda file because I am paranoid
-COPY Miniconda3-latest-Linux-x86_64.sh /tmp/.
 # Adding a user
 RUN adduser worker
+RUN yum install -y nano && \
+    yum install -y wget
 USER worker
 WORKDIR /home/worker
-RUN  bash /tmp/Miniconda3-latest-Linux-x86_64.sh -b
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-py38_4.8.2-Linux-x86_64.sh && \
+    bash Miniconda3-py38_4.8.2-Linux-x86_64.sh -b && \
+    rm Miniconda3-py38_4.8.2-Linux-x86_64.sh
+
 ENV HOME="/home/worker" PATH="/home/worker/miniconda3/bin:${PATH}"
 
 # Save some space
