@@ -4,7 +4,7 @@ from setuptools import setup, find_packages
 from imp import load_source
 
 here = path.abspath(path.dirname(__file__))
-__version__ = "0.0.1"
+__version__ = "1.0.1"
 
 
 # get dependencies
