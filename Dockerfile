@@ -4,8 +4,7 @@ RUN yum -y update && \
     yum -y upgrade
 
 RUN yum install -y centos-release-scl 
-# Using miniconda because rh-python is terrible
-# Using a pre-downloaded Miniconda file because I am paranoid
+
 # Adding a user
 RUN adduser worker
 RUN yum install -y nano && \
@@ -18,18 +17,19 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-py38_4.8.2-Linux-x86_64.
 
 ENV HOME="/home/worker" PATH="/home/worker/miniconda3/bin:${PATH}"
 
-# Save some space
-#RUN rm /tmp/Miniconda3-latest-Linux-x86_64.sh
 
+RUN pip install ipython &&\
+    pip install pytest
 
 RUN mkdir $HOME/build
 
 ENV BUILD=$HOME/build 
 
-
-COPY setup.py requirements*txt $BUILD/
-COPY dmrpp_generator $BUILD/dmrpp_generator
-COPY generate_dmrpp.py $BUILD/generate_dmrpp.py
+#--chown=<user>:<group> <hostPath> <containerPath>
+COPY --chown=worker setup.py requirements*txt $BUILD/
+COPY --chown=worker dmrpp_generator $BUILD/dmrpp_generator
+COPY --chown=worker generate_dmrpp.py $BUILD/generate_dmrpp.py
+COPY --chown=worker tests $BUILD/tests
 
 RUN \
   cd $BUILD; \
@@ -38,7 +38,7 @@ RUN \
 
 WORKDIR $BUILD
 
-RUN pip install ipython
+RUN pytest tests
 
 CMD ["python", "generate_dmrpp.py"]
 ENTRYPOINT []
