@@ -1,4 +1,4 @@
-FROM ghrcdaac/hyrax:snapshot
+FROM ghrcdaac/hyrax:ngap-snapshot
 
 RUN yum -y update && \
     yum -y upgrade
