@@ -1,5 +1,5 @@
 from cumulus_process import Process, s3
-from os import environ, path, remove
+import os
 from re import match, search
 
 
@@ -47,7 +47,7 @@ class DMRPPGenerator(Process):
         try:
             return s3.upload(filename, info['s3'], extra={}) if info.get('s3', False) else None
         except Exception as e:
-            self.logger.error("Error uploading file %s: %s" % (path.basename(path.basename(filename)), str(e)))
+            self.logger.error("Error uploading file %s: %s" % (os.path.basename(os.path.basename(filename)), str(e)))
 
     def process(self):
         """
@@ -61,9 +61,9 @@ class DMRPPGenerator(Process):
         buckets = self.config.get('buckets')
         files_sizes = {}
         for output_file_path in self.output:
-            files_sizes[path.basename(output_file_path)] = path.getsize(output_file_path)
+            files_sizes[os.path.basename(output_file_path)] = os.path.getsize(output_file_path)
             # Cleanup the space
-            remove(output_file_path)
+            os.remove(output_file_path)
 
         granule_data = {}
         for uploaded_file in uploaded_files:
@@ -108,7 +108,7 @@ class DMRPPGenerator(Process):
             if not match(f"{self.processing_regex}$", input_file):
                 outputs += [input_file]
                 continue
-            cmd = f"get_dmrpp -b {self.path} -o {input_file}.dmrpp {path.basename(input_file)}"
+            cmd = f"get_dmrpp -b {self.path} -o {input_file}.dmrpp {os.path.basename(input_file)}"
             self.run_command(cmd)
             outputs += [input_file, f"{input_file}.dmrpp"]
         return outputs

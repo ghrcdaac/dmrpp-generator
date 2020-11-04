@@ -38,7 +38,8 @@ RUN \
 
 WORKDIR $BUILD
 
-RUN pytest tests
+RUN pytest --junitxml=./test_results/test_dmrpp_generator.xml tests && \
+    rm -rf tests
 
 CMD ["python", "generate_dmrpp.py"]
 ENTRYPOINT []

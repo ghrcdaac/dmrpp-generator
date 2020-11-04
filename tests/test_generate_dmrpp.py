@@ -2,6 +2,7 @@ import os
 from unittest import TestCase
 import json
 from dmrpp_generator.main import DMRPPGenerator
+from unittest.mock import patch
 
 class StorageValues:
     processing_output = None
@@ -10,7 +11,6 @@ class StorageValues:
 class TestDMRPPFileGeneration(TestCase):
     """
     Test generating dmrpp files.
-    This will test if er2mir metadata will be extracted correctly
     """
     granule_name = "tpw_v07r01_201910.nc"
     fixture_path = os.path.join(os.path.dirname(__file__), "fixtures")
@@ -21,9 +21,13 @@ class TestDMRPPFileGeneration(TestCase):
 
     process_instance = DMRPPGenerator(input = input_file, config=payload['config'], path=fixture_path)
 
-
-
-    def test_1_check_generate_dmrpp(self):
+    @patch('cumulus_process.Process.upload_output_files',
+       return_value=[f's3://{granule_name}',
+                     f's3://{granule_name}.dmrpp'])
+    @patch('cumulus_process.Process.fetch_all',
+       return_value={'input_key': [os.path.join(os.path.dirname(__file__), f"fixtures/{granule_name}")]})
+    @patch('os.remove', return_value=granule_name)
+    def test_1_check_generate_dmrpp(self, mock_upload, mock_fetch, mock_remove):
         """
         Testing get correct start date
         :return:
