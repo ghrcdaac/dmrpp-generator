@@ -1,5 +1,5 @@
 from cumulus_process import Process, s3
-from os import environ, path
+from os import environ, path, remove
 from re import match, search
 
 
@@ -61,14 +61,17 @@ class DMRPPGenerator(Process):
         buckets = self.config.get('buckets')
         files_sizes = {}
         for output_file_path in self.output:
-            files_sizes[output_file_path.split('/')[-1]] = path.getsize(output_file_path)
+            files_sizes[path.basename(output_file_path)] = path.getsize(output_file_path)
+            # Cleanup the space
+            remove(output_file_path)
+
         granule_data = {}
         for uploaded_file in uploaded_files:
             if uploaded_file is None or not uploaded_file.startswith('s3'):
                 continue
             filename = uploaded_file.split('/')[-1]
             potential_extensions = f"({self.processing_regex})(\\.cmr.xml|\\.json.xml|\\.dmrpp)?"
-            granule_id = match(potential_extensions, filename).group(1)
+            granule_id = match(potential_extensions, filename).group(1) if match(potential_extensions, filename) else filename
             if granule_id not in granule_data.keys():
                 granule_data[granule_id] = {'granuleId': granule_id, 'files': []}
             granule_data[granule_id]['files'].append(
@@ -78,7 +81,7 @@ class DMRPPGenerator(Process):
                     "bucket": self.get_bucket(filename, collection.get('files', []),
                                               buckets)['name'],
                     "filename": uploaded_file,
-                    "name": uploaded_file,
+                    "name": filename,
                     "size": files_sizes.get(filename, 0)
                 }
             )
