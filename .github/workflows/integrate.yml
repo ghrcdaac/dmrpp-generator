@@ -1,8 +1,9 @@
 name: Create releases
 
 on:
-    tags:
-        - v*             # Push events to v1.0.0, v9.0.9 tag
+    push:
+        tags:
+            - v*             # Push events to v1.0.0, v9.0.9 tag
 
 jobs:
     test_pull_request:
