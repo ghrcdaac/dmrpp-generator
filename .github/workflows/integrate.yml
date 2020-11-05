@@ -1,0 +1,19 @@
+name: Create releases
+
+on:
+    tags:
+        - v*             # Push events to v1.0.0, v9.0.9 tag
+
+jobs:
+    test_pull_request:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - name: Get tag version
+                id: tag_name
+                run: echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
+            - name: Build a release
+              run: |
+               echo $SOURCE_TAG
+              env:
+               SOURCE_TAG: ${{ steps.tag_name.outputs.SOURCE_TAG }}
