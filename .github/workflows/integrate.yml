@@ -16,7 +16,7 @@ jobs:
             - name: Build a release
               run: |
                echo ${{ github.event_name }}
-               create_release $SOURCE_TAG
+               bash create_release.sh $SOURCE_TAG
               env:
                SOURCE_TAG: ${{ steps.tag_name.outputs.SOURCE_TAG }}
                SECRET_TOKEN: ${{ secrets.SECRET_TOKEN }}
