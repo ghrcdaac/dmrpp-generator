@@ -2,9 +2,9 @@ name: Create releases
 
 on:
     push:
-        tags: 
+        tags:
             - v*
-        
+
 jobs:
     test_pull_request:
         runs-on: ubuntu-latest
@@ -15,6 +15,8 @@ jobs:
               run: echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
             - name: Build a release
               run: |
-               echo $SOURCE_TAG
+               echo ${{ github.event_name }}
+               create_release $SOURCE_TAG
               env:
                SOURCE_TAG: ${{ steps.tag_name.outputs.SOURCE_TAG }}
+               SECRET_TOKEN: ${{ secrets.SECRET_TOKEN }}
