@@ -1,0 +1,23 @@
+name: Create releases
+
+on:
+    push:
+        tags:
+            - v*
+
+jobs:
+    test_pull_request:
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - name: Get tag version
+              id: tag_name
+              run: echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
+            - name: Build a release
+              run: |
+               echo ${{ github.event_name }}
+               bash create_release.sh $SOURCE_TAG
+              env:
+               SOURCE_TAG: ${{ steps.tag_name.outputs.SOURCE_TAG }}
+               SECRET_TOKEN: ${{ secrets.SECRET_TOKEN }}
+               GITHUB_REPO: ghrcdaac/dmrpp-generator
