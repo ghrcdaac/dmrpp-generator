@@ -2,9 +2,9 @@ name: Create releases
 
 on:
     push:
-        tags:
-            - v*             # Push events to v1.0.0, v9.0.9 tag
-
+        tags: 
+            - v*
+        
 jobs:
     test_pull_request:
         runs-on: ubuntu-latest
