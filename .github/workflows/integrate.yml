@@ -20,3 +20,4 @@ jobs:
               env:
                SOURCE_TAG: ${{ steps.tag_name.outputs.SOURCE_TAG }}
                SECRET_TOKEN: ${{ secrets.SECRET_TOKEN }}
+               GITHUB_REPO: ghrcdaac/dmrpp-generator
