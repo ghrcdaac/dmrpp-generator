@@ -38,7 +38,7 @@ create_zip_file
 curl -X POST -H "Authorization: token $SECRET_TOKEN" --data-binary "@${RELEASE_NAME}.zip" -H "Content-type: application/octet-stream" $RELEASE_URL/assets?name=${RELEASE_NAME}.zip
 
 ## Create Release for dmrpp docker image
-   curl -H\
+curl -H\
   "Authorization: token $SECRET_TOKEN"\
    -d "{\"tag_name\": \"$VERSION\", \"target_commitsh\": \"$VERSION\", \"name\": \"$VERSION\", \"body\": \"Release $VERSION\" }"\
    -H "Content-Type: application/json"\
