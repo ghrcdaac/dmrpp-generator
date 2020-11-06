@@ -11,6 +11,8 @@ export RELEASE_NAME=`basename $GITHUB_REPO`
    -X POST\
    https://api.github.com/repos/$GITHUB_REPO/releases |grep \"url\" |grep releases |sed -e 's/.*\(https.*\)\"\,/\1/'| sed -e 's/api/uploads/')
 
+
+
 ## Build TF modules that require source building
 function create_zip_file() {
 
@@ -25,11 +27,20 @@ function create_zip_file() {
   mv ${RELEASE_NAME}.zip ${DESTINATION_DIR}/.
   cd $DESTINATION_DIR
   rm -rf ${BUILD_DIR}
-
-
 }
+
+
+
 #### Release package
 create_zip_file
 
 ### Post the release
 curl -X POST -H "Authorization: token $SECRET_TOKEN" --data-binary "@${RELEASE_NAME}.zip" -H "Content-type: application/octet-stream" $RELEASE_URL/assets?name=${RELEASE_NAME}.zip
+
+## Create Release for dmrpp docker image
+curl -H\
+  "Authorization: token $SECRET_TOKEN"\
+   -d "{\"tag_name\": \"$VERSION\", \"target_commitsh\": \"$VERSION\", \"name\": \"$VERSION\", \"body\": \"Release $VERSION\" }"\
+   -H "Content-Type: application/json"\
+   -X POST\
+   https://api.github.com/repos/$GUTHUB_DOCKER_IMAGE/releases
