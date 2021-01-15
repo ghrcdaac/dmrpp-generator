@@ -1,5 +1,5 @@
 from cumulus_process import Process, s3
-from os import environ, path
+import os
 from re import match, search
 
 
@@ -23,17 +23,21 @@ class DMRPPGenerator(Process):
             'input_files': f"{self.processing_regex}(\\.cmr\\.xml|\\.json)?$"
         }
 
-    def get_bucket(self, filename, files):
+    def get_bucket(self, filename, files, buckets):
         """
         Extract the bucket from the files
         :param filename: Granule file name
         :param files: list of collection files
-        :return: Bucket name
+        :param buckets: Object holding buckets info
+        :return: Bucket object
         """
+        bucket_type = "public"
         for file in files:
-            if match(file.get('regex', '*.'),filename):
-                return file['bucket']
-        return 'public'
+            if match(file.get('regex', '*.'), filename):
+                bucket_type = file['bucket']
+                break
+        return buckets[bucket_type]
+
     
     def upload_file(self, filename):
         """ Upload a local file to s3 if collection payload provided """
@@ -43,7 +47,8 @@ class DMRPPGenerator(Process):
         try:
             return s3.upload(filename, info['s3'], extra={}) if info.get('s3', False) else None
         except Exception as e:
-            self.logger.error("Error uploading file %s: %s" % (path.basename(path.basename(filename)), str(e)))
+            self.logger.error("Error uploading file %s: %s" % (os.path.basename(os.path.basename(filename)), str(e)))
+
     def process(self):
         """
         Override the processing wrapper
@@ -53,22 +58,31 @@ class DMRPPGenerator(Process):
         self.output = self.dmrpp_generate(input_files)
         uploaded_files = self.upload_output_files()
         collection = self.config.get('collection')
+        buckets = self.config.get('buckets')
+        files_sizes = {}
+        for output_file_path in self.output:
+            files_sizes[os.path.basename(output_file_path)] = os.path.getsize(output_file_path)
+            # Cleanup the space
+            os.remove(output_file_path)
+
         granule_data = {}
         for uploaded_file in uploaded_files:
             if uploaded_file is None or not uploaded_file.startswith('s3'):
                 continue
             filename = uploaded_file.split('/')[-1]
             potential_extensions = f"({self.processing_regex})(\\.cmr.xml|\\.json.xml|\\.dmrpp)?"
-            granule_id = match(potential_extensions, filename).group(1)
+            granule_id = match(potential_extensions, filename).group(1) if match(potential_extensions, filename) else filename
             if granule_id not in granule_data.keys():
                 granule_data[granule_id] = {'granuleId': granule_id, 'files': []}
             granule_data[granule_id]['files'].append(
                 {
                     "path": self.config.get('fileStagingDir'),
                     "url_path": self.config.get('fileStagingDir'),
-                    "bucket": self.get_bucket(filename, collection.get('files', [])),
+                    "bucket": self.get_bucket(filename, collection.get('files', []),
+                                              buckets)['name'],
                     "filename": uploaded_file,
-                    "name": uploaded_file
+                    "name": filename,
+                    "size": files_sizes.get(filename, 0)
                 }
             )
 
@@ -94,7 +108,7 @@ class DMRPPGenerator(Process):
             if not match(f"{self.processing_regex}$", input_file):
                 outputs += [input_file]
                 continue
-            cmd = f"get_dmrpp -b {self.path} -o {input_file}.dmrpp {path.basename(input_file)}"
+            cmd = f"get_dmrpp -b {self.path} -o {input_file}.dmrpp {os.path.basename(input_file)}"
             self.run_command(cmd)
             outputs += [input_file, f"{input_file}.dmrpp"]
         return outputs
