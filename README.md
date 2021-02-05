@@ -12,7 +12,7 @@ In [main.tf](https://github.com/nasa/cumulus-template-deploy/blob/master/cumulus
  ```code
 module "dmrpp-generator" {
   // Required parameters
-  source = "git::https://github.com/ghrcdaac/dmrpp-generator.git"
+  source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/<tag_num>/dmrpp-generator.zip"
   cluster_arn = module.cumulus.ecs_cluster_arn
   log2elasticsearch_lambda_function_arn = module.cumulus.log2elasticsearch_lambda_function_arn
   region = var.region
@@ -24,14 +24,14 @@ module "dmrpp-generator" {
   memory_reservation = 900 // default to 900
   prefix = "Cumulus stack prefix" // default Cumulus stack prefix
   desired_count = 1  // Default to 1
-  docker_image = "ghrcdaac/dmrpp-generator:latest" // Default to ghrcdaac/dmrpp-generator:latest
+  docker_image = "ghrcdaac/dmrpp-generator:<tag_num>"
 } 
 ```
 In [variables.tf](https://github.com/nasa/cumulus-template-deploy/blob/master/cumulus-tf/variables.tf) 
 file you need to define 
 ```code
 variable "dmrpp-generator-docker-image" {
-  default = "ghrcdaac/dmrpp-generator:latest"
+  default = "ghrcdaac/dmrpp-generator:<tag_num>"
 }
 ```
 Assuming you already defined the region and the prefix 
