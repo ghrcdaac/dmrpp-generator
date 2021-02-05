@@ -50,16 +50,7 @@ In your [workflow.tf](https://github.com/nasa/cumulus-template-deploy/blob/maste
             "files_config": "{$.meta.collection.files}",
             "fileStagingDir": "{$.meta.collection.url_path}",
             "granuleIdExtraction": "{$.meta.collection.granuleIdExtraction}",
-            "collection": "{$.meta.collection}",
-            "cumulus_message": {
-              "input": "{[$.payload.granules[*].files[*].filename]}",
-              "outputs": [
-                {
-                  "source": "{$}",
-                  "destination": "{$.payload}"
-                }
-              ]
-            }
+            "collection": "{$.meta.collection}"
           }
         }
       },
