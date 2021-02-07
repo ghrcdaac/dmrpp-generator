@@ -1,7 +1,18 @@
+```code
+ ____  __  __ ____  ____  ____
+|  _ \|  \/  |  _ \|  _ \|  _ \
+| | | | |\/| | |_) | |_) | |_) |
+| |_| | |  | |  _ <|  __/|  __/
+|____/|_|  |_|_| \_\_|   |_|
+```
+
+
 # Overview
 DMR++ files generator is a cloud based activity that generate DMRPP files from netCDF4 and HDF files
+## 📖 Documentation
+- Release note [v1.0.4](https://ghrcdaac.github.io/dmrpp-generator/).
 
-# Pre-requisite 
+# 🔨 Pre-requisite 
 This module is meant to run within Cumulus stack. 
 If you don't have Cumulus stack deployed yet please consult [this repo](https://github.com/nasa/cumulus) 
 and follow the [documetation](https://nasa.github.io/cumulus/docs/cumulus-docs-readme) to provision it.

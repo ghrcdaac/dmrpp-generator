@@ -40,7 +40,7 @@ curl -X POST -H "Authorization: token $SECRET_TOKEN" --data-binary "@${RELEASE_N
 ## Create Release for dmrpp docker image
 curl -H\
   "Authorization: token $SECRET_TOKEN"\
-   -d "{\"tag_name\": \"$VERSION\", \"target_commitsh\": \"$VERSION\", \"name\": \"$VERSION\", \"body\": \"Release $VERSION\" }"\
+   -d "{\"tag_name\": \"$VERSION\", \"target_commitsh\": \"$VERSION\", \"name\": \"$VERSION\", \"body\": \"Release $VERSION https://ghrcdaac.github.io/dmrpp-generator\" }"\
    -H "Content-Type: application/json"\
    -X POST\
    https://api.github.com/repos/$GUTHUB_DOCKER_IMAGE/releases
