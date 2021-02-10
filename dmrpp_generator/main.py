@@ -70,16 +70,15 @@ class DMRPPGenerator(Process):
                     s3_path = output_file_path.get('s3_path')
                     file_local_path = output_file_path.get('file_local_path')
                     append_output[granule_id] = append_output.get(granule_id, {'files': []})
-                    append_output[granule_id]['files'].append(
-                        {
-                "bucket": self.get_bucket(file_['filename'], collection.get('files', []),buckets)['name'],
-                "filename": s3_path,
-                "name": os.path.basename(file_local_path),
-                "size": os.path.getsize(file_local_path),
-                "path": self.config.get('fileStagingDir'),
-                "url_path": self.config.get('fileStagingDir')
-                        }
-                    )
+                    append_output[granule_id]['files'].append({
+                        "bucket": self.get_bucket(file_['filename'], collection.get('files', []),buckets)['name'],
+                        "filename": s3_path,
+                        "name": os.path.basename(file_local_path),
+                        "size": os.path.getsize(file_local_path),
+                        "path": self.config.get('fileStagingDir'),
+                        "url_path": self.config.get('fileStagingDir'),
+                        "type": "metadata"
+                    })
         for granule in granules:
             granule_id = granule['granuleId']
             if append_output.get(granule_id, False):
