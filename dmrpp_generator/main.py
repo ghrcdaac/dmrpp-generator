@@ -68,6 +68,7 @@ class DMRPPGenerator(Process):
             for file_ in granule['files']:
                 if not match(f"{self.processing_regex}$", file_['filename']):
                     continue
+                nsidc_debug(f"file_='{file_}'")
                 output_file_path = self.dmrpp_generate(file_['filename'])
                 if output_file_path:
                     dmrpp_file = {
@@ -78,6 +79,7 @@ class DMRPPGenerator(Process):
                         "type": "metadata"
                     }
                     dmrpp_file['filename'] = f's3://{dmrpp_file["bucket"]}/{dmrpp_file["url_path"]}/{dmrpp_file["name"]}'
+                    nsidc_debug(f"dmrpp_file='{dmrpp_file}'")
                     dmrpp_files.append(dmrpp_file)
                     self.upload_file(output_file_path, dmrpp_file['filename'])
             granule['files'] += dmrpp_files
