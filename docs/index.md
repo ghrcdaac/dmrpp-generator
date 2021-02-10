@@ -1,6 +1,15 @@
 
-# 📖 Release note
+# 📖 Release note 5
+
+## v1.0.5
+This release fixes the problem adding a type of meta data for the dmrpp file and also changing some spacings.
+
+## v1.0.4
 This release fixes the problem of assuming the granuleId is the same as the file name [issue#9](https://github.com/ghrcdaac/dmrpp-generator/issues/9)
+
+
+## 🏃 Migration Steps to v1.0.5
+None
 
 ## 🏃 Migration Steps to v1.0.4
 Change the source url in your terraform file to point to v1.0.4 release
