@@ -78,7 +78,7 @@ class DMRPPGenerator(Process):
                         "url_path": file_['url_path'],
                         "type": "metadata"
                     }
-                    prefix = os.path.dirname(file_['filepath'])
+                    prefix = '/'.join(file_['filepath'].split('/')[:-1])
                     dmrpp_file['filename'] = f's3://{dmrpp_file["bucket"]}/{prefix}/{dmrpp_file["name"]}'
                     nsidc_debug(f"dmrpp_file='{dmrpp_file}'")
                     dmrpp_files.append(dmrpp_file)
