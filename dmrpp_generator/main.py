@@ -68,6 +68,7 @@ class DMRPPGenerator(Process):
                         "bucket": self.get_bucket(file_['filename'], collection.get('files', []),buckets)['name'],
                         "name": os.path.basename(output_file_path),
                         "size": os.path.getsize(output_file_path),
+                        "path": self.config.get('fileStagingDir'),
                         "url_path": file_['url_path'],
                         "type": "metadata"
                     }
