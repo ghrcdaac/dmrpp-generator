@@ -65,11 +65,11 @@ class DMRPPGenerator(Process):
                 output_file_path = self.dmrpp_generate(file_['filename'])
                 if output_file_path:
                     dmrpp_file = {
-                        "bucket": self.get_bucket(file_['filename'], collection.get('files', []),buckets)['name'],
                         "name": os.path.basename(output_file_path),
-                        "size": os.path.getsize(output_file_path),
                         "path": self.config.get('fileStagingDir'),
                         "url_path": file_['url_path'],
+                        "bucket": self.get_bucket(file_['filename'], collection.get('files', []),buckets)['name'],
+                        "size": os.path.getsize(output_file_path),
                         "type": "metadata"
                     }
                     prefix = os.path.dirname(file_['filepath'])
