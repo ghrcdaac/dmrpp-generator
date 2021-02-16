@@ -69,8 +69,6 @@ class DMRPPGenerator(Process):
                 if not match(f"{self.processing_regex}$", file_['filename']):
                     continue
                 nsidc_debug(f"file_='{file_}'")
-                stringy = '/'.join(file_['filepath'].split('/')[:-1])
-                nsidc_debug(f"stringy='{stringy}'")
                 output_file_path = self.dmrpp_generate(file_['filename'])
                 if output_file_path:
                     dmrpp_file = {
@@ -80,9 +78,10 @@ class DMRPPGenerator(Process):
                         "url_path": file_['url_path'],
                         "type": "metadata"
                     }
-                    prefix = '/'.join(file_['filepath'].split('/')[:-1])
+                    prefix = os.path.dirname(file_['filepath'])
                     nsidc_debug(f"prefix='{prefix}'")
-                    dmrpp_file['filename'] = f's3://{dmrpp_file["bucket"]}/{prefix}/{dmrpp_file["name"]}'
+                    dmrpp_file['filepath'] = f'{prefix}/{dmrpp_file["name"]}'
+                    dmrpp_file['filename'] = f's3://{dmrpp_file["bucket"]}/{dmrpp_file["filepath"]}'
                     nsidc_debug(f"dmrpp_file='{dmrpp_file}'")
                     dmrpp_files.append(dmrpp_file)
                     self.upload_file(output_file_path, dmrpp_file['filename'])
