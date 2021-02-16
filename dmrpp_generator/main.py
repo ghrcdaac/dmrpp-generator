@@ -3,12 +3,6 @@ import os
 from re import match, search
 import copy
 
-def nsidc_debug(msg):
-    with open('log.txt', 'a') as f:
-        f.write(str(msg))
-        f.write('\n')
-        f.write('\n')
-    s3.upload('log.txt', 's3://nsidc-cumulus-int-internal/logging/log.txt')
 
 class DMRPPGenerator(Process):
     """
@@ -46,14 +40,14 @@ class DMRPPGenerator(Process):
                 break
         return buckets[bucket_type]
 
-    
+
     def upload_file(self, filename, uri):
         """ Upload a local file to s3 if collection payload provided """
         try:
             return s3.upload(filename, uri, extra={})
         except Exception as e:
             self.logger.error("Error uploading file %s: %s" % (os.path.basename(os.path.basename(filename)), str(e)))
-    
+
 
     def process(self):
         """
@@ -68,7 +62,6 @@ class DMRPPGenerator(Process):
             for file_ in granule['files']:
                 if not match(f"{self.processing_regex}$", file_['filename']):
                     continue
-                nsidc_debug(f"file_='{file_}'")
                 output_file_path = self.dmrpp_generate(file_['filename'])
                 if output_file_path:
                     dmrpp_file = {
@@ -79,10 +72,8 @@ class DMRPPGenerator(Process):
                         "type": "metadata"
                     }
                     prefix = os.path.dirname(file_['filepath'])
-                    nsidc_debug(f"prefix='{prefix}'")
                     dmrpp_file['filepath'] = f'{prefix}/{dmrpp_file["name"]}'
                     dmrpp_file['filename'] = f's3://{dmrpp_file["bucket"]}/{dmrpp_file["filepath"]}'
-                    nsidc_debug(f"dmrpp_file='{dmrpp_file}'")
                     dmrpp_files.append(dmrpp_file)
                     self.upload_file(output_file_path, dmrpp_file['filename'])
             granule['files'] += dmrpp_files
@@ -106,7 +97,7 @@ class DMRPPGenerator(Process):
         try:
             file_name = s3.download(input_file, path=self.path)
             cmd = f"get_dmrpp -b {self.path} -o {file_name}.dmrpp {os.path.basename(file_name)}"
-            self.run_command(cmd) 
+            self.run_command(cmd)
             return f"{file_name}.dmrpp"
         except Exception as ex:
             self.logger.error(f"DMRPP error {ex}")
