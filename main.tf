@@ -5,12 +5,6 @@ terraform {
   }
 }
 
-provider "aws" {
-  region  = var.region
-  profile = var.aws_profile
-}
-
-
 module "dmrpp_service" {
   source = "./modules/dmrpp_service"
   prefix = var.prefix
