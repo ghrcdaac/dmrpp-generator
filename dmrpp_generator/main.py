@@ -67,7 +67,7 @@ class DMRPPGenerator(Process):
                     dmrpp_file = {
                         "name": os.path.basename(output_file_path),
                         "path": self.config.get('fileStagingDir'),
-                        "url_path": file_.get('url_path', self.config.get('fileStagingDir'))
+                        "url_path": file_.get('url_path', self.config.get('fileStagingDir')),
                         "bucket": self.get_bucket(file_['filename'], collection.get('files', []),buckets)['name'],
                         "size": os.path.getsize(output_file_path),
                         "type": "metadata"
