@@ -24,6 +24,14 @@ class DMRPPGenerator(Process):
             'input_files': f"{self.processing_regex}(\\.cmr\\.xml|\\.json)?$"
         }
 
+    def get_file_type(self, filename):
+
+        collection = self.config.get('collection')
+        for file in collection.get('files', []):
+            if match(file.get('regex', '*.'), filename):
+                return file['type']
+        return 'metadata'
+
 
     def get_bucket(self, filename, files, buckets):
         """
@@ -68,9 +76,9 @@ class DMRPPGenerator(Process):
                         "name": os.path.basename(output_file_path),
                         "path": self.config.get('fileStagingDir'),
                         "url_path": file_.get('url_path', self.config.get('fileStagingDir')),
-                        "bucket": self.get_bucket(file_['filename'], collection.get('files', []),buckets)['name'],
+                        "bucket": self.get_bucket(os.path.basename(output_file_path), collection.get('files', []),buckets)['name'],
                         "size": os.path.getsize(output_file_path),
-                        "type": "metadata"
+                        "type": self.get_file_type(os.path.basename(output_file_path))
                     }
                     prefix = os.path.dirname(file_['filepath'])
                     dmrpp_file['filepath'] = f'{prefix}/{dmrpp_file["name"]}'
