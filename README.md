@@ -10,9 +10,17 @@
 # Overview
 DMR++ files generator is a cloud based activity that generate DMRPP files from netCDF4 and HDF files
 ## 📖 Documentation
+- Release note [v1.1.0](https://ghrcdaac.github.io/dmrpp-generator/).
 - Release note [v1.0.6](https://ghrcdaac.github.io/dmrpp-generator/).
 - Release note [v1.0.5](https://ghrcdaac.github.io/dmrpp-generator/).
 - Release note [v1.0.4](https://ghrcdaac.github.io/dmrpp-generator/).
+
+## Versioning
+We are following `v<major>.<minor>.<patch>` versioning convention, where:
+* `<major>+1` means we changed the infrastructure and/or the major components that makes this software run. Will definitely 
+  lead to breaking changes.
+* `<minor>+1` means we upgraded/patched the dependencies this software relays on. Can lead to breaking changes.
+* `<patch>+1` means we fixed a bug and/or added a feature. Breaking changes are not expected.
 
 # 🔨 Pre-requisite 
 This module is meant to run within Cumulus stack. 
