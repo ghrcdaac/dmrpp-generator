@@ -1,6 +1,9 @@
 import os
 import json
 
+"""
+Example Cumulus configuration for supported get_dmrpp switches
+"""
 payload = """
 {
     "config": {
@@ -10,33 +13,46 @@ payload = """
     }
 }
 """
-
 class DMRPPCommandLine:
+    """
+    Class to generate dmrpp optional command line arguments either from 
+    - environment variable settings (config=None) or 
+    - Cumulus configuration (config=str)
+    """
 
+    """
+    Supported get_dmrpp switches
+    """
     switch_map = {
         "create_missing_cf": "-M"
     }
+    
+    def __init__(self, config):
+        """
+        :param config: Cumulus configuration in json format. If this is null or empty environment variables are used.
+        """
+        self.data = None
+        if config != None: self.data = json.loads(config)
 
-    def __init__(self, local, config):
-        if local == False: self.data = json.loads(config)
-        self.local = local
-
+    """
+        Generates base get_dmrpp command based on configuration/environment
+    """
     def get_command(self):
         switches = ""
         for key in self.switch_map:
             add_switch = False
-            if self.local:
-                add_switch = os.getenv(key.upper(), 'False').lower() in ['true', '1']
-            else:
+            if self.data:
                 try:   
                     add_switch = self.data['config']['dmrpp'][key] == True
                 except KeyError:
-                    pass
-            
+                    pass               
+            else:
+                add_switch = os.getenv(key.upper(), 'False').lower() in ['true', '1']
+                           
             if add_switch: switches = switches.join(f" {self.switch_map[key]}")
 
         return f'get_dmrpp{switches} -b'
 
 if __name__ == "__main__":
-    dmrpp = DMRPPCommandLine(True, payload)
+    dmrpp = DMRPPCommandLine(payload)
     print(dmrpp.get_command())

@@ -12,7 +12,7 @@ class TestDMRPPCommandLine(TestCase):
         Testing local no env var
         :return:
         """
-        dmrpp = DMRPPCommandLine(True, "")
+        dmrpp = DMRPPCommandLine(None)
         self.assertEqual('get_dmrpp -b', dmrpp.get_command())
 
     def test_2_local_m(self):
@@ -21,7 +21,7 @@ class TestDMRPPCommandLine(TestCase):
         :return:
         """
         os.environ['CREATE_MISSING_CF'] = 'true'
-        dmrpp = DMRPPCommandLine(True, "")
+        dmrpp = DMRPPCommandLine(None)
         self.assertEqual('get_dmrpp -M -b', dmrpp.get_command())
 
     def test_3_local_no_m(self):
@@ -30,7 +30,7 @@ class TestDMRPPCommandLine(TestCase):
         :return:
         """
         os.environ['CREATE_MISSING_CF'] = 'false'
-        dmrpp = DMRPPCommandLine(True, "")
+        dmrpp = DMRPPCommandLine(None)
         self.assertEqual('get_dmrpp -b', dmrpp.get_command())
 
     def test_4_cumulus_no_dmrpp_config(self):
@@ -46,7 +46,7 @@ class TestDMRPPCommandLine(TestCase):
             }
         }
         """
-        dmrpp = DMRPPCommandLine(False, config)
+        dmrpp = DMRPPCommandLine(config)
         self.assertEqual('get_dmrpp -b', dmrpp.get_command())
 
     def test_5_cumulus_m(self):
@@ -63,7 +63,7 @@ class TestDMRPPCommandLine(TestCase):
             }
         }
         """
-        dmrpp = DMRPPCommandLine(False, config)
+        dmrpp = DMRPPCommandLine(config)
         self.assertEqual('get_dmrpp -M -b', dmrpp.get_command())
 
     def test_6_cumulus_m_false(self):
@@ -81,7 +81,7 @@ class TestDMRPPCommandLine(TestCase):
             }
         }
         """
-        dmrpp = DMRPPCommandLine(False, config)
+        dmrpp = DMRPPCommandLine(config)
         self.assertEqual('get_dmrpp -b', dmrpp.get_command())
     
     def test_7_cumulus_no_m(self):
@@ -98,6 +98,6 @@ class TestDMRPPCommandLine(TestCase):
             }
         }
         """
-        dmrpp = DMRPPCommandLine(False, config)
+        dmrpp = DMRPPCommandLine(config)
         self.assertEqual('get_dmrpp -b', dmrpp.get_command())
 

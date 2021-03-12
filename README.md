@@ -1,6 +1,22 @@
 # dmrpp-file-generator-docker
 Docker image to generate dmrpp files from netCDF and HDF files
+# Supported get_dmrpp configuration
 
+## Via Cumulus configuration
+```code
+{
+    "config": {
+        "dmrpp": {
+            "create_missing_cf" : true    
+        }
+    }
+}
+```
+## Via env vars
+
+| Environment Variable | Valid Values | Tool flag | Description |
+| -----------          | ------------ | ----------| ----------- | 
+| CREATE_MISSING_CF    | true,false   | -M        | Create and merge missing CF coordinate domain variables into the dmrpp. If there are missing variables, a sidecar file named input_file_name_missing.suffix will be created in the same directory location as the input_data_file. |
 
 # Generate DMRpp files locally
 The folder `<path/to/nc/hdf/files>` should contain netCDF and HDF files
@@ -19,10 +35,3 @@ where the file env.list contains
 ```code
 CREATE_MISSING_CF=true
 ```
-# Supported get_dmrpp configuration
-
-| Environment Variable | Valid Values | Tool flag | Description |
-| -----------          | ------------ | ----------| ----------- | 
-| CREATE_MISSING_CF    | true,false   | -M        | Create and merge missing CF coordinate domain variables into the dmrpp. If there are missing variables, a sidecar file named input_file_name_missing.suffix will be created in the same directory location as the input_data_file. |
-
-
