@@ -89,7 +89,6 @@ class TestDMRPPCommandLine(TestCase):
         Testing local with env var false
         :return:
         """
-        #del os.environ['CREATE_MISSING_CF']
         config = """
         {
             "config": {
