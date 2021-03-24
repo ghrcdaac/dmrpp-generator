@@ -54,5 +54,5 @@ class DMRPPCommandLine:
         return f'get_dmrpp{switches} -b'
 
 if __name__ == "__main__":
-    dmrpp = DMRPPCommandLine(payload)
-    print(dmrpp.get_command())
+    generator = DMRPPCommandLine(payload)
+    print(generator.get_command())

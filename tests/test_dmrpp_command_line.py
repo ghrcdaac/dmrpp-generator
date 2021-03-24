@@ -1,10 +1,9 @@
 import os
 from unittest import TestCase
 import json
+
 from dmrpp_generator.dmrpp_command_line import DMRPPCommandLine
 from unittest.mock import patch
-
-
 class TestDMRPPCommandLine(TestCase):
 
     def test_1_local(self):
@@ -51,7 +50,7 @@ class TestDMRPPCommandLine(TestCase):
 
     def test_5_cumulus_m(self):
         """
-        Testing local with env var true
+        Testing cumulus true
         :return:
         """
         config = """
@@ -68,10 +67,9 @@ class TestDMRPPCommandLine(TestCase):
 
     def test_6_cumulus_m_false(self):
         """
-        Testing local with env var false
+        Testing cumulus false
         :return:
         """
-        #del os.environ['CREATE_MISSING_CF']
         config = """
         {
             "config": {
@@ -86,7 +84,7 @@ class TestDMRPPCommandLine(TestCase):
     
     def test_7_cumulus_no_m(self):
         """
-        Testing local with env var false
+        Testing cumulus no explicit config
         :return:
         """
         config = """
@@ -99,4 +97,13 @@ class TestDMRPPCommandLine(TestCase):
         """
         dmrpp = DMRPPCommandLine(config)
         self.assertEqual('get_dmrpp -b', dmrpp.get_command())
+
+    def test_8_local_m(self):
+        """
+        Testing local with env var 1
+        :return:
+        """
+        os.environ['CREATE_MISSING_CF'] = '1'
+        dmrpp = DMRPPCommandLine(None)
+        self.assertEqual('get_dmrpp -M -b', dmrpp.get_command())
 
