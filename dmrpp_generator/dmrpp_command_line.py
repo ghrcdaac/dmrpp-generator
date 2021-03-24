@@ -39,7 +39,7 @@ class DMRPPCommandLine:
     """
         Generates base get_dmrpp command based on configuration/environment
     """
-    def get_command(self):
+    def get_command(self, path, file_name):
         switches = ""
         for key in self.switch_map:
             add_switch = False
@@ -53,8 +53,8 @@ class DMRPPCommandLine:
                            
             if add_switch: switches = switches.join(f" {self.switch_map[key]}")
 
-        return f'get_dmrpp{switches} -b'
+        return f'get_dmrpp{switches} -b {path} -o {file_name}.dmrpp {os.path.basename(file_name)}'
 
 if __name__ == "__main__":
     generator = DMRPPCommandLine(payload)
-    print(generator.get_command())
+    print(generator.get_command("foo", "bar"))

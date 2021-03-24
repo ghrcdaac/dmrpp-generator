@@ -11,7 +11,7 @@ class TestDMRPPCommandLine(TestCase):
         :return:
         """
         dmrpp = DMRPPCommandLine(None)
-        self.assertEqual('get_dmrpp -b', dmrpp.get_command())
+        self.assertEqual('get_dmrpp -b foo -o bar.dmrpp bar', dmrpp.get_command("foo", "bar"))
 
     def test_2_local_m(self):
         """
@@ -20,7 +20,7 @@ class TestDMRPPCommandLine(TestCase):
         """
         os.environ['CREATE_MISSING_CF'] = 'true'
         dmrpp = DMRPPCommandLine(None)
-        self.assertEqual('get_dmrpp -M -b', dmrpp.get_command())
+        self.assertEqual('get_dmrpp -M -b foo -o bar.dmrpp bar', dmrpp.get_command("foo", "bar"))
 
     def test_3_local_no_m(self):
         """
@@ -29,7 +29,7 @@ class TestDMRPPCommandLine(TestCase):
         """
         os.environ['CREATE_MISSING_CF'] = 'false'
         dmrpp = DMRPPCommandLine(None)
-        self.assertEqual('get_dmrpp -b', dmrpp.get_command())
+        self.assertEqual('get_dmrpp -b foo -o bar.dmrpp bar', dmrpp.get_command("foo", "bar"))
 
     def test_4_local_m(self):
         """
@@ -38,7 +38,7 @@ class TestDMRPPCommandLine(TestCase):
         """
         os.environ['CREATE_MISSING_CF'] = '1'
         dmrpp = DMRPPCommandLine(None)
-        self.assertEqual('get_dmrpp -M -b', dmrpp.get_command())
+        self.assertEqual('get_dmrpp -M -b foo -o bar.dmrpp bar', dmrpp.get_command("foo", "bar"))
 
     def test_5_cumulus_no_meta_config(self):
         """
@@ -54,7 +54,7 @@ class TestDMRPPCommandLine(TestCase):
         }
         """
         dmrpp = DMRPPCommandLine(config)
-        self.assertEqual('get_dmrpp -b', dmrpp.get_command())
+        self.assertEqual('get_dmrpp -b foo -o bar.dmrpp bar', dmrpp.get_command("foo", "bar"))
 
     def test_6_cumulus_no_dmrpp_config(self):
         """
@@ -71,7 +71,7 @@ class TestDMRPPCommandLine(TestCase):
         }
         """
         dmrpp = DMRPPCommandLine(config)
-        self.assertEqual('get_dmrpp -b', dmrpp.get_command())
+        self.assertEqual('get_dmrpp -b foo -o bar.dmrpp bar', dmrpp.get_command("foo", "bar"))
 
     def test_7_cumulus_m(self):
         """
@@ -90,7 +90,7 @@ class TestDMRPPCommandLine(TestCase):
         }
         """
         dmrpp = DMRPPCommandLine(config)
-        self.assertEqual('get_dmrpp -M -b', dmrpp.get_command())
+        self.assertEqual('get_dmrpp -M -b foo -o bar.dmrpp bar', dmrpp.get_command("foo", "bar"))
 
     def test_8_cumulus_m_false(self):
         """
@@ -109,7 +109,7 @@ class TestDMRPPCommandLine(TestCase):
         }
         """
         dmrpp = DMRPPCommandLine(config)
-        self.assertEqual('get_dmrpp -b', dmrpp.get_command())
+        self.assertEqual('get_dmrpp -b foo -o bar.dmrpp bar', dmrpp.get_command("foo", "bar"))
     
     def test_9_cumulus_no_m(self):
         """
@@ -127,5 +127,5 @@ class TestDMRPPCommandLine(TestCase):
         }
         """
         dmrpp = DMRPPCommandLine(config)
-        self.assertEqual('get_dmrpp -b', dmrpp.get_command())
+        self.assertEqual('get_dmrpp -b foo -o bar.dmrpp bar', dmrpp.get_command("foo", "bar"))
 
