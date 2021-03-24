@@ -29,23 +29,17 @@ class DMRPPCommandLine:
         "create_missing_cf": "-M"
     }
     
-    def __init__(self, config):
-        """
-        :param config: Cumulus configuration in json format. If this is null or empty environment variables are used.
-        """
-        self.data = None
-        if config != None: self.data = json.loads(config)
-
-    """
-        Generates base get_dmrpp command based on configuration/environment
-    """
-    def get_command(self, path, file_name):
+    def get_command(self, config, path, file_name):
         switches = ""
+
+        data = None
+        if config != None: data = json.loads(config)
+
         for key in self.switch_map:
             add_switch = False
-            if self.data:
+            if data:
                 try:   
-                    add_switch = self.data['config']["meta"]['dmrpp'][key] == True
+                    add_switch = data['config']['meta']['dmrpp'][key] == True
                 except KeyError:
                     pass               
             else:
@@ -56,5 +50,5 @@ class DMRPPCommandLine:
         return f'get_dmrpp{switches} -b {path} -o {file_name}.dmrpp {os.path.basename(file_name)}'
 
 if __name__ == "__main__":
-    generator = DMRPPCommandLine(payload)
-    print(generator.get_command("foo", "bar"))
+    generator = DMRPPCommandLine()
+    print(generator.get_command(payload, "foo", "bar"))
