@@ -7,8 +7,10 @@ Example Cumulus configuration for supported get_dmrpp switches
 payload = """
 {
     "config": {
-        "dmrpp": {
-            "create_missing_cf" : true    
+        "meta": {
+            "hyrax_processing": true,
+            "dmrpp": {
+                "create_missing_cf" : true    
         }
     }
 }
@@ -43,7 +45,7 @@ class DMRPPCommandLine:
             add_switch = False
             if self.data:
                 try:   
-                    add_switch = self.data['config']['dmrpp'][key] == True
+                    add_switch = self.data['config']["meta"]['dmrpp'][key] == True
                 except KeyError:
                     pass               
             else:
