@@ -65,7 +65,9 @@ class TestDMRPPFileGeneration(TestCase):
     with open(payload_file) as f:
         payload = json.load(f)
 
-    process_instance = DMRPPGenerator(input = input_file, config=payload['config'], path=fixture_path)
+    payload_data = payload
+
+    process_instance = DMRPPGenerator(input=input_file, config=payload_data['config'], path=fixture_path)
     process_instance.path = fixture_path
 
     @patch('dmrpp_generator.main.DMRPPGenerator.upload_file',
@@ -88,7 +90,6 @@ class TestDMRPPFileGeneration(TestCase):
         Test the putput schema of the processnig
         :return:
         """
-        print(StorageValues.processing_output)
         self.assertListEqual(['granules'], list(StorageValues.processing_output.keys()))
 
     def test_3_checkout_dmrpp_output(self):
@@ -100,3 +101,25 @@ class TestDMRPPFileGeneration(TestCase):
                 if file["name"] == dmrpp_file:
                     dmrpp_exists = True
         self.assertEqual(True, dmrpp_exists)
+
+
+    @patch('dmrpp_generator.main.DMRPPGenerator.upload_file',
+       return_value={granule_id:f's3://{granule_name}.dmrpp'})
+    @patch('cumulus_process.Process.fetch_all',
+       return_value={'input_key': [os.path.join(os.path.dirname(__file__), f"fixtures/{granule_name}")]})
+    @patch('os.remove', return_value=granule_name)
+    @patch('cumulus_process.s3.download', return_value=f"{process_instance.path}/{granule_name}")
+    @patch('cumulus_process.s3.upload', return_value=f"s3://fake_s3/{granule_name}")
+    def test_4_checkout_missing_nc(self, mock_upload, mock_fetch, mock_remove, mock_download, mock_upload_s3):
+        self.payload_data['config']['collection']['meta']['dmrpp']['create_missing_cf'] = "-M"
+
+        process_instance = DMRPPGenerator(input=self.input_file, config=self.payload_data['config'], path=self.fixture_path)
+        process_instance.path = self.fixture_path
+        outputs = process_instance.process()
+        missing_nc_file = f"{self.granule_name}.missing"
+        missing_nc_file_exists = False
+        for granules in outputs['granules']:
+            for file in granules.get('files'):
+                if file["name"] == missing_nc_file:
+                    missing_nc_file_exists = True
+        self.assertEqual(True, missing_nc_file_exists)

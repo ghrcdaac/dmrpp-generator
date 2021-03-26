@@ -1,4 +1,4 @@
-FROM ghrcdaac/hyrax:1.1.0
+FROM ghrcdaac/hyrax:1.2.0
 
 RUN yum -y update && \
     yum -y upgrade
@@ -27,9 +27,12 @@ ENV BUILD=$HOME/build
 
 #--chown=<user>:<group> <hostPath> <containerPath>
 COPY --chown=worker setup.py requirements*txt $BUILD/
+RUN pip install -r $BUILD/requirements.txt
 COPY --chown=worker dmrpp_generator $BUILD/dmrpp_generator
 COPY --chown=worker generate_dmrpp.py $BUILD/generate_dmrpp.py
 COPY --chown=worker tests $BUILD/tests
+
+
 
 RUN \
   cd $BUILD; \
