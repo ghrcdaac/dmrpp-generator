@@ -7,9 +7,8 @@ Docker image to generate dmrpp files from netCDF and HDF files
 {
     "config": {
         "meta": {
-            "hyrax_processing": true,
             "dmrpp": {
-                "create_missing_cf" : true    
+                "create_missing_cf" : "-M"    
             }
     }
 }

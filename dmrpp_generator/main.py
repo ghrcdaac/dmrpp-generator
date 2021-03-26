@@ -100,13 +100,16 @@ class DMRPPGenerator(Process):
         Getting the command line to create DMRPP files
         """
         dmrpp_meta = dmrpp_meta if isinstance(dmrpp_meta, dict) else {}
-
-        options = '-M -b' if os.getenv('create_missing_cf'.upper()) in ['true', '1'] else '-b'
-        for key in dmrpp_meta:
-            if match('^-[a-zA-Z]$', dmrpp_meta[key]):
-                options = f"{dmrpp_meta[key]} {options}"
+        options = '-b'
+        if os.getenv('CREATE_MISSING_CF') in ['true', '1', 'yes']:
+            dmrpp_meta['create_missing_cf'] = '-M' 
+        for _, value in dmrpp_meta.items():
+            if match('^-[a-zA-Z]$', value):
+                options = f"{value} {options}"
             else:
-                self.logger.warning(f"Option {dmrpp_meta[key]} not supported")
+                self.logger.warning(f"Option {value} not supported")
+        # Remove duplicates from options
+        options = (" ".join(sorted(set(options.split()), key=options.split().index))) 
 
         return f"get_dmrpp {options} {input_path} -o {output_filename}.dmrpp {os.path.basename(output_filename)}"
 
