@@ -45,19 +45,23 @@
       "granuleId": "^(tpw_v07r).*\\.nc$",
       "granuleIdExtraction": "(tpw_v07r.*)",
       "sampleFileName": "tpw_v07r01_201812.nc",
+      "meta": {
+        "dmrpp": {
+          "create_missing_cf" : ""
+        }
+      },
       "files": [
         {
             "bucket": "private",
-            "regex": "^tpw_v07r\\d{2}_\\d{6}\\.nc$",
+            "regex": "^.*.nc$",
             "sampleFileName": "tpw_v07r01_201910.nc"
         },
         {
             "bucket": "protected",
-            "regex": "^tpw_v07r\\d{2}_\\d{6}\\.dmrpp$",
+            "regex": "^tpw_v07r\\d{2}_\\d{6}\\.(dmrpp|missing)$",
             "sampleFileName": "tpw_v07r01_201910.dmrpp"
         }
       ]
   }
 }
 }
-  
