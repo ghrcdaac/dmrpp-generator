@@ -1,6 +1,11 @@
 
 # 📖 Release notes
 
+## v2.0.0
+This release:
+* Fixes the issue [issue 11](https://github.com/ghrcdaac/dmrpp-generator/issues/11).
+
+
 ## v1.1.0
 This release:
 * Fixes the file type issue, now you can define a custom dmrpp file type.
@@ -16,6 +21,39 @@ This release fixes the problem adding a type of meta data for the dmrpp file and
 
 ## v1.0.4
 This release fixes the problem of assuming the granuleId is the same as the file name [issue#9](https://github.com/ghrcdaac/dmrpp-generator/issues/9)
+
+## 🏃 Migration Steps to v2.0.0
+Change the source url in your terraform file to point to v2.0.0 release
+```code
+module "dmrpp-generator" {
+source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/v2.0.0/dmrpp-generator.zip"
+...
+}
+``` 
+Change the value of your docker image to point to v1.1.0 tag
+```code
+module "dmrpp-generator" {
+...
+docker_image = "ghrcdaac/dmrpp-generator:v2.0.0"
+}
+
+```
+
+## Features added to v2.0.0
+Now you can add DMRPP options via collection definition 
+```code
+{
+  "name" : "foo"
+  ...
+  "meta": {
+      "dmrpp": {
+        "create_missing_cf" : "-M"    
+      }
+      ...
+  }
+  ...
+}
+```
 
 
 ## 🏃 Migration Steps to v1.1.0
