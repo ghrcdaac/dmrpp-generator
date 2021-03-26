@@ -47,7 +47,7 @@
       "sampleFileName": "tpw_v07r01_201812.nc",
       "meta": {
         "dmrpp": {
-          "create_missing_cf" : "false"
+          "create_missing_cf" : ""
         }
       },
       "files": [

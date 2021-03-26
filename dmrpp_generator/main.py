@@ -95,16 +95,20 @@ class DMRPPGenerator(Process):
             granule['files'] += dmrpp_files
         return self.input
 
-    @staticmethod
-    def get_dmrpp_command(dmrpp_meta, input_path, output_filename):
+    def get_dmrpp_command(self, dmrpp_meta, input_path, output_filename):
         """
         Getting the command line to create DMRPP files
         """
         dmrpp_meta = dmrpp_meta if isinstance(dmrpp_meta, dict) else {}
-        create_missing_cf = dmrpp_meta.get('create_missing_cf') in ['true', '1'] or os.getenv('create_missing_cf'.upper()) in ['true', '1']
-        create_missing_cf_option = '-M -b' if create_missing_cf else '-b'
 
-        return f"get_dmrpp {create_missing_cf_option} {input_path} -o {output_filename}.dmrpp {os.path.basename(output_filename)}"
+        options = '-M -b' if os.getenv('create_missing_cf'.upper()) in ['true', '1'] else '-b'
+        for key in dmrpp_meta:
+            if match('^-[a-zA-Z]$', dmrpp_meta[key]):
+                options = f"{dmrpp_meta[key]} {options}"
+            else:
+                self.logger.warning(f"Option {dmrpp_meta[key]} not supported")
+
+        return f"get_dmrpp {options} {input_path} -o {output_filename}.dmrpp {os.path.basename(output_filename)}"
 
     def dmrpp_generate(self, input_file, local=False, dmrpp_meta=None):
         """
@@ -118,7 +122,7 @@ class DMRPPGenerator(Process):
             cmd = self.get_dmrpp_command(dmrpp_meta, self.path, file_name)
             self.run_command(cmd)
             out_files = [f"{file_name}.dmrpp"]
-            if dmrpp_meta.get('create_missing_cf') in ["true", "1"]:
+            if dmrpp_meta.get('create_missing_cf') == '-M':
                 out_files += [f"{file_name}.missing"]
             return out_files
 
