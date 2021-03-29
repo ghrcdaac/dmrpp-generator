@@ -40,7 +40,9 @@ docker_image = "ghrcdaac/dmrpp-generator:v2.0.0"
 ```
 
 ## Features added to v2.0.0
-Now you can add DMRPP options via collection definition 
+Now you can pass DMRPP options via collection definition.
+For more info about DMRPP options please refer to [DMRPP Documentation](https://docs.google.com/presentation/d/1ZTeWjk6bUBgKP5iD2NVb_Ur8ZcvOpVbfd7pAl8c5bCs/edit#slide=id.p)
+
 ```code
 {
   "name" : "foo"
@@ -54,7 +56,40 @@ Now you can add DMRPP options via collection definition
   ...
 }
 ```
+`create_missing_cf` is an arbitrary key name, you can achieve the same result by passing
+```code
+{
+  "name" : "foo"
+  ...
+  "meta": {
+      "dmrpp": {
+        "option1" : "-M"    
+      }
+      ...
+  }
+  ...
+}
+```
+For more supported DMRPP options (example `-v`)
+```code
+```code
+{
+  "name" : "foo"
+  ...
+  "meta": {
+      "dmrpp": {
+        "option1" : "-M",
+        "option2" : "-v"    
+      }
+      ...
+  }
+  ...
+}
+```
 
+
+## 🚨 Breaking Changes v2.0.0
+DMRPP activity is using `url_path` instead of `filepath`.
 
 ## 🏃 Migration Steps to v1.1.0
 Change the source url in your terraform file to point to v1.1.0 release
