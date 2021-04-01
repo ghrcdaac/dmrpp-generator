@@ -79,16 +79,18 @@ class DMRPPGenerator(Process):
                                                        dmrpp_meta=dmrpp_meta)
                 for output_file_path in output_file_paths:
                     output_file_basename = os.path.basename(output_file_path)
+                    url_path = file_.get('url_path', self.config.get('fileStagingDir'))
+                    filepath = os.path.dirname(file_.get('filepath', url_path))
                     if output_file_path:
                         dmrpp_file = {
                         "name": os.path.basename(output_file_path),
                         "path": self.config.get('fileStagingDir'),
-                        "url_path": file_.get('url_path', self.config.get('fileStagingDir')),
+                        "url_path": url_path,
                         "bucket": self.get_bucket(output_file_basename, collection_files, buckets)['name'],
                         "size": os.path.getsize(output_file_path),
                         "type": self.get_file_type(output_file_basename, collection_files)
                         }
-                        dmrpp_file['filepath'] = f"{dmrpp_file['url_path'].rstrip('/')}/{dmrpp_file['name']}".lstrip('/')
+                        dmrpp_file['filepath'] = f"{filepath}/{dmrpp_file['name']}".lstrip('/')
                         dmrpp_file['filename'] = f's3://{dmrpp_file["bucket"]}/{dmrpp_file["filepath"]}'
                         dmrpp_files.append(dmrpp_file)
                         self.upload_file_to_s3(output_file_path, dmrpp_file['filename'])
@@ -102,14 +104,14 @@ class DMRPPGenerator(Process):
         dmrpp_meta = dmrpp_meta if isinstance(dmrpp_meta, dict) else {}
         options = '-b'
         if os.getenv('CREATE_MISSING_CF') in ['true', '1', 'yes']:
-            dmrpp_meta['create_missing_cf'] = '-M' 
+            dmrpp_meta['create_missing_cf'] = '-M'
         for _, value in dmrpp_meta.items():
             if match('^-[a-zA-Z]$', value):
                 options = f"{value} {options}"
             else:
                 self.logger.warning(f"Option {value} not supported")
         # Remove duplicates from options
-        options = (" ".join(sorted(set(options.split()), key=options.split().index))) 
+        options = (" ".join(sorted(set(options.split()), key=options.split().index)))
 
         return f"get_dmrpp {options} {input_path} -o {output_filename}.dmrpp {os.path.basename(output_filename)}"
 
@@ -125,7 +127,7 @@ class DMRPPGenerator(Process):
             cmd = self.get_dmrpp_command(dmrpp_meta, self.path, file_name)
             self.run_command(cmd)
             out_files = [f"{file_name}.dmrpp"]
-            if dmrpp_meta.get('create_missing_cf') == '-M':
+            if "-M" in dmrpp_meta.values():
                 out_files += [f"{file_name}.missing"]
             return out_files
 
