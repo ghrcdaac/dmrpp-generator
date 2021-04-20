@@ -12,7 +12,7 @@ module "dmrpp_ecs_task_module" {
 }
 
 module "dmrpp_service" {
-  source = "https://github.com/nasa/cumulus/releases/download/v5.0.1/terraform-aws-cumulus-ecs-service.zip"
+  source = "https://github.com/nasa/cumulus/releases/download/v8.0.0/terraform-aws-cumulus-ecs-service.zip"
 
 
   prefix = var.prefix
@@ -21,10 +21,10 @@ module "dmrpp_service" {
   cluster_arn                           = var.cluster_arn
   desired_count                         = var.desired_count
   image                                 = var.docker_image
-  log2elasticsearch_lambda_function_arn = var.log2elasticsearch_lambda_function_arn
-  cpu                = var.cpu
-  memory_reservation = var.memory_reservation
-  volumes            = var.volumes
+  log_destination_arn                   = var.log_destination_arn
+  cpu                                   = var.cpu
+  memory_reservation                    = var.memory_reservation
+  volumes                               = var.volumes
 
   environment = {
     AWS_DEFAULT_REGION = var.region
