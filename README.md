@@ -37,7 +37,6 @@ module "dmrpp-generator" {
   // Required parameters
   source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/<tag_num>/dmrpp-generator.zip"
   cluster_arn = module.cumulus.ecs_cluster_arn
-  log2elasticsearch_lambda_function_arn = module.cumulus.log2elasticsearch_lambda_function_arn
   region = var.region
   prefix = var.prefix
   docker_image = var.dmrpp-generator-docker-image
@@ -49,6 +48,8 @@ module "dmrpp-generator" {
   desired_count = 1  // Default to 1
   docker_image = "ghrcdaac/dmrpp-generator:<tag_num>"
 } 
+
+log_destination_arn = var.aws_log_mechanism (optional)
 ```
 In [variables.tf](https://github.com/nasa/cumulus-template-deploy/blob/master/cumulus-tf/variables.tf) 
 file you need to define 
