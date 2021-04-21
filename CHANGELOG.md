@@ -9,8 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 ### Changed
-- **PODAAC-3366**
-  - Modify DMRPP to be cumulus 7.x compliant.
+- https://github.com/ghrcdaac/dmrpp-generator/issues/12
+  - Modification to fix the above issue.
 ### Deprecated
 ### Removed
 ### Fixed
