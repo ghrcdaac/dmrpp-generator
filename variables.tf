@@ -11,7 +11,7 @@ variable "region" {
 
 
 variable "prefix" {
-  type = string
+  type        = string
   description = "Cumulus stack prefix"
 }
 
@@ -37,7 +37,7 @@ variable "docker_image" {
 
 variable "volumes" {
   description = "Volumes to make accessible to the container(s)"
-  type    = list(object({ name = string, host_path = string, container_path = string }))
-  default = []
+  type        = list(object({ name = string, host_path = string, container_path = string }))
+  default     = []
 }
 

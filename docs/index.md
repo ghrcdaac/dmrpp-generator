@@ -1,6 +1,27 @@
 
 # 📖 Release notes
 
+## v2.1.0
+This release:
+* Fixes the issue [issue 12](https://github.com/ghrcdaac/dmrpp-generator/issues/12)
+
+## 🏃 Migration Steps to v2.1.0
+ release
+```code
+module "dmrpp-generator" {
+// Change the source url in your terraform file to point to v2.1.0
+source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/v2.1.0/dmrpp-generator.zip"
+...
+// Change the value of your docker image to point to v2.1.0 tag
+docker_image = "ghrcdaac/dmrpp-generator:v2.1.0"
+...
+// Add destination log to remote kinesis (optional)
+log_destination_arn = var.log_destination_arn
+}
+``` 
+## 🚨 Breaking Changes v2.1.0
+Only compatible with Cumulus v7+ 
+
 ## v2.0.1
 This release:
 * Fixes the issue of `filepath` passed from `move-granules` step function
@@ -27,6 +48,9 @@ This release fixes the problem adding a type of meta data for the dmrpp file and
 
 ## v1.0.4
 This release fixes the problem of assuming the granuleId is the same as the file name [issue#9](https://github.com/ghrcdaac/dmrpp-generator/issues/9)
+
+
+
 
 ## 🏃 Migration Steps to v2.0.1
 Change the source url in your terraform file to point to v2.0.0 release

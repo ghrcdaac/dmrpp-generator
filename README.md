@@ -46,10 +46,10 @@ module "dmrpp-generator" {
   memory_reservation = 900 // default to 900
   prefix = "Cumulus stack prefix" // default Cumulus stack prefix
   desired_count = 1  // Default to 1
-  docker_image = "ghrcdaac/dmrpp-generator:<tag_num>"
+  log_destination_arn = var.aws_log_mechanism // default to null
 } 
 
-log_destination_arn = var.aws_log_mechanism (optional)
+
 ```
 In [variables.tf](https://github.com/nasa/cumulus-template-deploy/blob/master/cumulus-tf/variables.tf) 
 file you need to define 
