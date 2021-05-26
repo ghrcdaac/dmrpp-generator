@@ -1,6 +1,27 @@
 
 # 📖 Release notes
 
+## v2.1.1
+This release:
+* Support `H5` extension 
+
+
+## 🏃 Migration Steps to v2.1.1
+ release
+```code
+module "dmrpp-generator" {
+// Change the source url in your terraform file to point to v2.1.1
+source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/v2.1.1/dmrpp-generator.zip"
+...
+// Change the value of your docker image to point to v2.1.1 tag
+docker_image = "ghrcdaac/dmrpp-generator:v2.1.1"
+...
+}
+``` 
+
+## 🚨 Breaking Changes v2.1.1
+None
+
 ## v2.1.0
 This release:
 * Fixes the issue [issue 12](https://github.com/ghrcdaac/dmrpp-generator/issues/12)
