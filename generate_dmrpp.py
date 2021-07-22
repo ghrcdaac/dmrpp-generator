@@ -1,4 +1,4 @@
-from os import listdir
+from os import listdir, getenv
 from os.path import isfile, join, basename
 from dmrpp_generator.main import DMRPPGenerator
 from re import match
