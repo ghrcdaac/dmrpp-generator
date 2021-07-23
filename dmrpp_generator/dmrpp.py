@@ -22,12 +22,13 @@ class DMRpp:
         """
         filename = url.rsplit('/', 1)[-1]
         local_path = f'{host_path}/{filename}'
-        try:
-            response = self.session.get(url)
-            with open(local_path, 'wb') as file:
-                file.write(response.content)
-        except Exception as e:
-            logging.log(level=20, msg=str(e))
+        if not os.path.isfile(local_path):
+            try:
+                response = self.session.get(url)
+                with open(local_path, 'wb') as file:
+                    file.write(response.content)
+            except Exception as e:
+                logging.log(level=20, msg=str(e))
 
         return local_path
 
@@ -39,7 +40,7 @@ class DMRpp:
         """
         filename = s3_link.rsplit('/', 1)[-1]
         local_path = f'{host_path}/{filename}'
-        if os.path.isfile(local_path):
+        if not os.path.isfile(local_path):
             reg_res = re.match(rf'^.*://([^/]*)/(.*)', s3_link)
             bucket_name = reg_res.group(1)
             key = reg_res.group(2)
