@@ -1,4 +1,5 @@
 import logging
+import os
 import re
 
 import boto3
@@ -11,7 +12,7 @@ class DMRpp:
         self.session = requests.Session()
 
     def get_https_file(self, url, host_path='/tmp'):
-        self.get_http_file(url, host_path)
+        return self.get_http_file(url, host_path)
 
     def get_http_file(self, url, host_path="/tmp"):
         """
@@ -20,12 +21,15 @@ class DMRpp:
         :param host_path: Where to store the downloaded file
         """
         filename = url.rsplit('/', 1)[-1]
+        local_path = f'{host_path}/{filename}'
         try:
             response = self.session.get(url)
-            with open(f'{host_path}/{filename}', 'wb') as file:
+            with open(local_path, 'wb') as file:
                 file.write(response.content)
         except Exception as e:
             logging.log(level=20, msg=str(e))
+
+        return local_path
 
     def get_s3_file(self, s3_link, host_path="/tmp"):
         """
@@ -34,30 +38,36 @@ class DMRpp:
         :param host_path: Where to store the downloaded file
         """
         filename = s3_link.rsplit('/', 1)[-1]
-        reg_res = re.match(rf'^.*://([^/]*)/(.*)', s3_link)
-        bucket_name = reg_res.group(1)
-        key = reg_res.group(2)
-        try:
-            self.s3_client.download_file(bucket_name, key, f'{host_path}/{filename}')
-        except Exception as e:
-            logging.log(level=20, msg=str(e))
+        local_path = f'{host_path}/{filename}'
+        if os.path.isfile(local_path):
+            reg_res = re.match(rf'^.*://([^/]*)/(.*)', s3_link)
+            bucket_name = reg_res.group(1)
+            key = reg_res.group(2)
+            try:
+                self.s3_client.download_file(bucket_name, key, f'{host_path}/{filename}')
+            except Exception as e:
+                logging.log(level=20, msg=str(e))
+
+        return local_path
 
     def get_dmrpp_option(self, dmrpp_meta):
         """
         :param dmrpp_meta: DMR meta string
         :return A sequential string with the flags and URLs in order
         """
-        res_str = ''
+        res_str = '-b '
         for option in dmrpp_meta.get('options'):
             flag = option.get('flag', '')
             res_str = f'{res_str}{flag} '
-            file_link = option.get('opt', '')
+            file_link = option.get('opt')
             if file_link:
-                res_str = f'{res_str}{file_link} '
-                download = option.get('download', '')
-                if download and download == 'true':
+                location = file_link
+                download = option.get('download')
+                if download == 'true':
                     protocol = re.match(rf'.+?(?=:)', file_link).group()
-                    self.__getattribute__(f'get_{protocol}_file')(file_link)
+                    location = self.__getattribute__(f'get_{protocol}_file')(file_link)
+
+                res_str = f'{res_str}{location} '
 
         return res_str.rstrip(' ')
 
