@@ -12,9 +12,6 @@ class DMRpp:
         self.session = requests.Session()
         self.host_path = host_path
 
-    def get_https_file(self, url, local_path):
-        self.get_http_file(url, local_path)
-
     def download_files(self, url):
         """
         Calls the corresponding download function for the url's protocol. Function names must be of the form
@@ -28,6 +25,9 @@ class DMRpp:
             self.__getattribute__(f'get_{protocol}_file')(url, local_path)
 
         return local_path
+
+    def get_https_file(self, url, local_path):
+        self.get_http_file(url, local_path)
 
     def get_http_file(self, url, local_path):
         """
@@ -76,7 +76,7 @@ class DMRpp:
 
                 res_str = f'{res_str}{location} '
 
-        return res_str.rstrip(' ')
+        return res_str.rstrip()
 
 
 if __name__ == '__main__':
