@@ -10,6 +10,9 @@ class DMRpp:
         self.s3_client = boto3.client('s3')
         self.session = requests.Session()
 
+    def get_https_file(self, url, host_path='/tmp'):
+        self.get_http_file(url, host_path)
+
     def get_http_file(self, url, host_path="/tmp"):
         """
         Downloads a file from the provided url.
@@ -53,7 +56,7 @@ class DMRpp:
                 res_str = f'{res_str}{file_link} '
                 download = option.get('download', '')
                 if download and download == 'true':
-                    protocol = re.match(rf'http|s3', file_link).group()
+                    protocol = re.match(rf'.+?(?=:)', file_link).group()
                     self.__getattribute__(f'get_{protocol}_file')(file_link)
 
         return res_str.rstrip(' ')
