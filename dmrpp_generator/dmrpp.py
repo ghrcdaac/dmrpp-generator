@@ -20,7 +20,7 @@ class DMRpp:
         :param url: Location to find the file to download http or https
         :param host_path: Where to store the downloaded file
         """
-        filename = url.rsplit('/', 1)[-1]
+        filename = os.path.basename(url)
         local_path = f'{host_path}/{filename}'
         if not os.path.isfile(local_path):
             try:
@@ -38,7 +38,7 @@ class DMRpp:
         :param s3_link: Location to find the file to download from S3
         :param host_path: Where to store the downloaded file
         """
-        filename = s3_link.rsplit('/', 1)[-1]
+        filename = os.path.basename(s3_link)
         local_path = f'{host_path}/{filename}'
         if not os.path.isfile(local_path):
             reg_res = re.match(rf'^.*://([^/]*)/(.*)', s3_link)
