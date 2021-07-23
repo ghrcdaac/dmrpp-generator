@@ -7,49 +7,56 @@ import requests
 
 
 class DMRpp:
-    def __init__(self) -> None:
+    def __init__(self, host_path='/tmp') -> None:
         self.s3_client = boto3.client('s3')
         self.session = requests.Session()
+        self.host_path = host_path
 
-    def get_https_file(self, url, host_path='/tmp'):
-        return self.get_http_file(url, host_path)
+    def get_https_file(self, url, local_path):
+        self.get_http_file(url, local_path)
 
-    def get_http_file(self, url, host_path="/tmp"):
+    def download_files(self, url):
         """
-        Downloads a file from the provided url.
-        :param url: Location to find the file to download http or https
-        :param host_path: Where to store the downloaded file
+        Calls the corresponding download function for the url's protocol. Function names must be of the form
+        get_{protocol}_file.
+        :param url: Location to find the file to download
         """
         filename = os.path.basename(url)
-        local_path = f'{host_path}/{filename}'
+        local_path = f'{self.host_path}/{filename}'
+        protocol = re.match(rf'.+?(?=:)', url).group()
         if not os.path.isfile(local_path):
-            try:
-                response = self.session.get(url)
-                with open(local_path, 'wb') as file:
-                    file.write(response.content)
-            except Exception as e:
-                logging.log(level=20, msg=str(e))
+            self.__getattribute__(f'get_{protocol}_file')(url, local_path)
 
         return local_path
 
-    def get_s3_file(self, s3_link, host_path="/tmp"):
+    def get_http_file(self, url, local_path):
         """
-        Downloads a file from the provided url.
-        :param s3_link: Location to find the file to download from S3
-        :param host_path: Where to store the downloaded file
+        Downloads the file at the url and stores it at the local path.
+        :param url: Url of the file to download.
+        :param local_path: Location to write the downloaded file to.
         """
-        filename = os.path.basename(s3_link)
-        local_path = f'{host_path}/{filename}'
-        if not os.path.isfile(local_path):
-            reg_res = re.match(rf'^.*://([^/]*)/(.*)', s3_link)
-            bucket_name = reg_res.group(1)
-            key = reg_res.group(2)
-            try:
-                self.s3_client.download_file(bucket_name, key, f'{host_path}/{filename}')
-            except Exception as e:
-                logging.log(level=20, msg=str(e))
+        try:
+            response = self.session.get(url)
+            with open(local_path, 'wb') as file:
+                file.write(response.content)
+        except Exception as e:
+            logging.error(msg=str(e))
+        pass
 
-        return local_path
+    def get_s3_file(self, s3_link, local_path):
+        """
+        Downloads the file at the s3_link and stores it at the local path.
+        :param s3_link: s3 link of the file to download.
+        :param local_path: Location to write the downloaded file to.
+        """
+        reg_res = re.match(rf'^.*://([^/]*)/(.*)', s3_link)
+        bucket_name = reg_res.group(1)
+        key = reg_res.group(2)
+        try:
+            self.s3_client.download_file(bucket_name, key, local_path)
+        except Exception as e:
+            logging.error(msg=str(e))
+        pass
 
     def get_dmrpp_option(self, dmrpp_meta):
         """
@@ -65,8 +72,7 @@ class DMRpp:
                 location = file_link
                 download = option.get('download')
                 if download == 'true':
-                    protocol = re.match(rf'.+?(?=:)', file_link).group()
-                    location = self.__getattribute__(f'get_{protocol}_file')(file_link)
+                    location = self.download_files(file_link)
 
                 res_str = f'{res_str}{location} '
 
@@ -95,6 +101,7 @@ if __name__ == '__main__':
             }
           ]
         }
+
     sn = DMRpp()
     print(f'[{sn.get_dmrpp_option(test_dict)}]')
     # sn.get_http_file(url='https://catalog.uah.edu/grad/colleges-departments/science/earth-system-science/earth-system-science.pdf', host_path='.')
