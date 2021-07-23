@@ -30,7 +30,7 @@ class DMRpp:
     def get_s3_file(self, s3_link, host_path="/tmp"):
         """
         Downloads a file from the provided url.
-        :param url: Location to find the file to download from S3
+        :param s3_link: Location to find the file to download from S3
         :param host_path: Where to store the downloaded file
         """
         filename = s3_link.rsplit('/', 1)[-1]
