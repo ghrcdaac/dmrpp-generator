@@ -133,3 +133,4 @@ dmypy.json
 .idea
 .vscode
 *.code-workspace
+.DS_Store

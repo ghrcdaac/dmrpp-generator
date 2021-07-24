@@ -97,6 +97,26 @@ class DMRPPGenerator(Process):
             granule['files'] += dmrpp_files
         return self.input
 
+
+    def get_dmrpp_option(self, dmrpp_meta):
+        """"
+        dmrpp_meta ={"options": [{"flag": "-M"},{"flag":"-s", "opt": "<file1_link_to_s3_or_http>", "download": "true"}, {"flag":"-c", "opt": "<file2_link_to_s3_or_http>", "download": "false"}]
+        """
+        """
+        options = '-b'
+        Loop through dmrpp_meta
+        if opt defined 
+            add that option to the flag
+            if download is true
+               check if the link contains S3:// or http
+                
+               download the file and add the path to the flag
+        else
+           add the flag to the options
+        return "-b -M -s path_to_file1 -c file2_link_to_s3_or_http
+        """
+
+
     def get_dmrpp_command(self, dmrpp_meta, input_path, output_filename):
         """
         Getting the command line to create DMRPP files
@@ -112,7 +132,6 @@ class DMRPPGenerator(Process):
                 self.logger.warning(f"Option {value} not supported")
         # Remove duplicates from options
         options = (" ".join(sorted(set(options.split()), key=options.split().index)))
-
         return f"get_dmrpp {options} {input_path} -o {output_filename}.dmrpp {os.path.basename(output_filename)}"
 
     def dmrpp_generate(self, input_file, local=False, dmrpp_meta=None):
