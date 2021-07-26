@@ -1,4 +1,4 @@
-FROM ghrcdaac/hyrax:1.2.0
+FROM opendap/besd:3.20.8-260
 
 RUN yum -y update && \
     yum -y upgrade

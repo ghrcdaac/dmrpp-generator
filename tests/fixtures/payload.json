@@ -47,7 +47,11 @@
       "sampleFileName": "tpw_v07r01_201812.nc",
       "meta": {
         "dmrpp": {
-          "create_missing_cf" : ""
+          "options" : [
+            {
+              "flag": "-M"
+            }
+          ]
         }
       },
       "files": [

@@ -1,7 +1,8 @@
 from cumulus_process import Process, s3
+from .dmrpp_options import DMRppOptions
 import os
 from re import match
-
+import logging
 
 class DMRPPGenerator(Process):
     """
@@ -11,7 +12,7 @@ class DMRPPGenerator(Process):
     """
 
     def __init__(self, **kwargs):
-        self.processing_regex = '.*\\.([h|H](e)?5|nc(4)?)(\\.bz2|\\.gz|\\.Z)?'
+        self.processing_regex = '.*\\.(((?i:(h|hdf)))(e)?5|nc(4)?)(\\.bz2|\\.gz|\\.Z)?'
         super(DMRPPGenerator, self).__init__(**kwargs)
         self.path = self.path.rstrip('/') + "/"
 
@@ -97,41 +98,13 @@ class DMRPPGenerator(Process):
             granule['files'] += dmrpp_files
         return self.input
 
-
-    def get_dmrpp_option(self, dmrpp_meta):
-        """"
-        dmrpp_meta ={"options": [{"flag": "-M"},{"flag":"-s", "opt": "<file1_link_to_s3_or_http>", "download": "true"}, {"flag":"-c", "opt": "<file2_link_to_s3_or_http>", "download": "false"}]
-        """
-        """
-        options = '-b'
-        Loop through dmrpp_meta
-        if opt defined 
-            add that option to the flag
-            if download is true
-               check if the link contains S3:// or http
-                
-               download the file and add the path to the flag
-        else
-           add the flag to the options
-        return "-b -M -s path_to_file1 -c file2_link_to_s3_or_http
-        """
-
-
     def get_dmrpp_command(self, dmrpp_meta, input_path, output_filename):
         """
         Getting the command line to create DMRPP files
         """
         dmrpp_meta = dmrpp_meta if isinstance(dmrpp_meta, dict) else {}
-        options = '-b'
-        if os.getenv('CREATE_MISSING_CF') in ['true', '1', 'yes']:
-            dmrpp_meta['create_missing_cf'] = '-M'
-        for _, value in dmrpp_meta.items():
-            if match('^-[a-zA-Z]$', value):
-                options = f"{value} {options}"
-            else:
-                self.logger.warning(f"Option {value} not supported")
-        # Remove duplicates from options
-        options = (" ".join(sorted(set(options.split()), key=options.split().index)))
+        dmrpp_options = DMRppOptions(self.path)
+        options = dmrpp_options.get_dmrpp_option(dmrpp_meta=dmrpp_meta)
         return f"get_dmrpp {options} {input_path} -o {output_filename}.dmrpp {os.path.basename(output_filename)}"
 
     def dmrpp_generate(self, input_file, local=False, dmrpp_meta=None):
@@ -140,20 +113,25 @@ class DMRPPGenerator(Process):
         """
         # Force dmrpp_meta to be an object
         dmrpp_meta = dmrpp_meta if isinstance(dmrpp_meta, dict) else {}
-
+        # If not running locally use Cumulus logger
+        logger = logging if local else self.logger
+        cmd_output = ""
         try:
             file_name = input_file if local else s3.download(input_file, path=self.path)
             cmd = self.get_dmrpp_command(dmrpp_meta, self.path, file_name)
-            self.run_command(cmd)
+            cmd_output = self.run_command(cmd)
             out_files = [f"{file_name}.dmrpp"]
             if "-M" in dmrpp_meta.values():
                 out_files += [f"{file_name}.missing"]
             return out_files
 
         except Exception as ex:
-            self.logger.error(f"DMRPP error {ex}")
+            logger.error(f"DMRPP error {ex}: {cmd_output}")
             return []
 
 
 if __name__ == "__main__":
-    DMRPPGenerator.cli()
+    dmr = DMRPPGenerator(input = [], config = {})
+    meta = {"options": [{"flag": "-s", "opt": "htp://localhost/config.conf", "download": "true"}]}
+    dmr.get_dmrpp_command(meta, dmr.path, "file_name.nc")
+
