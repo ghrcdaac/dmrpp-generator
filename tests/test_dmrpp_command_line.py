@@ -18,31 +18,33 @@ class TestDMRPPCommandLine(TestCase):
         Testing local with env var true
         :return:
         """
-        os.environ['CREATE_MISSING_CF'] = 'true'
-        self.assertEqual('get_dmrpp -M -b foo -o bar.dmrpp bar', self.dmrpp.get_dmrpp_command({}, 'foo', 'bar'))
+
+        meta = {'options': [{'flag': '-M'}]}
+        self.assertEqual('get_dmrpp -M -b foo -o bar.dmrpp bar', self.dmrpp.get_dmrpp_command(dmrpp_meta=meta,
+                                                                                              input_path='foo',
+                                                                                              output_filename='bar'))
 
     def test_3_local_no_m(self):
         """
         Testing local with env var false
         :return:
         """
-        os.environ['CREATE_MISSING_CF'] = 'false'
-        self.assertEqual('get_dmrpp -b foo -o bar.dmrpp bar', self.dmrpp.get_dmrpp_command({}, 'foo', 'bar'))
+        meta = {'options': []}
+        self.assertEqual('get_dmrpp -b foo -o bar.dmrpp bar', self.dmrpp.get_dmrpp_command(meta, 'foo', 'bar'))
 
     def test_4_local_m(self):
         """
         Testing local with env var 1
         :return:
         """
-        os.environ['CREATE_MISSING_CF'] = '1'
-        self.assertEqual('get_dmrpp -M -b foo -o bar.dmrpp bar', self.dmrpp.get_dmrpp_command({}, 'foo', 'bar'))
+        meta = {'options': [{'flag': '-M'}]}
+        self.assertEqual('get_dmrpp -M -b foo -o bar.dmrpp bar', self.dmrpp.get_dmrpp_command(meta, 'foo', 'bar'))
 
     def test_5_cumulus_no_meta_config(self):
         """
         Testing cumulus no config 1
         :return:
         """
-        os.environ['CREATE_MISSING_CF'] = '0'
 
         self.assertEqual('get_dmrpp -b foo -o bar.dmrpp bar', self.dmrpp.get_dmrpp_command({}, 'foo', 'bar'))
 
@@ -52,10 +54,7 @@ class TestDMRPPCommandLine(TestCase):
         Testing cumulus true
         :return:
         """
-        os.environ['CREATE_MISSING_CF'] = '0'
-        dmrpp_meta = {
-            "create_missing_cf": "-M"
-        }
+        dmrpp_meta = {'options': [{'flag': '-M'}]}
         self.assertEqual('get_dmrpp -M -b foo -o bar.dmrpp bar', self.dmrpp.get_dmrpp_command(dmrpp_meta, 'foo', 'bar'))
 
 
