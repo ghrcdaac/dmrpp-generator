@@ -107,6 +107,19 @@ class DMRPPGenerator(Process):
         options = dmrpp_options.get_dmrpp_option(dmrpp_meta=dmrpp_meta)
         return f"get_dmrpp {options} {input_path} -o {output_filename}.dmrpp {os.path.basename(output_filename)}"
 
+    
+    def add_missing_files(self, dmrpp_meta, file_name):
+        """
+        """
+        # If the missing file was not generated
+        if not os.path.isfile(file_name):
+            return []
+        # If it was generated and the flag was set
+        options = dmrpp_meta.get('options', [])
+        if {'flag': '-M'} in options:
+            return [file_name]
+        return []
+
     def dmrpp_generate(self, input_file, local=False, dmrpp_meta=None):
         """
         Generate DMRPP from S3 file
@@ -120,9 +133,7 @@ class DMRPPGenerator(Process):
             file_name = input_file if local else s3.download(input_file, path=self.path)
             cmd = self.get_dmrpp_command(dmrpp_meta, self.path, file_name)
             cmd_output = self.run_command(cmd)
-            out_files = [f"{file_name}.dmrpp"]
-            if "-M" in dmrpp_meta.values():
-                out_files += [f"{file_name}.missing"]
+            out_files = [f"{file_name}.dmrpp"] + self.add_missing_files(dmrpp_meta, f'{file_name}.dmrpp.missing')
             return out_files
 
         except Exception as ex:
@@ -132,6 +143,6 @@ class DMRPPGenerator(Process):
 
 if __name__ == "__main__":
     dmr = DMRPPGenerator(input = [], config = {})
-    meta = {"options": [{"flag": "-s", "opt": "htp://localhost/config.conf", "download": "true"}]}
+    meta = {"options": [{"flag": "-s", "opt": "htp://localhost/config.conf", "download": "true"}, {"flag": "-M"}]}
     dmr.get_dmrpp_command(meta, dmr.path, "file_name.nc")
 

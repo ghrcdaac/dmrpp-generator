@@ -34,9 +34,6 @@ class DMRppOptions:
         logging.error(message)
         raise Exception(message)
 
-    def __get_https_file(self, link, local_path, **kwargs):
-        self.__get_http_file(link, local_path)
-
     def __get_http_file(self, link, local_path, **kwargs):
         """
         Downloads the file at the url and stores it at the local path.
