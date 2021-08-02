@@ -1,6 +1,56 @@
 
 # 📖 Release notes
 
+## v3.0.1.beta
+This release:
+* Uses cumulus v9.1.0
+* Support `HDF5 | hdf5` extensions
+* Support get_dmrpp options and flags 
+
+
+## 🚨 Breaking Changes v3.0.1.beta
+To pass the flags you need to define the meta config as follow
+```
+{
+    ...
+        "meta": {
+            "dmrpp": {
+          "options": [
+            {
+              "flag": "-M"
+            },
+            {
+              "flag": "-s",
+              "opt": "s3://ghrcsbxw-public/dmrpp_config/file.config",
+              "download": "true"
+            },
+            {
+              "flag": "-c",
+              "opt": "s3://ghrcsbxw-public/aces1cont__1/aces1cont_2002.212_v2.50.tar.cmr.json",
+              "download": "false"
+            }
+          ]
+        }
+        ...
+    }
+    ...
+}
+```
+Check [DMR++](https://docs.opendap.org/index.php?title=DMR%2B%2B) for DMRPP options
+## 🏃 Migration Steps to v3.0.1.beta
+ release
+```code
+module "dmrpp-generator" {
+// Change the source url in your terraform file to point to v3.0.1.beta
+source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/v3.0.1.beta/dmrpp-generator.zip"
+...
+// Change the value of your docker image to point to v3.0.1.beta tag
+docker_image = "ghrcdaac/dmrpp-generator:v3.0.1.beta"
+...
+}
+``` 
+
+
 ## v2.1.1
 This release:
 * Support `H5` extension 
