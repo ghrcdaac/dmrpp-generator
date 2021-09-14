@@ -12,7 +12,7 @@ class DMRPPGenerator(Process):
     """
 
     def __init__(self, **kwargs):
-        self.processing_regex = '.*(?<!BRW)\\.(((?i:(h|hdf)))(e)?5|nc(4)?)(\\.bz2|\\.gz|\\.Z)?'
+        self.processing_regex = '.*\\.(((?i:(h|hdf)))(e)?5|nc(4)?)(\\.bz2|\\.gz|\\.Z)?'
         super(DMRPPGenerator, self).__init__(**kwargs)
         self.path = self.path.rstrip('/') + "/"
 
