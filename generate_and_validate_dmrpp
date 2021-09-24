@@ -1,0 +1,26 @@
+#! /usr/bin/python3
+import argparse
+import subprocess
+import json
+
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(description='Generate and validate DMRPP files.')
+    parser.add_argument('-p', '--path', dest='nc_hdf_path', nargs=1, required=True,
+                        help='Path to netCDF4 and HDF5 folder')
+    parser.add_argument('-prt', '--port', dest='port', nargs=1, default="8080",
+                        help='Port number to Hyrax local server')
+    parser.add_argument('-pyld', '--payload', dest='payload', nargs=1, default=['{}'],
+                        help='Payload to execute get_dmrpp binary')
+
+    args = parser.parse_args()
+    nc_hdf_path, port, payload = [getattr(args, ele)[0] for ele in args.__dict__.keys()]
+    with open("/tmp/output.log", "a") as output:
+        print(f"Visit http://localhost:{port}/opendap")
+        subprocess.call(f"PAYLOAD={payload} NC_FILES_PATH={nc_hdf_path} PORT={port} docker-compose up", shell=True, stdout=output,
+                        stderr=output)
+
+
+
+
