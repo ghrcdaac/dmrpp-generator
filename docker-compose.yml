@@ -1,0 +1,23 @@
+version: '3'
+services:
+  dmrpp:
+    # Path to dockerfile.
+    # '.' represents the current directory in which
+    # docker-compose.yml is present.
+    build: .
+    image: ghrcdaac/dmrpp-generator
+    # Mount volume 
+    volumes:
+      - $PWD:/usr/share/hyrax
+
+  hyrax:
+
+    # image to fetch from docker hub
+    image: opendap/hyrax:snapshot
+    ports:
+    - "8080:8080"
+    volumes:
+      - $PWD/data:/usr/share/hyrax/
+    working_dir: /usr/share/hyrax
+    container_name: hyrax
+    
