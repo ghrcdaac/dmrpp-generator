@@ -10,15 +10,15 @@ services:
       - PAYLOAD=${PAYLOAD}
     # Mount volume
     volumes:
-      - ${NC_FILES_PATH}:/usr/share/hyrax
+      - ${NC_FILES_PATH:-/tmp}:/usr/share/hyrax
 
   hyrax:
 
     # image to fetch from docker hub
     image: opendap/hyrax:snapshot
     ports:
-    - "${PORT}:8080"
+    - "${PORT:-8080}:8080"
     volumes:
-      - ${NC_FILES_PATH}:/usr/share/hyrax/
+      - ${NC_FILES_PATH:-/tmp}:/usr/share/hyrax/
     working_dir: /usr/share/hyrax
     container_name: hyrax

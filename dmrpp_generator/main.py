@@ -105,8 +105,9 @@ class DMRPPGenerator(Process):
         dmrpp_meta = dmrpp_meta if isinstance(dmrpp_meta, dict) else {}
         dmrpp_options = DMRppOptions(self.path)
         options = dmrpp_options.get_dmrpp_option(dmrpp_meta=dmrpp_meta)
-        local_option = f" -u file://{output_filename} " if local else " "
-        return f"get_dmrpp {options} {input_path} -o {output_filename}.dmrpp{local_option}{os.path.basename(output_filename)}"
+        local_option = f"-u file://{output_filename}" if local else ""
+        dmrpp_cmd = f"get_dmrpp {options} {input_path} -o {output_filename}.dmrpp {local_option} {os.path.basename(output_filename)}"
+        return " ".join(dmrpp_cmd.split())
 
 
     def add_missing_files(self, dmrpp_meta, file_name):
