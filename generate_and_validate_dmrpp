@@ -6,7 +6,7 @@ from multiprocessing import Process
 from os import walk
 
 
-def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, length = 100, fill = '█', printEnd = "\r"):
+def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, separate_bar='-', length = 100, fill = '█', printEnd = "\r"):
     """
     Call in a loop to create terminal progress bar
     @params:
@@ -15,32 +15,40 @@ def printProgressBar (iteration, total, prefix = '', suffix = '', decimals = 1, 
         prefix      - Optional  : prefix string (Str)
         suffix      - Optional  : suffix string (Str)
         decimals    - Optional  : positive number of decimals in percent complete (Int)
+        separate_bar - Optional : what will separate the bar as it fills
         length      - Optional  : character length of bar (Int)
         fill        - Optional  : bar fill character (Str)
         printEnd    - Optional  : end character (e.g. "\r", "\r\n") (Str)
     """
     percent = ("{0:." + str(decimals) + "f}").format(100 * (iteration / float(total)))
     filledLength = int(length * iteration // total)
-    bar = fill * filledLength + '-' * (length - filledLength)
+    bar = fill * filledLength + separate_bar * (length - filledLength)
     print(f'\r{prefix} |{bar}| {percent}% {suffix}', end = printEnd)
     # Print New Line on Complete
     if iteration == total: 
         print()
 
 
-def progress_bar(file_number):
+def progress_bar(file_number,prefix = 'Generating:', suffix = 'Complete',length = 50, fill = '█', separate_bar='-'):
     items = list(range(0, min(file_number * 25, 600)))
     l = len(items)
     # Initial call to print 0% progress
-    printProgressBar(0, l, prefix = 'Generating:', suffix = 'Complete', length = 50)
+    printProgressBar(iteration=0, total= l, prefix = prefix, suffix = suffix, length = length, fill= fill, separate_bar=separate_bar)
     for i, _ in enumerate(items):
         time.sleep(0.1)
         # Update Progress Bar
-        printProgressBar(i + 1, l, prefix = 'Generating:', suffix = 'Complete', length = 50)
+        printProgressBar(iteration = i + 1, total = l, prefix = prefix, suffix = suffix, length = length, fill=fill, separate_bar=separate_bar)
+
 
 def run_docker_compose(payload,nc_hdf_path, port, dmrrpp_service ):
+
+    
     with open("/tmp/dmrpp_output.log", "a") as output:
-        subprocess.call(f"PAYLOAD={payload} NC_FILES_PATH={nc_hdf_path} PORT={port} docker-compose up {dmrrpp_service}", shell=True, stdout=output,
+        try:
+            subprocess.call(f"PAYLOAD='{payload}' NC_FILES_PATH={nc_hdf_path} PORT={port} docker-compose up {dmrrpp_service}", shell=True, stdout=output,
+                        stderr=output)
+        except KeyboardInterrupt:
+            subprocess.call(f" docker-compose down {dmrrpp_service}", shell=True, stdout=output,
                         stderr=output)
     
 
@@ -68,19 +76,17 @@ if __name__ == "__main__":
     _, _, files = next(walk(nc_hdf_path))
     # Remove dmrpp suffix from the list of files
     [files.remove(file_) for file_ in files[:] if file_.endswith('.dmrpp')]    
-    
-    start = time.time()
-    p1 = Process(target=progress_bar, args=(len(files),))
-    p2 = Process(target=run_docker_compose, args=(payload,nc_hdf_path, port, dmrrpp_service,))
-    p1.start()
-    p2.start()
-    p1.join()
-    print(f"To see the results visit: {visit_link_path_message}")
-    p2.join()
-        
-        
-        
 
-
-
-
+    try:
+        p1 = Process(target=progress_bar, args=(len(files),))
+        p2 = Process(target=run_docker_compose, args=(payload,nc_hdf_path, port, dmrrpp_service,))
+        p1.start()
+        p2.start()
+        p1.join()
+        print(f"To see the results visit: {visit_link_path_message}")
+        p2.join()
+    except KeyboardInterrupt:
+        print("Shutting down the server...")
+        p1 = Process(target=progress_bar, args=(3, "Progress", 'Complete', 10,'💀','🔥',))
+        p1.start()
+        p1.join()
