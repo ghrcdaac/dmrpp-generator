@@ -12,7 +12,12 @@ class DMRPPGenerator(Process):
     """
 
     def __init__(self, **kwargs):
-        self.processing_regex = '.*\\.(((?i:(h|hdf)))(e)?5|nc(4)?)(\\.bz2|\\.gz|\\.Z)?'
+        self.processing_regex =  kwargs.get('config', {}) \
+                                    .get('collection', {}) \
+                                    .get('meta', {}) \
+                                    .get('dmrpp_processing_regex', '.*\\.(((?i:(h|hdf)))(e)?5|nc(4)?)(\\.bz2|\\.gz|\\.Z)?')
+
+
         super(DMRPPGenerator, self).__init__(**kwargs)
         self.path = self.path.rstrip('/') + "/"
 
@@ -109,7 +114,6 @@ class DMRPPGenerator(Process):
         dmrpp_cmd = f"get_dmrpp {options} {input_path} -o {output_filename}.dmrpp {local_option} {os.path.basename(output_filename)}"
         return " ".join(dmrpp_cmd.split())
 
-
     def add_missing_files(self, dmrpp_meta, file_name):
         """
         """
@@ -147,4 +151,3 @@ if __name__ == "__main__":
     dmr = DMRPPGenerator(input = [], config = {})
     meta = {"options": [{"flag": "-s", "opt": "htp://localhost/config.conf", "download": "true"}, {"flag": "-M"}]}
     dmr.get_dmrpp_command(meta, dmr.path, "file_name.nc")
-
