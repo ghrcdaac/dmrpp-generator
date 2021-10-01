@@ -103,15 +103,16 @@ class DMRPPGenerator(Process):
             granule['files'] += dmrpp_files
         return self.input
 
-    def get_dmrpp_command(self, dmrpp_meta, input_path, output_filename):
+    def get_dmrpp_command(self, dmrpp_meta, input_path, output_filename, local=False):
         """
         Getting the command line to create DMRPP files
         """
         dmrpp_meta = dmrpp_meta if isinstance(dmrpp_meta, dict) else {}
         dmrpp_options = DMRppOptions(self.path)
         options = dmrpp_options.get_dmrpp_option(dmrpp_meta=dmrpp_meta)
-        return f"get_dmrpp {options} {input_path} -o {output_filename}.dmrpp {os.path.basename(output_filename)}"
-
+        local_option = f"-u file://{output_filename}" if local else ""
+        dmrpp_cmd = f"get_dmrpp {options} {input_path} -o {output_filename}.dmrpp {local_option} {os.path.basename(output_filename)}"
+        return " ".join(dmrpp_cmd.split())
 
     def add_missing_files(self, dmrpp_meta, file_name):
         """
@@ -136,7 +137,7 @@ class DMRPPGenerator(Process):
         cmd_output = ""
         try:
             file_name = input_file if local else s3.download(input_file, path=self.path)
-            cmd = self.get_dmrpp_command(dmrpp_meta, self.path, file_name)
+            cmd = self.get_dmrpp_command(dmrpp_meta, self.path, file_name, local)
             cmd_output = self.run_command(cmd)
             out_files = [f"{file_name}.dmrpp"] + self.add_missing_files(dmrpp_meta, f'{file_name}.dmrpp.missing')
             return out_files

@@ -8,7 +8,7 @@ logging.getLogger()
 if __name__ == "__main__":
     payload = getenv('PAYLOAD', '{}')
     meta = json.loads(payload)
-    workstation_path = "/workstation/"
+    workstation_path  = getenv('MOUNT_VOL', '/usr/share/hyrax/')
     join_path = lambda x: join(workstation_path, x)
     input_files = [join_path(f) for f in listdir(workstation_path) if isfile(join_path(f))]
     dmrpp = DMRPPGenerator(input=input_files)
