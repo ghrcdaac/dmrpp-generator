@@ -104,3 +104,32 @@ In your [workflow.tf](https://github.com/nasa/cumulus-template-deploy/blob/maste
     }
 ```
 Where `<Your next Step>` is the next step in your workflow.
+
+##Cumulus Configuration
+Add the options desired to the collection definition as follows:
+```code
+{
+    "config": {
+        "meta": {
+            "dmrpp": {
+          "options": [
+            {
+              "flag": "-M"
+            },
+            {
+              "flag": "-s",
+              "opt": "s3://ghrcsbxw-public/dmrpp_config/file.config",
+              "download": "true"
+            },
+            {
+              "flag": "-c",
+              "opt": "s3://ghrcsbxw-public/aces1cont__1/aces1cont_2002.212_v2.50.tar.cmr.json",
+              "download": "false"
+            }
+          ]
+        }
+    }
+}
+```
+For a list of all configuration options see: https://docs.opendap.org/index.php?title=DMR%2B%2B#:~:text=4.2%20Command%20line%20options
+
