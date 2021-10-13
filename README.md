@@ -7,6 +7,9 @@ Docker image and commandline utility to generate dmrpp files from netCDF and HDF
 ```docker pull opendap/hyrax:snapshot```
 3. Start the docker container, mounting your data directory on to the docker image at /usr/share/hyrax:
 ```docker run -d -h hyrax -p 8080:8080 --volume /tmp/dmrpp:/usr/share/hyrax --name=hyrax opendap/hyrax:snapshot```
+   
+<a href="https://asciinema.org/a/wPSjUfHKIa9e8pIf02itKLrRN" target="_blank"><img src="https://asciinema.org/a/wPSjUfHKIa9e8pIf02itKLrRN.svg" /></a>
+
 # Supported get_dmrpp configuration
 ## Via env vars
 Create a PAYLOAD environment variable holding dmrpp options
@@ -50,6 +53,8 @@ A prompt will ask you to visit localhost:8080
 ./generate_and_validate_dmrpp -p <path/to/nc/hdf/files> -prt 8889
 Now you can validate the result in localhost:8889
 ```
+
+<a href="https://asciinema.org/a/HJgRhohpDXIcRIch5W7C8WU1X" target="_blank"><img src="https://asciinema.org/a/HJgRhohpDXIcRIch5W7C8WU1X.svg" /></a>
 
 # Generate missing metadata for non-netcdf compliant data (the -b switch)
 ```code
