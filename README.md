@@ -1,10 +1,17 @@
 # dmrpp-file-generator-docker
 Docker image and commandline utility to generate dmrpp files from netCDF and HDF files.
+# Initial Setup
+1. Acquire representative granule files for the collection you wish to import. Put them on the system that is running the Docker daemon. This example will use:
+  ```/tmp/dmrpp```
+2. Get the most up to date Hyrax docker image:
+```docker pull opendap/hyrax:snapshot```
+3. Start the docker container, mounting your data directory on to the docker image at /usr/share/hyrax:
+```docker run -d -h hyrax -p 8080:8080 --volume /tmp/dmrpp:/usr/share/hyrax --name=hyrax opendap/hyrax:snapshot```
 # Supported get_dmrpp configuration
 ## Via env vars
 Create a PAYLOAD environment variable holding dmrpp options
 ```
-PAYLOAD='{"options":[{"flag": "-M"}, {"flag": "-s", "opt": "s3://ghrcsbxw-public/dmrpp_config/file.config","download": "true"}]}'
+PAYLOAD='{"dmrpp_regex": "^.*.nc4", "options":[{"flag": "-M"}, {"flag": "-s", "opt": "s3://ghrcsbxw-public/dmrpp_config/file.config","download": "true"}]}'
 ```
 # Generate DMRpp files locally without Hyrax server
 ```
