@@ -8,6 +8,7 @@ Docker image to generate dmrpp files from netCDF and HDF files
     "config": {
         "meta": {
             "dmrpp": {
+            "dmrpp_regex" : "^.*.H6",
           "options": [
             {
               "flag": "-M"
@@ -35,8 +36,9 @@ We are supporting HTTP and s3 protocols.
 ## Via env vars
 Create a PAYLOAD environment variable holding dmrpp options
 ```
-PAYLOAD='{"options":[{"flag": "-M"}, {"flag": "-s", "opt": "s3://ghrcsbxw-public/dmrpp_config/file.config","download": "true"}]}'
+PAYLOAD='{"dmrpp_regex": "^.*.nc4", "options":[{"flag": "-M"}, {"flag": "-s", "opt": "s3://ghrcsbxw-public/dmrpp_config/file.config","download": "true"}]}'
 ```
+`dmrpp_regex` is optional to override the DMRPP-Generator regex 
 # Generate DMRpp files locally without Hyrax server
 ```
 $./generate_and_validate_dmrpp --help
