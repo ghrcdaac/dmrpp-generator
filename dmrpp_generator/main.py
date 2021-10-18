@@ -76,6 +76,7 @@ class DMRPPGenerator(Process):
         dmrpp_meta = collection_meta.get('dmrpp', {})
         buckets = self.config.get('buckets')
         granules = self.input['granules']
+        self.processing_regex = dmrpp_meta.get('dmrpp_regex', self.processing_regex)
         for granule in granules:
             dmrpp_files = []
             for file_ in granule['files']:
