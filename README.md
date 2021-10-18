@@ -10,6 +10,7 @@
 # Overview
 DMR++ files generator is a cloud based activity that generate DMRPP files from netCDF4 and HDF files
 ## 📖 Documentation
+- Release note [v3.1.0](https://ghrcdaac.github.io/dmrpp-generator/#v310).
 - Release note [v3.0.1.beta](https://ghrcdaac.github.io/dmrpp-generator/#v301beta).
 - Release note [v2.1.1](https://ghrcdaac.github.io/dmrpp-generator/#v211).
 - Release note [v2.1.0](https://ghrcdaac.github.io/dmrpp-generator/#v210).

@@ -1,11 +1,34 @@
 
 # 📖 Release notes
 
+## v3.1.0
+This release:
+* Uses cumulus v9.7.0
+* Support custom DMRPP file reg_ex
+* Support creating and validating locally
+
+## 🏃 Migration Steps to v3.1.0
+ release
+```code
+module "dmrpp-generator" {
+// Change the source url in your terraform file to point to v3.1.0
+source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/v3.1.0/dmrpp-generator.zip"
+...
+// Change the value of your docker image to point to v3.1.0 tag
+docker_image = "ghrcdaac/dmrpp-generator:v3.1.0
+...
+}
+``` 
+
+
+
 ## v3.0.1.beta
 This release:
 * Uses cumulus v9.1.0
 * Support `HDF5 | hdf5` extensions
 * Support get_dmrpp options and flags 
+
+
 
 
 ## 🚨 Breaking Changes v3.0.1.beta
