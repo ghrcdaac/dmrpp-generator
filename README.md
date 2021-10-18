@@ -1,14 +1,5 @@
 # dmrpp-file-generator-docker
 Docker image and commandline utility to generate dmrpp files from netCDF and HDF files.
-# Initial Setup
-1. Acquire representative granule files for the collection you wish to import. Put them on the system that is running the Docker daemon. This example will use:
-  ```/tmp/dmrpp```
-2. Get the most up to date Hyrax docker image:
-```docker pull opendap/hyrax:snapshot```
-3. Start the docker container, mounting your data directory on to the docker image at /usr/share/hyrax:
-```docker run -d -h hyrax -p 8080:8080 --volume /tmp/dmrpp:/usr/share/hyrax --name=hyrax opendap/hyrax:snapshot```
-   
-<a href="https://asciinema.org/a/wPSjUfHKIa9e8pIf02itKLrRN" target="_blank"><img src="https://asciinema.org/a/wPSjUfHKIa9e8pIf02itKLrRN.svg" /></a>
 
 # Supported get_dmrpp configuration
 ## Via env vars
@@ -43,7 +34,7 @@ The folder `<path/to/nc/hdf/files>` should contain netCDF and/or HDF files
 Note: If you don't have python3 in /usr/bin/python run the command with your explicit python
 generate_and_validate_dmrpp -p <path/to/nc/hdf/files> -vldt false
 ```
-
+<a href="https://asciinema.org/a/UbhNufu2FsHqiDCWvOaqMQykk" target="_blank"><img src="https://asciinema.org/a/UbhNufu2FsHqiDCWvOaqMQykk.svg" /></a>
 # Generate DMRpp files locally with Hyrax server (for validation)
 
 ```code
@@ -54,7 +45,7 @@ A prompt will ask you to visit localhost:8080
 Now you can validate the result in localhost:8889
 ```
 
-<a href="https://asciinema.org/a/HJgRhohpDXIcRIch5W7C8WU1X" target="_blank"><img src="https://asciinema.org/a/HJgRhohpDXIcRIch5W7C8WU1X.svg" /></a>
+<a href="https://asciinema.org/a/Tzcgm0FwT6smYF520f3uqxvMu" target="_blank"><img src="https://asciinema.org/a/Tzcgm0FwT6smYF520f3uqxvMu.svg" /></a>
 
 # Generate missing metadata for non-netcdf compliant data (the -b switch)
 ```code
