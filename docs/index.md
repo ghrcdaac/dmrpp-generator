@@ -7,6 +7,25 @@ This release:
 * Support custom DMRPP file reg_ex
 * Support creating and validating locally
 
+
+## 🚨 v3.1.0 Changes
+Added the ability to custom the regular expression for DMRPP generator. For example this configuration
+```code
+
+{
+    "config": {
+        "meta": {
+            "dmrpp": {
+            "dmrpp_regex" : "^.*.H6",
+          "options": [
+            ...
+          ]
+        }
+    }
+}
+```
+Will process only files with `H6` extension
+
 ## 🏃 Migration Steps to v3.1.0
  release
 ```code
@@ -24,7 +43,7 @@ docker_image = "ghrcdaac/dmrpp-generator:v3.1.0
 
 ## v3.0.1.beta
 This release:
-* Uses cumulus v9.1.0
+* Uses cumulus v9.7.0
 * Support `HDF5 | hdf5` extensions
 * Support get_dmrpp options and flags 
 
