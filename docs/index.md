@@ -4,9 +4,11 @@
 ## v3.1.1
 This release:
 * Upgrades the base cumulus module to v9.7.0
+* Uses opendap/besd:3.20.9-15 
 
 ## 🚨 Breaking Changes v3.1.1
 * Works with Cumulus v9.7.0
+* Relays on opendap/besd:3.20.9-15
 
 ## 🏃 Migration Steps to v3.1.1
  release
