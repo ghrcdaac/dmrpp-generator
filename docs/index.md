@@ -1,6 +1,26 @@
 
 # 📖 Release notes
 
+## v3.1.1
+This release:
+* Upgrades the base cumulus module to v9.7.0
+
+## 🚨 Breaking Changes v3.1.1
+* Works with Cumulus v9.7.0
+
+## 🏃 Migration Steps to v3.1.1
+ release
+```code
+module "dmrpp-generator" {
+// Change the source url in your terraform file to point to v3.1.1
+source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/v3.1.1/dmrpp-generator.zip"
+...
+// Change the value of your docker image to point to v3.1.1 tag
+docker_image = "ghrcdaac/dmrpp-generator:v3.1.1
+...
+}
+``` 
+
 ## v3.1.0
 This release:
 * Uses cumulus v9.7.0
