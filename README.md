@@ -67,7 +67,7 @@ The folder `<path/to/nc/hdf/files>` should contain netCDF and/or HDF files
 Note: If you don't have python3 in /usr/bin/python run the command with your explicit python
 generate_and_validate_dmrpp -p <path/to/nc/hdf/files> -vldt false
 ```
-<a href="https://asciinema.org/a/UbhNufu2FsHqiDCWvOaqMQykk" target="_blank"><img src="https://asciinema.org/a/UbhNufu2FsHqiDCWvOaqMQykk.svg" /></a>
+<a href="https://asciinema.org/a/cwS7DwtEBYcvVVaRzm77wBHuA" target="_blank"><img src="https://asciinema.org/a/cwS7DwtEBYcvVVaRzm77wBHuA.svg" /></a>
 # Generate DMRpp files locally with Hyrax server (for validation)
 
 ```code
@@ -78,7 +78,7 @@ A prompt will ask you to visit localhost:8080
 Now you can validate the result in localhost:8889
 ```
 
-<a href="https://asciinema.org/a/Tzcgm0FwT6smYF520f3uqxvMu" target="_blank"><img src="https://asciinema.org/a/Tzcgm0FwT6smYF520f3uqxvMu.svg" /></a>
+<a href="https://asciinema.org/a/6F2KsfWPt4FVdlRuTWHhilV7j" target="_blank"><img src="https://asciinema.org/a/6F2KsfWPt4FVdlRuTWHhilV7j.svg" /></a>
 
 # Generate missing metadata for non-netcdf compliant data (the -b switch)
 ```code
