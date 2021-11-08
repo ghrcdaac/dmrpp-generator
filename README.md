@@ -33,6 +33,7 @@ Docker image to generate dmrpp files from netCDF and HDF files
 If the `opt` is provided with `"download": "false"` or without `download` the value of `opt` will be used as a letteral string in `get_dmrpp` executable.
 We are supporting HTTP and s3 protocols.
 
+# Supported get_dmrpp configuration
 ## Via env vars
 Create a PAYLOAD environment variable holding dmrpp options
 ```
@@ -66,7 +67,7 @@ The folder `<path/to/nc/hdf/files>` should contain netCDF and/or HDF files
 Note: If you don't have python3 in /usr/bin/python run the command with your explicit python
 generate_and_validate_dmrpp -p <path/to/nc/hdf/files> -vldt false
 ```
-
+<a href="https://asciinema.org/a/cwS7DwtEBYcvVVaRzm77wBHuA" target="_blank"><img src="https://asciinema.org/a/cwS7DwtEBYcvVVaRzm77wBHuA.svg" /></a>
 # Generate DMRpp files locally with Hyrax server (for validation)
 
 ```code
@@ -76,6 +77,8 @@ A prompt will ask you to visit localhost:8080
 ./generate_and_validate_dmrpp -p <path/to/nc/hdf/files> -prt 8889
 Now you can validate the result in localhost:8889
 ```
+
+<a href="https://asciinema.org/a/6F2KsfWPt4FVdlRuTWHhilV7j" target="_blank"><img src="https://asciinema.org/a/6F2KsfWPt4FVdlRuTWHhilV7j.svg" /></a>
 
 # Generate missing metadata for non-netcdf compliant data (the -b switch)
 ```code
