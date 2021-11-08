@@ -3,6 +3,7 @@ from .dmrpp_options import DMRppOptions
 import os
 from re import match
 import logging
+import subprocess
 
 class DMRPPGenerator(Process):
     """
@@ -127,6 +128,12 @@ class DMRPPGenerator(Process):
             return [file_name]
         return []
 
+    @staticmethod
+    def run_command(cmd):
+        """ Run cmd as a system command """
+        out = subprocess.run(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return out
+
     def dmrpp_generate(self, input_file, local=False, dmrpp_meta=None):
         """
         Generate DMRPP from S3 file
@@ -140,11 +147,12 @@ class DMRPPGenerator(Process):
             file_name = input_file if local else s3.download(input_file, path=self.path)
             cmd = self.get_dmrpp_command(dmrpp_meta, self.path, file_name, local)
             cmd_output = self.run_command(cmd)
+            logger.error(f"DMRPP: command {cmd} returned {cmd_output.stderr}") if cmd_output.stderr else ""
             out_files = [f"{file_name}.dmrpp"] + self.add_missing_files(dmrpp_meta, f'{file_name}.dmrpp.missing')
             return out_files
 
         except Exception as ex:
-            logger.error(f"DMRPP error {ex}: {cmd_output}")
+            logger.error(f"DMRPP error {ex}: {cmd_output.stdout} {cmd_output.stderr}")
             return []
 
 
