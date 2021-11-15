@@ -35,7 +35,7 @@ class DMRPPGenerator(Process):
         """
         bucket_type = "public"
         for file in files:
-            if match(file.get('regex', '*.'), filename):
+            if search(file.get('regex', '*.'), filename):
                 bucket_type = file['bucket']
                 break
         return buckets[bucket_type]
@@ -60,8 +60,11 @@ class DMRPPGenerator(Process):
         for granule in granules:
             dmrpp_files = []
             for file_ in granule['files']:
-                if not match(f"{self.processing_regex}$", file_['filename']):
+                if not search(f"{self.processing_regex}$", file_['filename']):
+                    self.logger.error(f"regex not matching search one {self.processing_regex}")
                     continue
+                self.logger.error(f"regex matching search two {self.processing_regex}")
+                self.logger.error(f"file_name to process {file_['filename']}")
                 output_file_path = self.dmrpp_generate(file_['filename'])
                 if output_file_path:
                     dmrpp_file = {
