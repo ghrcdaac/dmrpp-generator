@@ -1,4 +1,5 @@
 from cumulus_process import Process, s3
+from cumulus_logger import CumulusLogger
 from .dmrpp_options import DMRppOptions
 import os
 from re import match
@@ -21,6 +22,7 @@ class DMRPPGenerator(Process):
 
         super(DMRPPGenerator, self).__init__(**kwargs)
         self.path = self.path.rstrip('/') + "/"
+        self.logger = CumulusLogger(name="DMRPP-Generator")
 
     @property
     def input_keys(self):
@@ -103,6 +105,7 @@ class DMRPPGenerator(Process):
                         dmrpp_files.append(dmrpp_file)
                         self.upload_file_to_s3(output_file_path, dmrpp_file['filename'])
             granule['files'] += dmrpp_files
+
         return self.input
 
     def get_dmrpp_command(self, dmrpp_meta, input_path, output_filename, local=False):
