@@ -1,8 +1,10 @@
 from cumulus_process import Process, s3
+from cumulus_logger import CumulusLogger
 from .dmrpp_options import DMRppOptions
 import os
 from re import search
 import logging
+import subprocess
 
 class DMRPPGenerator(Process):
     """
@@ -20,6 +22,7 @@ class DMRPPGenerator(Process):
 
         super(DMRPPGenerator, self).__init__(**kwargs)
         self.path = self.path.rstrip('/') + "/"
+        self.logger = CumulusLogger(name="DMRPP-Generator")
 
     @property
     def input_keys(self):
@@ -106,6 +109,7 @@ class DMRPPGenerator(Process):
                         dmrpp_files.append(dmrpp_file)
                         self.upload_file_to_s3(output_file_path, dmrpp_file['filename'])
             granule['files'] += dmrpp_files
+
         return self.input
 
     def get_dmrpp_command(self, dmrpp_meta, input_path, output_filename, local=False):
@@ -131,6 +135,12 @@ class DMRPPGenerator(Process):
             return [file_name]
         return []
 
+    @staticmethod
+    def run_command(cmd):
+        """ Run cmd as a system command """
+        out = subprocess.run(cmd.split(), stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return out
+
     def dmrpp_generate(self, input_file, local=False, dmrpp_meta=None):
         """
         Generate DMRPP from S3 file
@@ -144,11 +154,12 @@ class DMRPPGenerator(Process):
             file_name = input_file if local else s3.download(input_file, path=self.path)
             cmd = self.get_dmrpp_command(dmrpp_meta, self.path, file_name, local)
             cmd_output = self.run_command(cmd)
+            logger.error(f"DMRPP: command {cmd} returned {cmd_output.stderr}") if cmd_output.stderr else ""
             out_files = [f"{file_name}.dmrpp"] + self.add_missing_files(dmrpp_meta, f'{file_name}.dmrpp.missing')
             return out_files
 
         except Exception as ex:
-            logger.error(f"DMRPP error {ex}: {cmd_output}")
+            logger.error(f"DMRPP error {ex}: {cmd_output.stdout} {cmd_output.stderr}")
             return []
 
 

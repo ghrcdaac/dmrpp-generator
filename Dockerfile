@@ -1,4 +1,4 @@
-FROM opendap/besd:3.20.8-260
+FROM opendap/besd:3.20.9-15
 
 RUN yum -y update && \
     yum -y upgrade
