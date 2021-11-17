@@ -1,9 +1,9 @@
-FROM ghrcdaac/hyrax:ngap-snapshot
+FROM opendap/besd:3.20.8-260
 
 RUN yum -y update && \
     yum -y upgrade
 
-RUN yum install -y centos-release-scl 
+RUN yum install -y centos-release-scl
 
 # Adding a user
 RUN adduser worker
@@ -23,17 +23,20 @@ RUN pip install ipython &&\
 
 RUN mkdir $HOME/build
 
-ENV BUILD=$HOME/build 
+ENV BUILD=$HOME/build
 
 #--chown=<user>:<group> <hostPath> <containerPath>
 COPY --chown=worker setup.py requirements*txt $BUILD/
+RUN pip install -r $BUILD/requirements.txt
 COPY --chown=worker dmrpp_generator $BUILD/dmrpp_generator
 COPY --chown=worker generate_dmrpp.py $BUILD/generate_dmrpp.py
 COPY --chown=worker tests $BUILD/tests
 
+
+
 RUN \
   cd $BUILD; \
-  python setup.py install 
+  python setup.py install
 
 
 WORKDIR $BUILD
