@@ -2,7 +2,7 @@ from cumulus_process import Process, s3
 from cumulus_logger import CumulusLogger
 from .dmrpp_options import DMRppOptions
 import os
-from re import match
+from re import search
 import logging
 import subprocess
 
@@ -41,7 +41,7 @@ class DMRPPGenerator(Process):
         """
 
         for collection_file in files:
-            if match(collection_file.get('regex', '*.'), filename):
+            if search(collection_file.get('regex', '*.'), filename):
                 return collection_file.get('type', 'metadata')
         return 'metadata'
 
@@ -56,7 +56,7 @@ class DMRPPGenerator(Process):
         """
         bucket_type = "public"
         for file in files:
-            if match(file.get('regex', '*.'), filename):
+            if search(file.get('regex', '*.'), filename):
                 bucket_type = file['bucket']
                 break
         return buckets[bucket_type]
@@ -67,6 +67,7 @@ class DMRPPGenerator(Process):
             return s3.upload(filename, uri, extra={})
         except Exception as e:
             self.logger.error("Error uploading file %s: %s" % (os.path.basename(os.path.basename(filename)), str(e)))
+
 
     def process(self):
         """
@@ -83,8 +84,10 @@ class DMRPPGenerator(Process):
         for granule in granules:
             dmrpp_files = []
             for file_ in granule['files']:
-                if not match(f"{self.processing_regex}$", file_['filename']):
+                if not search(f"{self.processing_regex}$", file_['filename']):
+                    self.logger.debug(f"regex {self.processing_regex} does not match filename {file_['filename']}")
                     continue
+                self.logger.debug(f"reges {self.processing_regex} matches filename to process {file_['filename']}")
                 output_file_paths = self.dmrpp_generate(input_file=file_['filename'],
                                                        dmrpp_meta=dmrpp_meta)
                 for output_file_path in output_file_paths:
