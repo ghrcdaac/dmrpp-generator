@@ -85,10 +85,9 @@ class DMRPPGenerator(Process):
             dmrpp_files = []
             for file_ in granule['files']:
                 if not search(f"{self.processing_regex}$", file_['filename']):
-                    self.logger.error(f"regex not matching search one {self.processing_regex}")
+                    self.logger.debug(f"regex {self.processing_regex} does not match filename {file_['filename']}")
                     continue
-                self.logger.error(f"regex matching search two {self.processing_regex}")
-                self.logger.error(f"file_name to process {file_['filename']}")
+                self.logger.debug(f"reges {self.processing_regex} matches filename to process {file_['filename']}")
                 output_file_paths = self.dmrpp_generate(input_file=file_['filename'],
                                                        dmrpp_meta=dmrpp_meta)
                 for output_file_path in output_file_paths:
