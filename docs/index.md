@@ -1,6 +1,27 @@
 
 # 📖 Release notes
 
+## v3.1.2
+This release:
+* Add logging capability to cloudwatch log groups
+* Uses a simpler logic to check the file regular expression [PR 22](https://github.com/ghrcdaac/dmrpp-file-generator-docker/pull/22)
+* Uses opendap/besd:3.20.9-76
+* Fixes [issue 14](https://github.com/ghrcdaac/dmrpp-generator/issues/14)
+
+## 🏃 Migration Steps to v3.1.2
+ release
+```code
+module "dmrpp-generator" {
+// Change the source url in your terraform file to point to v3.1.2
+source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/v3.1.2/dmrpp-generator.zip"
+...
+// Change the value of your docker image to point to v3.1.2 tag
+docker_image = "ghrcdaac/dmrpp-generator:v3.1.2
+...
+}
+``` 
+
+
 ## v3.1.1
 This release:
 * Upgrades the base cumulus module to v9.7.0
