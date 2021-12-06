@@ -102,7 +102,6 @@ class TestDMRPPFileGeneration(TestCase):
                     dmrpp_exists = True
         self.assertEqual(True, dmrpp_exists)
 
-
     # @patch('dmrpp_generator.main.DMRPPGenerator.upload_file',
     #    return_value={granule_id:f's3://{granule_name}.dmrpp'})
     # @patch('cumulus_process.Process.fetch_all',

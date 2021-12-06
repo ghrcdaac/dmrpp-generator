@@ -5,7 +5,7 @@ services:
     # '.' represents the current directory in which
     # docker-compose.yml is present.
     build: .
-    image: ghrcdaac/dmrpp-generator
+    image: ghrcdaac/dmrpp-generator:v3.2.0
     environment:
       - PAYLOAD=${PAYLOAD}
     # Mount volume
