@@ -1,5 +1,22 @@
 
 # 📖 Release notes
+## v3.2.0
+This release:
+* Uses opendap/besd:3.20.9-91 as base image
+
+## 🏃 Migration Steps to v3.2.0
+ release
+```code
+module "dmrpp-generator" {
+// Change the source url in your terraform file to point to v3.2.0
+source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/v3.2.0/dmrpp-generator.zip"
+...
+// Change the value of your docker image to point to v3.2.0 tag
+docker_image = "ghrcdaac/dmrpp-generator:v3.2.0
+...
+}
+``` 
+
 
 ## v3.1.2
 This release:

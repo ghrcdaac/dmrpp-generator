@@ -10,6 +10,7 @@
 # Overview
 DMR++ files generator is a cloud based activity that generate DMRPP files from netCDF4 and HDF files
 ## 📖 Documentation
+- Release note [v3.2.0](https://ghrcdaac.github.io/dmrpp-generator/#v320).
 - Release note [v3.1.2](https://ghrcdaac.github.io/dmrpp-generator/#v312).
 - Release note [v3.1.1](https://ghrcdaac.github.io/dmrpp-generator/#v311).
 - Release note [v3.1.0](https://ghrcdaac.github.io/dmrpp-generator/#v310).
@@ -25,19 +26,19 @@ DMR++ files generator is a cloud based activity that generate DMRPP files from n
 
 ## Versioning
 We are following `v<major>.<minor>.<patch>` versioning convention, where:
-* `<major>+1` means we changed the infrastructure and/or the major components that makes this software run. Will definitely 
+* `<major>+1` means we changed the infrastructure and/or the major components that makes this software run. Will definitely
   lead to breaking changes.
 * `<minor>+1` means we upgraded/patched the dependencies this software relays on. Can lead to breaking changes.
 * `<patch>+1` means we fixed a bug and/or added a feature. Breaking changes are not expected.
 
-# 🔨 Pre-requisite 
-This module is meant to run within Cumulus stack. 
-If you don't have Cumulus stack deployed yet please consult [this repo](https://github.com/nasa/cumulus) 
+# 🔨 Pre-requisite
+This module is meant to run within Cumulus stack.
+If you don't have Cumulus stack deployed yet please consult [this repo](https://github.com/nasa/cumulus)
 and follow the [documetation](https://nasa.github.io/cumulus/docs/cumulus-docs-readme) to provision it.
 
 # Deploying with Cumulus Stack
 In [main.tf](https://github.com/nasa/cumulus-template-deploy/blob/master/cumulus-tf/main.tf) file
- (where you defined cumulus module) add 
+ (where you defined cumulus module) add
  ```code
 module "dmrpp-generator" {
   // Required parameters
@@ -53,22 +54,22 @@ module "dmrpp-generator" {
   prefix = "Cumulus stack prefix" // default Cumulus stack prefix
   desired_count = 1  // Default to 1
   log_destination_arn = var.aws_log_mechanism // default to null
-} 
+}
 
 
 ```
-In [variables.tf](https://github.com/nasa/cumulus-template-deploy/blob/master/cumulus-tf/variables.tf) 
-file you need to define 
+In [variables.tf](https://github.com/nasa/cumulus-template-deploy/blob/master/cumulus-tf/variables.tf)
+file you need to define
 ```code
 variable "dmrpp-generator-docker-image" {
   default = "ghrcdaac/dmrpp-generator:<tag_num>"
 }
 ```
-Assuming you already defined the region and the prefix 
+Assuming you already defined the region and the prefix
 
 
 # Add the activity to your workflow
-In your [workflow.tf](https://github.com/nasa/cumulus-template-deploy/blob/master/cumulus-tf/hello_world_workflow.tf) add 
+In your [workflow.tf](https://github.com/nasa/cumulus-template-deploy/blob/master/cumulus-tf/hello_world_workflow.tf) add
 ```code
    "HyraxProcessing": {
       "Parameters": {
