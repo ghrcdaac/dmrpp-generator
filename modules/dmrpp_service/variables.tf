@@ -7,3 +7,4 @@ variable "cluster_arn" {}
 variable "log_destination_arn" {}
 variable "docker_image" {}
 variable "volumes" {}
+variable "enable_cw_logging" {}

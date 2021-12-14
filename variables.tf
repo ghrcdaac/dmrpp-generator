@@ -41,3 +41,9 @@ variable "volumes" {
   default     = []
 }
 
+
+variable "enable_cw_logging" {
+  description = "Enable logging to cloud watch"
+  type        = bool
+  default     = true
+}

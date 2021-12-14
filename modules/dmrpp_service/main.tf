@@ -28,6 +28,8 @@ module "dmrpp_service" {
 
   environment = {
     AWS_DEFAULT_REGION = var.region
+    ENABLE_CW_LOGGING  = var.enable_cw_logging
+
   }
   command = [
     "dmrpp-generator",
