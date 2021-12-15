@@ -2,9 +2,10 @@ from os import path
 from codecs import open
 from setuptools import setup, find_packages
 from imp import load_source
-
 here = path.abspath(path.dirname(__file__))
-__version__ = "1.0.1"
+from importlib import import_module
+
+__version__ = import_module('dmrpp_generator.version').__version__
 
 
 # get dependencies

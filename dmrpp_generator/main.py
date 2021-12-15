@@ -1,11 +1,11 @@
 from cumulus_process import Process, s3
-from cumulus_logger import CumulusLogger
+import logging
 from .dmrpp_options import DMRppOptions
 import os
 from re import search
-import logging
+from cumulus_logger import CumulusLogger
 import subprocess
-
+from .version import __version__
 class DMRPPGenerator(Process):
     """
     Class to generate dmrpp files from hdf and netCDf files
@@ -22,7 +22,11 @@ class DMRPPGenerator(Process):
 
         super(DMRPPGenerator, self).__init__(**kwargs)
         self.path = self.path.rstrip('/') + "/"
-        self.logger = CumulusLogger(name="DMRPP-Generator")
+        # Enable logging the default is True
+        enable_logging = os.getenv('ENABLE_CW_LOGGING', True) in [True, "true", "t", 1]
+        self.dmrpp_version = f"DMRPP {__version__}"
+        if enable_logging:
+            self.logger = CumulusLogger(name="DMRPP-Generator")
 
     @property
     def input_keys(self):
@@ -66,7 +70,7 @@ class DMRPPGenerator(Process):
         try:
             return s3.upload(filename, uri, extra={})
         except Exception as e:
-            self.logger.error("Error uploading file %s: %s" % (os.path.basename(os.path.basename(filename)), str(e)))
+            self.logger.error("{self.dmrpp_version}: Error uploading file %s: %s" % (os.path.basename(os.path.basename(filename)), str(e)))
 
 
     def process(self):
@@ -85,9 +89,9 @@ class DMRPPGenerator(Process):
             dmrpp_files = []
             for file_ in granule['files']:
                 if not search(f"{self.processing_regex}$", file_['filename']):
-                    self.logger.debug(f"regex {self.processing_regex} does not match filename {file_['filename']}")
+                    self.logger.debug(f"{self.dmrpp_version}: regex {self.processing_regex} does not match filename {file_['filename']}")
                     continue
-                self.logger.debug(f"reges {self.processing_regex} matches filename to process {file_['filename']}")
+                self.logger.debug(f"{self.dmrpp_version}: reges {self.processing_regex} matches filename to process {file_['filename']}")
                 output_file_paths = self.dmrpp_generate(input_file=file_['filename'],
                                                        dmrpp_meta=dmrpp_meta)
                 for output_file_path in output_file_paths:
@@ -153,12 +157,12 @@ class DMRPPGenerator(Process):
             file_name = input_file if local else s3.download(input_file, path=self.path)
             cmd = self.get_dmrpp_command(dmrpp_meta, self.path, file_name, local)
             cmd_output = self.run_command(cmd)
-            logger.error(f"DMRPP: command {cmd} returned {cmd_output.stderr}") if cmd_output.stderr else ""
+            logger.error(f"{self.dmrpp_version}: command {cmd} returned {cmd_output.stderr}") if cmd_output.stderr else ""
             out_files = [f"{file_name}.dmrpp"] + self.add_missing_files(dmrpp_meta, f'{file_name}.dmrpp.missing')
             return out_files
 
         except Exception as ex:
-            logger.error(f"DMRPP error {ex}: {cmd_output.stdout} {cmd_output.stderr}")
+            logger.error(f"{self.dmrpp_version}: error {ex}: {cmd_output.stdout} {cmd_output.stderr}")
             return []
 
 
