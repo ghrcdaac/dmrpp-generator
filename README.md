@@ -2,36 +2,91 @@
 Docker image to generate dmrpp files from netCDF and HDF files
 # Supported get_dmrpp configuration
 
-## Via Cumulus configuration
+## Via Cumulus Collection configuration
 ```code
 {
-    "config": {
-        "meta": {
-            "dmrpp": {
-            "dmrpp_regex" : "^.*.H6",
-          "options": [
-            {
-              "flag": "-M"
-            },
-            {
-              "flag": "-s",
-              "opt": "s3://ghrcsbxw-public/dmrpp_config/file.config",
-              "download": "true"
-            },
-            {
-              "flag": "-c",
-              "opt": "s3://ghrcsbxw-public/aces1cont__1/aces1cont_2002.212_v2.50.tar.cmr.json",
-              "download": "false"
-            }
-          ]
-        }
+  "config": {
+    "meta": {
+      "dmrpp": {
+        "dmrpp_regex" : "^.*.H6",
+        "options": [
+          {
+            "flag": "-M"
+          },
+          {
+            "flag": "-s",
+            "opt": "s3://ghrcsbxw-public/dmrpp_config/file.config",
+            "download": "true"
+          },
+          {
+            "flag": "-c",
+            "opt": "s3://ghrcsbxw-public/aces1cont__1/aces1cont_2002.212_v2.50.tar.cmr.json",
+            "download": "false"
+          }
+        ]
+      }
     }
+  }
 }
 ```
 
-`opt` is the value that will come after the flag, if provided with `"download": "true"` the value will be ignored and the file provided will be downloaded and used with the `flag`. 
+`opt` is the value that will come after the flag, if provided with `"download": "true"` the value will be ignored and the file provided will be downloaded and used with the `flag`.
 If the `opt` is provided with `"download": "false"` or without `download` the value of `opt` will be used as a letteral string in `get_dmrpp` executable.
 We are supporting HTTP and s3 protocols.
+
+## Via Cumulus Workflow configuration
+
+If you want the same `dmrpp` config to apply to multiple collections that use
+the same workflow, the configuration can be placed in the workflow at
+`${StepName}.Parameters.cma.task_config.dmrpp` instead of in each collection at
+`config.meta.dmrpp`:
+
+```
+   "HyraxProcessing": {
+      "Parameters": {
+        "cma": {
+          "event.$": "$",
+          "task_config": {
+            ...
+            "dmrpp": {
+              "dmrpp_regex" : "^.*.H6",
+              "options": [
+                {
+                  "flag": "-M"
+                },
+                {
+                  "flag": "-s",
+                  "opt": "s3://ghrcsbxw-public/dmrpp_config/file.config",
+                  "download": "true"
+                },
+                {
+                  "flag": "-c",
+                  "opt": "s3://ghrcsbxw-public/aces1cont__1/aces1cont_2002.212_v2.50.tar.cmr.json",
+                  "download": "false"
+                }
+              ]
+            }
+          }
+        }
+      },
+
+    ...
+    }
+```
+
+As with other variables in the JSON template file, the `dmrpp` config can be set in a terraform variable:
+
+```
+"task_config": {
+  ...
+  "dmrpp": ${jsonencode(dmrpp_config)}
+}
+```
+
+If `dmrpp` configuration is set on the collection and in the workflow, the
+collection's configuration will override the workflow's. In other words, the
+workflow's `dmrpp` configuration acts as a default which can be overridden by
+any collection.
 
 # Supported get_dmrpp configuration
 ## Via env vars
@@ -39,7 +94,7 @@ Create a PAYLOAD environment variable holding dmrpp options
 ```
 PAYLOAD='{"dmrpp_regex": "^.*.nc4", "options":[{"flag": "-M"}, {"flag": "-s", "opt": "s3://ghrcsbxw-public/dmrpp_config/file.config","download": "true"}]}'
 ```
-`dmrpp_regex` is optional to override the DMRPP-Generator regex 
+`dmrpp_regex` is optional to override the DMRPP-Generator regex
 # Generate DMRpp files locally without Hyrax server
 ```
 $./generate_and_validate_dmrpp --help
@@ -84,7 +139,7 @@ Now you can validate the result in localhost:8889
 ```code
 ./generate_and_validate_dmrpp -p <path/to/nc/hdf/files> -pyld $PAYLOAD
 ```
-or 
+or
 ```code
 docker run --rm -it --env-file ./env.list -v <path/to/nc/hdf/files>:/workstation ghrcdaac/dmrpp-generator
 ```
