@@ -110,31 +110,81 @@ In your [workflow.tf](https://github.com/nasa/cumulus-template-deploy/blob/maste
 ```
 Where `<Your next Step>` is the next step in your workflow.
 
-##Cumulus Configuration
+## Cumulus Collection Configuration
+
 Add the options desired to the collection definition as follows:
+
 ```code
 {
-    "config": {
-        "meta": {
-            "dmrpp": {
-          "options": [
-            {
-              "flag": "-M"
-            },
-            {
-              "flag": "-s",
-              "opt": "s3://ghrcsbxw-public/dmrpp_config/file.config",
-              "download": "true"
-            },
-            {
-              "flag": "-c",
-              "opt": "s3://ghrcsbxw-public/aces1cont__1/aces1cont_2002.212_v2.50.tar.cmr.json",
-              "download": "false"
-            }
-          ]
-        }
+  "config": {
+    "meta": {
+      "dmrpp": {
+        "options": [
+          {
+            "flag": "-M"
+          },
+          {
+            "flag": "-s",
+            "opt": "s3://ghrcsbxw-public/dmrpp_config/file.config",
+            "download": "true"
+          },
+          {
+            "flag": "-c",
+            "opt": "s3://ghrcsbxw-public/aces1cont__1/aces1cont_2002.212_v2.50.tar.cmr.json",
+            "download": "false"
+          }
+        ]
+      }
     }
+  }
 }
 ```
+
 For a list of all configuration options see: https://docs.opendap.org/index.php?title=DMR%2B%2B#:~:text=4.2%20Command%20line%20options
 
+
+## Cumulus Workflow Configuration
+
+If your workflow is used by multiple collections which use a common dmrpp
+config, the config can be set at the workflow's
+`${StepName}.Parameters.cma.task_config.dmrpp` instead of in the collection
+(**Note:** if the workflow and collection _both_ have a `dmrpp` key, the
+collection's config will be used; the workflow's `dmrpp` acts as the default
+which can be overridden by any collection that needs a different config):
+
+```
+# terraform
+
+dmrpp_config = {
+  options = [
+    {
+      flag = "-M"
+    },
+    {
+      flag = "-s"
+      opt = "s3://ghrcsbxw-public/dmrpp_config/file.config"
+      download = "true"
+    },
+    {
+      flag = "-c"
+      opt = "s3://ghrcsbxw-public/aces1cont__1/aces1cont_2002.212_v2.50.tar.cmr.json"
+      download = "false"
+    }
+  ]
+}
+
+# workflow JSON
+   "HyraxProcessing": {
+      "Parameters": {
+        "cma": {
+          "event.$": "$",
+          "task_config": {
+            ...
+            "dmrpp": ${jsonencode(dmrpp_config)}
+          }
+        }
+      },
+
+    ...
+    }
+```
