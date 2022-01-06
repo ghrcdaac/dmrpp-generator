@@ -19,15 +19,15 @@ ENV BUILD=$HOME/build
 COPY --chown=worker setup.py requirements*txt $BUILD/
 RUN pip install -r $BUILD/requirements.txt
 COPY --chown=worker dmrpp_generator $BUILD/dmrpp_generator
-COPY --chown=worker generate_dmrpp.py $BUILD/generate_dmrpp.py
+
 COPY --chown=worker tests $BUILD/tests
 RUN \
   cd $BUILD; \
-  python setup.py install
-WORKDIR $BUILD
-RUN pytest --junitxml=./test_results/test_dmrpp_generator.xml tests && \
-    rm -rf tests
-CMD ["python", "generate_dmrpp.py"]
+  python setup.py install; \
+  pytest --junitxml=./test_results/test_dmrpp_generator.xml tests
+RUN rm -rf $BUILD
+COPY --chown=worker generate_dmrpp.py generate_dmrpp.py
+CMD ["python", "./generate_dmrpp.py"]
 ENTRYPOINT []
 
 
