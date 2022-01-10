@@ -16,4 +16,6 @@ module "dmrpp_service" {
   memory_reservation  = var.memory_reservation
   region              = var.region
   volumes             = var.volumes
+  enable_cw_logging = var.enable_cw_logging
+
 }
