@@ -5,6 +5,7 @@
 This release:
 * Support turning on and off logging to cloud watch `enable_cw_logging` variable [example](https://github.com/ghrcdaac/dmrpp-generator#deploying-with-cumulus-stack)
 * Allow `dmrpp_config` to be defined within the worflow configuration. The collection definition defining `dmrpp_config` will override the one defined in the workflow configuration [example](https://github.com/ghrcdaac/dmrpp-generator#cumulus-workflow-configuration)
+* Fixes DMRPP logging to cloudwatch duplicate entries
 
 ## 🏃 Migration Steps to v3.2.1
 ```code
