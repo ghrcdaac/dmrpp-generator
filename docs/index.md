@@ -1,6 +1,24 @@
 
 # 📖 Release notes
 
+## v3.3.0.beta (🚨 Not an official release)
+This release:
+* Compatible with Cumulus v10
+* fixes issue 24 [i_24](https://github.com/ghrcdaac/dmrpp-file-generator-docker/issues/24)
+
+## 🏃 Migration Steps to v3.3.0.beta
+```code
+module "dmrpp-generator" {
+// Change the source url in your terraform file to point to v3.3.0.beta
+source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/v3.3.0.beta/dmrpp-generator.zip"
+...
+// Change the value of your docker image to point to v3.3.0.beta tag
+docker_image = "ghrcdaac/dmrpp-generator:v3.3.0.beta
+...
+}
+``` 
+
+
 ## v3.2.1
 This release:
 * Support turning on and off logging to cloud watch `enable_cw_logging` variable [example](https://github.com/ghrcdaac/dmrpp-generator#deploying-with-cumulus-stack)
@@ -74,11 +92,11 @@ docker_image = "ghrcdaac/dmrpp-generator:v3.1.2
 
 ## v3.1.1
 This release:
-* Upgrades the base cumulus module to v9.7.0
+* Upgrades the base cumulus module to v10.1.1
 * Uses opendap/besd:3.20.9-15 
 
 ## 🚨 Breaking Changes v3.1.1
-* Works with Cumulus v9.7.0
+* Works with Cumulus v10.1.1
 * Relays on opendap/besd:3.20.9-15
 
 ## 🏃 Migration Steps to v3.1.1
@@ -96,7 +114,7 @@ docker_image = "ghrcdaac/dmrpp-generator:v3.1.1
 
 ## v3.1.0
 This release:
-* Uses cumulus v9.7.0
+* Uses cumulus v10.1.1
 * Support custom DMRPP file reg_ex
 * Support creating and validating locally
 
@@ -136,7 +154,7 @@ docker_image = "ghrcdaac/dmrpp-generator:v3.1.0
 
 ## v3.0.1.beta
 This release:
-* Uses cumulus v9.7.0
+* Uses cumulus v10.1.1
 * Support `HDF5 | hdf5` extensions
 * Support get_dmrpp options and flags 
 
