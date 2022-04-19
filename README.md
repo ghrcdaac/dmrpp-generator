@@ -154,8 +154,8 @@ If your workflow is used by multiple collections which use a common dmrpp
 config, the config can be set at the workflow's
 `${StepName}.Parameters.cma.task_config.dmrpp` instead of in the collection
 (**Note:** if the workflow and collection _both_ have a `dmrpp` key, the
-collection's config will be used; the workflow's `dmrpp` acts as the default
-which can be overridden by any collection that needs a different config):
+configurations will be merged together, with the collection's config overriding
+any keys that are found in both the workflow and collection):
 
 ```
 # terraform
