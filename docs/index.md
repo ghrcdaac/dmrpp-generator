@@ -1,6 +1,24 @@
 
 # 📖 Release notes
 
+
+## v3.3.1
+This release:
+* Compatible with Cumulus v10 and v11
+*  docker_image variable default to the correct release (can be override from the module definition)
+
+## 🏃 Migration Steps to v3.3.1
+```code
+module "dmrpp-generator" {
+// Change the source url in your terraform file to point to v3.3.1
+source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/v3.3.1/dmrpp-generator.zip"
+...
+// Override dmrpp docker image version
+docker_image = "ghrcdaac/dmrpp-generator"
+...
+}
+``` 
+
 ## v3.3.0.beta (🚨 Not an official release)
 This release:
 * Compatible with Cumulus v10

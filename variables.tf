@@ -32,7 +32,9 @@ variable "log_destination_arn" {
   description = "A shared AWS:Log:Destination that receives logs in log_groups"
 }
 variable "docker_image" {
-  default = "ghrcdaac/dmrpp-generator:latest"
+    description = "Docker image used to generate DMRPP"
+    type    = string
+    default = "ghrcdaac/dmrpp-generator:v3.3.1"
 }
 
 variable "volumes" {
