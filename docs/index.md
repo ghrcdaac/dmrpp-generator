@@ -1,6 +1,22 @@
 
 # 📖 Release notes
 
+## v3.4.0
+This release:
+* Place holder
+*  place holder
+
+## 🏃 Migration Steps to v3.4.0
+```code
+module "dmrpp-generator" {
+// Change the source url in your terraform file to point to v3.4.0
+source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/v3.4.0/dmrpp-generator.zip"
+...
+// Override dmrpp docker image version
+docker_image = "ghrcdaac/dmrpp-generator"
+...
+}
+``` 
 
 ## v3.3.1
 This release:
