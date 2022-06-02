@@ -23,6 +23,7 @@ function create_zip_file() {
   cp -r modules ${BUILD_DIR}
   cp *tf ${BUILD_DIR}
   cd ${BUILD_DIR}
+  sed -i "s/VERSION_SUB/${VERSION}/g" variables.tf
   zip -r9 ${RELEASE_NAME}.zip .
   mv ${RELEASE_NAME}.zip ${DESTINATION_DIR}/.
   cd $DESTINATION_DIR

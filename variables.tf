@@ -34,7 +34,7 @@ variable "log_destination_arn" {
 variable "docker_image" {
     description = "Docker image used to generate DMRPP"
     type    = string
-    default = "ghrcdaac/dmrpp-generator:v3.3.1"
+    default = "ghrcdaac/dmrpp-generator:VERSION_SUB"
 }
 
 variable "volumes" {
