@@ -3,17 +3,17 @@
 
 ## v3.4.0
 This release:
-* Place holder
-*  place holder
+* Uses opendap/besd:3.20.10-386 as base image
+* Supports:
+* * Fix Hyrax/OLFS generated links/URLs so that ForceLinksToHTTPS 
+* * Add support for HDF5 FIllValue chunks to the dmrpp_module
+* * Add support for HDF5 FillValue feature to dmr++ generation
 
 ## 🏃 Migration Steps to v3.4.0
 ```code
 module "dmrpp-generator" {
 // Change the source url in your terraform file to point to v3.4.0
 source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/v3.4.0/dmrpp-generator.zip"
-...
-// Override dmrpp docker image version
-docker_image = "ghrcdaac/dmrpp-generator"
 ...
 }
 ``` 
