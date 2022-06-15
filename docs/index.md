@@ -5,7 +5,7 @@
 This release:
 * Uses opendap/besd:3.20.10-462 as base image
 * Supports:
-* * Fix Hyrax issue where it was unable to produce missing data files for level 3|4 granules that do not contain explicit domain coordinate data values
+* * Fix Hyrax issue where it was unable to produce missing data files for level 3&4 granules that do not contain explicit domain coordinate data values
 
 
 ## 🏃 Migration Steps to v3.5.0
