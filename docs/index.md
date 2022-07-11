@@ -1,6 +1,10 @@
 
 # 📖 Release notes
 
+## v4.0.0
+This release:
+* Updated to cumulus v11.1.3
+
 ## v3.5.0
 This release:
 * Uses opendap/besd:3.20.10-462 as base image
