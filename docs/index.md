@@ -4,6 +4,14 @@
 ## v4.0.0
 This release:
 * Updated to cumulus v11.1.3
+## 🏃 Migration Steps to v4.0.0
+```code
+module "dmrpp-generator" {
+// Change the source url in your terraform file to point to v4.0.0
+source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/v4.0.0/dmrpp-generator.zip"
+...
+}
+``` 
 
 ## v3.5.0
 This release:
