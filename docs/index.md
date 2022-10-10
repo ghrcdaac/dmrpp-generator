@@ -1,6 +1,18 @@
 
 # 📖 Release notes
 
+## v4.0.1
+This release:
+* Updated the hyrax besd version to 3.20.13-130.
+## 🏃 Migration Steps to v4.0.1
+```code
+module "dmrpp-generator" {
+// Change the source url in your terraform file to point to v4.0.1
+source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/v4.0.1/dmrpp-generator.zip"
+...
+}
+```
+
 ## v4.0.0
 This release:
 * Updated to cumulus v11.1.3
@@ -11,7 +23,7 @@ module "dmrpp-generator" {
 source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/v4.0.0/dmrpp-generator.zip"
 ...
 }
-``` 
+```
 
 ## v3.5.0
 This release:
