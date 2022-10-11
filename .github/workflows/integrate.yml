@@ -19,6 +19,6 @@ jobs:
                bash create_release.sh $SOURCE_TAG
               env:
                SOURCE_TAG: ${{ steps.tag_name.outputs.SOURCE_TAG }}
-               SECRET_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+               GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
                GITHUB_REPO: ghrcdaac/dmrpp-generator
                GUTHUB_DOCKER_IMAGE: ghrcdaac/dmrpp-file-generator-docker
