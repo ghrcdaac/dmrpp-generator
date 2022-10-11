@@ -8,6 +8,7 @@ on:
 jobs:
     test_pull_request:
         runs-on: ubuntu-latest
+        permissions: write-all
         steps:
             - uses: actions/checkout@v2
             - name: Get tag version
