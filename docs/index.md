@@ -4,7 +4,7 @@
 ## v4.0.2
 This release:
 * Updated the hyrax besd version to 3.20.13-184.
-## 🏃 Migration Steps to v4.0.1
+## 🏃 Migration Steps to v4.0.2
 ```code
 module "dmrpp-generator" {
 // Change the source url in your terraform file to point to v4.0.2
