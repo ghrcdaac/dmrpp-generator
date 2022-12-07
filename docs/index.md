@@ -1,5 +1,16 @@
 
 # 📖 Release notes
+## v4.0.3
+This release:
+* Updated the code to remove existing dmrpp files from the granule file list before adding newly created ones.
+## 🏃 Migration Steps to v4.0.3
+```code
+module "dmrpp-generator" {
+// Change the source url in your terraform file to point to v4.0.3
+source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/v4.0.3/dmrpp-generator.zip"
+...
+}
+```
 
 ## v4.0.2
 This release:
