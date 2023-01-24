@@ -2,7 +2,7 @@
 # 📖 Release notes
 ## v4.0.4
 This release:
-* Updated the desd docker image to 3.20.13-306 which should resolve issue with the Bathy_SBES dataset.
+* Updated the desd docker image to 3.20.13-310 which should resolve issue with the Bathy_SBES dataset.
 ## 🏃 Migration Steps to v4.0.4
 ```code
 module "dmrpp-generator" {
