@@ -1,5 +1,18 @@
 
 # 📖 Release notes
+## v4.0.5
+This release:
+* The subprocess call to Hyrax will now raise an exception based of result code: https://bugs.earthdata.nasa.gov/browse/GHRCCLOUD-4502
+* S3 exceptions for upload will no longer be caught: https://bugs.earthdata.nasa.gov/browse/GHRCCLOUD-4515
+## 🏃 Migration Steps to v4.0.5
+```code
+module "dmrpp-generator" {
+// Change the source url in your terraform file to point to v4.0.5
+source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/v4.0.5/dmrpp-generator.zip"
+...
+}
+```
+
 ## v4.0.4
 This release:
 * Updated the desd docker image to 3.20.13-310 which should resolve issue with the Bathy_SBES dataset.
