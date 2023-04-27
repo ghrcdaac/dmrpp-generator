@@ -49,3 +49,9 @@ variable "enable_cw_logging" {
   type        = bool
   default     = true
 }
+
+variable "get_dmrpp_timeout" {
+  description = "Duration to wait on the get_dmrpp subprocess call."
+  type    = number
+  default = 60
+}

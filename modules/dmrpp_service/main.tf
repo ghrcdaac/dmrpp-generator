@@ -10,7 +10,7 @@ module "dmrpp_ecs_task_module" {
 }
 
 module "dmrpp_service" {
-  source = "https://github.com/nasa/cumulus/releases/download/v11.1.3/terraform-aws-cumulus-ecs-service.zip"
+  source = "https://github.com/nasa/cumulus/releases/download/v14.1.0/terraform-aws-cumulus-ecs-service.zip"
 
   prefix              = var.prefix
   name                = "${var.prefix}_dmrpp_generator"
@@ -26,6 +26,7 @@ module "dmrpp_service" {
   environment = {
     AWS_DEFAULT_REGION = var.region
     ENABLE_CW_LOGGING  = var.enable_cw_logging
+    GET_DMRPP_TIMEOUT  = var.get_dmrpp_timeout
   }
   command = [
     "dmrpp-generator",
