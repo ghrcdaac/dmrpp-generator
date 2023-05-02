@@ -3,8 +3,9 @@
 ## v4.0.6
 This release:
 * Updated cumulus service version to v14.1.0
-* Added a variable to configure dmrpp to timeout. Can be set with a terraform variable or passed in by the workflow. 
+* Added a variable to configure dmrpp to timeout. Can be set with a terraform variable or passed in by the workflow.
 Defaults to 60 seconds
+* Updated to besd:3.20.13-563 https://wiki.earthdata.nasa.gov/pages/viewpage.action?pageId=296466475
 ## 🏃 Migration Steps to v4.0.5
 ```code
 module "dmrpp-generator" {

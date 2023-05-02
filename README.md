@@ -202,3 +202,12 @@ dmrpp_config = {
     ...
     }
 ```
+
+## Timeout Configuration
+The subprocess call to the besd library has a configurable timeout value. It will default to 60 seconds
+if not configured. There are two ways to provide a custom value. 
+1. Setting the `get_dmrpp_timeout` terraform variable
+2. Adding `get_dmrpp_timeout` to the collection definition: `collection.meta.dmrpp`
+
+If the value is provided in the collection definition this will take precedence over the environment
+variable. 
