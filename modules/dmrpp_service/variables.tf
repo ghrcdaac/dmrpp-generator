@@ -8,3 +8,4 @@ variable "log_destination_arn" {}
 variable "docker_image" {}
 variable "volumes" {}
 variable "enable_cw_logging" {}
+variable "get_dmrpp_timeout" {}

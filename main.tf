@@ -17,4 +17,5 @@ module "dmrpp_service" {
   region              = var.region
   volumes             = var.volumes
   enable_cw_logging   = var.enable_cw_logging
+  get_dmrpp_timeout   = var.get_dmrpp_timeout
 }

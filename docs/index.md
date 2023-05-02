@@ -1,5 +1,20 @@
 
 # 📖 Release notes
+## v4.0.6
+This release:
+* Updated cumulus service version to v14.1.0
+* Added a variable to configure dmrpp to timeout. Can be set with a terraform variable or passed in by the workflow.
+Defaults to 60 seconds
+* Updated to besd:3.20.13-563 https://wiki.earthdata.nasa.gov/pages/viewpage.action?pageId=296466475
+## 🏃 Migration Steps to v4.0.5
+```code
+module "dmrpp-generator" {
+// Change the source url in your terraform file to point to v4.0.6
+source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/v4.0.5/dmrpp-generator.zip"
+...
+}
+```
+
 ## v4.0.5
 This release:
 * The subprocess call to Hyrax will now raise an exception based of result code: https://bugs.earthdata.nasa.gov/browse/GHRCCLOUD-4502
