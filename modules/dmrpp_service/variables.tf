@@ -9,4 +9,9 @@ variable "docker_image" {}
 variable "volumes" {}
 variable "enable_cw_logging" {}
 variable "get_dmrpp_timeout" {}
-variable "default_log_retention_days" {}
+
+variable "default_log_retention_days" {
+  type = number
+  default = 30
+  description = "Default value that user chooses for their log retention periods"
+}
