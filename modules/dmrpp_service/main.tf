@@ -22,6 +22,7 @@ module "dmrpp_service" {
   cpu                 = var.cpu
   memory_reservation  = var.memory_reservation
   volumes             = var.volumes
+  default_log_retention_days = var.default_log_retention_days
 
   environment = {
     AWS_DEFAULT_REGION = var.region

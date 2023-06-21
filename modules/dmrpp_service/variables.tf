@@ -9,3 +9,4 @@ variable "docker_image" {}
 variable "volumes" {}
 variable "enable_cw_logging" {}
 variable "get_dmrpp_timeout" {}
+variable "default_log_retention_days" {}

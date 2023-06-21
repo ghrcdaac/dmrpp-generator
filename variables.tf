@@ -55,3 +55,9 @@ variable "get_dmrpp_timeout" {
   type    = number
   default = 60
 }
+
+variable "default_log_retention_days" {
+  type = number
+  default = 30
+  description = "Default value that user chooses for their log retention periods"
+}
