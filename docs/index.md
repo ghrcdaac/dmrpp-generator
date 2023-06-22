@@ -1,5 +1,17 @@
 
 # 📖 Release notes
+## v4.0.8
+This release:
+* default_log_retention_days is now configurable
+## 🏃 Migration Steps to v4.0.8
+```code
+module "dmrpp-generator" {
+// Change the source url in your terraform file to point to v4.0.8
+source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/v4.0.8/dmrpp-generator.zip"
+...
+}
+```
+
 ## v4.0.7
 This release:
 * Updated to besd:3.20.13-664 https://wiki.earthdata.nasa.gov/pages/viewpage.action?pageId=304939198
