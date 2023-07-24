@@ -10,6 +10,7 @@
 # Overview
 DMR++ files generator is a cloud based activity that generate DMRPP files from netCDF4 and HDF files
 ## 📖 Documentation
+- Release note [v4.0.9](https://ghrcdaac.github.io/dmrpp-generator/#v409).
 - Release note [v4.0.8](https://ghrcdaac.github.io/dmrpp-generator/#v408).
 - Release note [v4.0.7](https://ghrcdaac.github.io/dmrpp-generator/#v407).
 - Release note [v4.0.6](https://ghrcdaac.github.io/dmrpp-generator/#v406).
@@ -212,4 +213,13 @@ if not configured. There are two ways to provide a custom value.
 2. Adding `get_dmrpp_timeout` to the collection definition: `collection.meta.dmrpp`
 
 If the value is provided in the collection definition this will take precedence over the environment
-variable. 
+variable.
+
+## Subprocess Logging Configuration
+When making the subprocess call, stdout and stderr will default to `None` to prevent an issue from occurring where the 
+timeout is not respected. This can be configured in two ways.
+1. Setting the `ENABLE_SUBPROCESS_LOGGING` environment variable in terraform
+2. Adding `enable_subprocess_logging` to the collection definition: `collection.meta.dmrpp`. Can be `true` or `false`.
+
+If the value is provided in the collection definition this will take precedence over the environment
+variable.

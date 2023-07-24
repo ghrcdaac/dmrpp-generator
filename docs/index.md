@@ -1,5 +1,18 @@
 
 # 📖 Release notes
+## v4.0.9
+This release:
+* The subprocess will have stdout and stderr default to None to reduce log spam. It can be enabled by passing 
+"enable_subprocess_logging": true into the event or setting the environment variable ENABLE_SUBPROCESS_LOGGING.
+## 🏃 Migration Steps to v4.0.9
+```code
+module "dmrpp-generator" {
+// Change the source url in your terraform file to point to v4.0.9
+source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/v4.0.9/dmrpp-generator.zip"
+...
+}
+```
+
 ## v4.0.8
 This release:
 * default_log_retention_days is now configurable
