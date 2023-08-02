@@ -1,5 +1,17 @@
 
 # 📖 Release notes
+## v4.1.0
+This release:
+* The dmrpp resource was updated to use Cumulus ECS service version 15.0.4
+## 🏃 Migration Steps to v4.1.0
+```code
+module "dmrpp-generator" {
+// Change the source url in your terraform file to point to v4.1.0
+source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/v4.1.0/dmrpp-generator.zip"
+...
+}
+```
+
 ## v4.0.9
 This release:
 * The subprocess will have stdout and stderr default to None to reduce log spam. It can be enabled by passing 
