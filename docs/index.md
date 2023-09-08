@@ -1,5 +1,16 @@
 
 # 📖 Release notes
+## v4.1.1
+This release:
+* The CLI assumed providing a local file assumed that it should be applied to the dmr++ -u option.
+## 🏃 Migration Steps to v4.1.1
+```code
+module "dmrpp-generator" {
+// Change the source url in your terraform file to point to v4.1.1
+source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/v4.1.1/dmrpp-generator.zip"
+...
+}
+
 ## v4.1.0
 This release:
 * The dmrpp resource was updated to use Cumulus ECS service version 15.0.4
