@@ -15,7 +15,6 @@ export RELEASE_NAME=`basename $GITHUB_REPO`
 
 ## Build TF modules that require source building
 function create_zip_file() {
-
   BUILD_DIR=/tmp/${RELEASE_NAME}
   DESTINATION_DIR=${PWD}/dist
   rm -rf ${DESTINATION_DIR}
@@ -39,9 +38,9 @@ create_zip_file
 curl -X POST -H "Authorization: token $GITHUB_TOKEN" --data-binary "@${RELEASE_NAME}.zip" -H "Content-type: application/octet-stream" $RELEASE_URL/assets?name=${RELEASE_NAME}.zip
 
 ## Create Release for dmrpp docker image
-curl -H\
-  "Authorization: token $GITHUB_TOKEN"\
-   -d "{\"tag_name\": \"$VERSION\", \"target_commitsh\": \"$VERSION\", \"name\": \"$VERSION\", \"body\": \"Release $VERSION https://ghrcdaac.github.io/dmrpp-generator\" }"\
-   -H "Content-Type: application/json"\
-   -X POST\
-   https://api.github.com/repos/$GUTHUB_DOCKER_IMAGE/releases
+#curl -H\
+#  "Authorization: token $GITHUB_TOKEN"\
+#   -d "{\"tag_name\": \"$VERSION\", \"target_commitsh\": \"$VERSION\", \"name\": \"$VERSION\", \"body\": \"Release $VERSION https://ghrcdaac.github.io/dmrpp-generator\" }"\
+#   -H "Content-Type: application/json"\
+#   -X POST\
+#   https://api.github.com/repos/$GUTHUB_DOCKER_IMAGE/releases
