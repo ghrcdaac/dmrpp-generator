@@ -10,6 +10,7 @@
 # Overview
 DMR++ files generator is a cloud based activity that generate DMRPP files from netCDF4 and HDF files
 ## 📖 Documentation
+- Release note [v4.1.1](https://ghrcdaac.github.io/dmrpp-generator/#v411).
 - Release note [v4.1.0](https://ghrcdaac.github.io/dmrpp-generator/#v410).
 - Release note [v4.0.9](https://ghrcdaac.github.io/dmrpp-generator/#v409).
 - Release note [v4.0.8](https://ghrcdaac.github.io/dmrpp-generator/#v408).
@@ -31,14 +32,6 @@ DMR++ files generator is a cloud based activity that generate DMRPP files from n
 - Release note [v3.1.1](https://ghrcdaac.github.io/dmrpp-generator/#v311).
 - Release note [v3.1.0](https://ghrcdaac.github.io/dmrpp-generator/#v310).
 - Release note [v3.0.1.beta](https://ghrcdaac.github.io/dmrpp-generator/#v301beta).
-- Release note [v2.1.1](https://ghrcdaac.github.io/dmrpp-generator/#v211).
-- Release note [v2.1.0](https://ghrcdaac.github.io/dmrpp-generator/#v210).
-- Release note [v2.0.1](https://ghrcdaac.github.io/dmrpp-generator/).
-- Release note [v2.0.0](https://ghrcdaac.github.io/dmrpp-generator/).
-- Release note [v1.1.0](https://ghrcdaac.github.io/dmrpp-generator/).
-- Release note [v1.0.6](https://ghrcdaac.github.io/dmrpp-generator/).
-- Release note [v1.0.5](https://ghrcdaac.github.io/dmrpp-generator/).
-- Release note [v1.0.4](https://ghrcdaac.github.io/dmrpp-generator/).
 
 ## Versioning
 We are following `v<major>.<minor>.<patch>` versioning convention, where:
