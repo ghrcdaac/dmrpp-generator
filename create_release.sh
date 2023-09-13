@@ -45,7 +45,7 @@ curl -X POST \
   "$RELEASE_URL"/assets?name="${RELEASE_NAME}".zip
 
 ### Post the wheel
-echo pwd
+pwd
 ls
 content=$(cat ./dmrpp_generator/version.py)
 [[ $content =~ ([0-9]+.[0-9]+.[0-9]+) ]]
