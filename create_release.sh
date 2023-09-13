@@ -48,6 +48,7 @@ curl -X POST \
 pwd
 ls
 cd ../
+create_wheel
 pwd
 ls
 content=$(cat ./dmrpp_generator/version.py)
@@ -60,6 +61,9 @@ curl -L \
   -H "Content-Type: application/octet-stream" \
   "$RELEASE_URL/assets?name=dmrpp_file_generator-${BASH_REMATCH[1]}-py3-none-any.whl" \
   --data-binary "@dmrpp_file_generator-${BASH_REMATCH[1]}-py3-none-any.whl"
+
+pwd
+ls
 
 ## Create Release for dmrpp docker image
 #curl -H\
