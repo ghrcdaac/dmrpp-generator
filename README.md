@@ -6,32 +6,10 @@
 |____/|_|  |_|_| \_\_|   |_|
 ```
 
-
 # Overview
-DMR++ files generator is a cloud based activity that generate DMRPP files from netCDF4 and HDF files
-## 📖 Documentation
-- Release note [v4.1.1](https://ghrcdaac.github.io/dmrpp-generator/#v411).
-- Release note [v4.1.0](https://ghrcdaac.github.io/dmrpp-generator/#v410).
-- Release note [v4.0.9](https://ghrcdaac.github.io/dmrpp-generator/#v409).
-- Release note [v4.0.8](https://ghrcdaac.github.io/dmrpp-generator/#v408).
-- Release note [v4.0.7](https://ghrcdaac.github.io/dmrpp-generator/#v407).
-- Release note [v4.0.6](https://ghrcdaac.github.io/dmrpp-generator/#v406).
-- Release note [v4.0.5](https://ghrcdaac.github.io/dmrpp-generator/#v405).
-- Release note [v4.0.4](https://ghrcdaac.github.io/dmrpp-generator/#v404).
-- Release note [v4.0.3](https://ghrcdaac.github.io/dmrpp-generator/#v403).
-- Release note [v4.0.2](https://ghrcdaac.github.io/dmrpp-generator/#v402).
-- Release note [v4.0.1](https://ghrcdaac.github.io/dmrpp-generator/#v401).
-- Release note [v4.0.0](https://ghrcdaac.github.io/dmrpp-generator/#v400).
-- Release note [v3.5.0](https://ghrcdaac.github.io/dmrpp-generator/#v350).
-- Release note [v3.4.0](https://ghrcdaac.github.io/dmrpp-generator/#v340).
-- Release note [v3.3.1](https://ghrcdaac.github.io/dmrpp-generator/#v331).
-- Release note [v3.3.0.beta](https://ghrcdaac.github.io/dmrpp-generator/#v330beta).
-- Release note [v3.2.1](https://ghrcdaac.github.io/dmrpp-generator/#v321).
-- Release note [v3.2.0](https://ghrcdaac.github.io/dmrpp-generator/#v320).
-- Release note [v3.1.2](https://ghrcdaac.github.io/dmrpp-generator/#v312).
-- Release note [v3.1.1](https://ghrcdaac.github.io/dmrpp-generator/#v311).
-- Release note [v3.1.0](https://ghrcdaac.github.io/dmrpp-generator/#v310).
-- Release note [v3.0.1.beta](https://ghrcdaac.github.io/dmrpp-generator/#v301beta).
+This repo consists of two components. The DMR++ activity terraform module and a python CLI to the DMR++ Docker 
+container.
+https://github.com/ghrcdaac/dmrpp-generator/blob/ce1b53772cf9d501d4576a8d94f4f6868e526f7d/Dockerfile#L1
 
 ## Versioning
 We are following `v<major>.<minor>.<patch>` versioning convention, where:
@@ -40,15 +18,24 @@ We are following `v<major>.<minor>.<patch>` versioning convention, where:
 * `<minor>+1` means we upgraded/patched the dependencies this software relays on. Can lead to breaking changes.
 * `<patch>+1` means we fixed a bug and/or added a feature. Breaking changes are not expected.
 
-# 🔨 Pre-requisite
-This module is meant to run within Cumulus stack.
+# Pre-requisite
+The prerequisites depend on which use case is needed. 
+
+## Terraform Module
+This module is meant to used within the Cumulus stack.
 If you don't have Cumulus stack deployed yet please consult [this repo](https://github.com/nasa/cumulus)
 and follow the [documetation](https://nasa.github.io/cumulus/docs/cumulus-docs-readme) to provision it.
 
-# Deploying with Cumulus Stack
+## DMR++ Python CLI
+For each release after v4.1.0, there will be a python wheel published in the release assets. This can be installed and 
+used locally via pip like the following:
+`pip install https://github.com/ghrcdaac/dmrpp-generator/releases/download/v1.0.0-test/dmrpp_file_generator-4.1.2-py3-none-any.whl`
+The python module uses Docker compose to generate dmrpp files locally so no other dependencies should be needed.
+
+# Deploying the Terraform module with the Cumulus Stack
 In [main.tf](https://github.com/nasa/cumulus-template-deploy/blob/master/cumulus-tf/main.tf) file
  (where you defined cumulus module) add
- ```code
+ ```terraform
 module "dmrpp-generator" {
   // Required parameters
   source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/<tag_num>/dmrpp-generator.zip"
@@ -67,7 +54,6 @@ module "dmrpp-generator" {
   log_destination_arn = var.aws_log_mechanism // default to null
 }
 
-
 ```
 In [variables.tf](https://github.com/nasa/cumulus-template-deploy/blob/master/cumulus-tf/variables.tf)
 file you need to define
@@ -77,7 +63,6 @@ variable "dmrpp-generator-docker-image" {
 }
 ```
 Assuming you already defined the region and the prefix
-
 
 # Add the activity to your workflow
 In your [workflow.tf](https://github.com/nasa/cumulus-template-deploy/blob/master/cumulus-tf/hello_world_workflow.tf) add
@@ -122,7 +107,6 @@ In your [workflow.tf](https://github.com/nasa/cumulus-template-deploy/blob/maste
 Where `<Your next Step>` is the next step in your workflow.
 
 ## Cumulus Collection Configuration
-
 Add the options desired to the collection definition as follows:
 
 ```code
@@ -150,12 +134,9 @@ Add the options desired to the collection definition as follows:
   }
 }
 ```
-
 For a list of all configuration options see: https://docs.opendap.org/index.php?title=DMR%2B%2B#:~:text=4.2%20Command%20line%20options
 
-
 ## Cumulus Workflow Configuration
-
 If your workflow is used by multiple collections which use a common dmrpp
 config, the config can be set at the workflow's
 `${StepName}.Parameters.cma.task_config.dmrpp` instead of in the collection
@@ -201,7 +182,7 @@ dmrpp_config = {
 ```
 
 ## Timeout Configuration
-The subprocess call to the besd library has a configurable timeout value. It will default to 60 seconds
+The subprocess call to the BESD library has a configurable timeout value. It will default to 60 seconds
 if not configured. There are two ways to provide a custom value. 
 1. Setting the `get_dmrpp_timeout` terraform variable
 2. Adding `get_dmrpp_timeout` to the collection definition: `collection.meta.dmrpp`
@@ -217,3 +198,72 @@ timeout is not respected. This can be configured in two ways.
 
 If the value is provided in the collection definition this will take precedence over the environment
 variable.
+
+# DMR++ Python CLI
+# How to install
+Find the version you want to use and get the asset URL for the .whl file and install like the following example command:
+```shell
+pip install https://github.com/ghrcdaac/dmrpp-generator/releases/download/v<release_version>/dmrpp_file_generator-<dmrpp_version>-py3-none-any.whl
+```
+
+# Supported get_dmrpp configuration
+## Via env vars
+Create a PAYLOAD environment variable holding dmrpp options
+```
+PAYLOAD='{"dmrpp_regex": "^.*.nc4", "options":[{"flag": "-M"}, {"flag": "-s", "opt": "s3://ghrcsbxw-public/dmrpp_config/file.config","download": "true"}]}'
+```
+`dmrpp_regex` is optional to override the DMRPP-Generator regex
+
+# Generate DMRpp files locally without Hyrax server
+`generate-validate-dmrpp` now uses docker compose v2.  Please update to  
+docker compose v2 or you will get the error  
+`/bin/sh: 1: docker compose: not found`
+```shell
+$generate-validate-dmrpp --help
+usage: generate-validate-dmrpp [-h] -p NC_HDF_PATH [-prt PORT] [-pyld PAYLOAD] [-vldt VALIDATE]
+
+Generate and validate DMRPP files.
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -p NC_HDF_PATH, --path NC_HDF_PATH
+                        Path to netCDF4 and HDF5 folder
+  -prt PORT, --port PORT
+                        Port number to Hyrax local server
+  -pyld PAYLOAD, --payload PAYLOAD
+                        Payload to execute get_dmrpp binary
+  -vldt VALIDATE, --validate VALIDATE
+                        Validate netCDF4 and HDF5 files against OPeNDAP local server
+
+```
+
+The folder `<absolute/path/to/nc/hdf/files>` should contain netCDF and/or HDF files
+```code
+generate-validate-dmrpp -p <absolute/path/to/nc/hdf/files> -vldt false
+```
+<a href="https://asciinema.org/a/p6xzJQguUni26FIbjCxm8giWw" target="_blank"><img src="https://asciinema.org/a/p6xzJQguUni26FIbjCxm8giWw.svg" /></a>
+# Generate DMRpp files locally with Hyrax server (for validation)
+
+```shell
+generate-validate-dmrpp -p <absolute/path/to/nc/hdf/files>
+```
+A prompt will ask you to visit localhost:8080. If you want to change the default port run the command with
+```shell
+generate-validate-dmrpp -p <absolute/path/to/nc/hdf/files> -prt 8889
+Now you can validate the result in localhost:8889
+```
+<a href="https://asciinema.org/a/1NbdKMckp3ONLAuD1zbDkCFIw" target="_blank"><img src="https://asciinema.org/a/1NbdKMckp3ONLAuD1zbDkCFIw.svg" /></a>
+
+# Generate missing metadata for non-netcdf compliant data (the -b switch)
+```code
+generate-validate-dmrpp -p <absolute/path/to/nc/hdf/files> -pyld $PAYLOAD
+```
+or
+```shell
+docker run --rm -it --env-file ./env.list -v <absolute/path/to/nc/hdf/files>:/workstation ghrcdaac/dmrpp-generator
+```
+where PAYLOAD contains your flags and switches
+```shell
+PAYLOAD={"options":[{"flag": "-M"}, {"flag": "-u", "opt": "/usr/share/hyrax"}]}
+```
+
