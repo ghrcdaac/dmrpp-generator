@@ -18,16 +18,16 @@ export RELEASE_NAME=$(basename "$GITHUB_REPO")
 function create_zip_file() {
   BUILD_DIR=/tmp/${RELEASE_NAME}
   DESTINATION_DIR=${PWD}/dist
-  rm -rf ${DESTINATION_DIR}
-  mkdir -p ${BUILD_DIR} ${DESTINATION_DIR}
-  cp -r modules ${BUILD_DIR}
-  cp *tf ${BUILD_DIR}
-  cd ${BUILD_DIR}
+  rm -rf "${DESTINATION_DIR}"
+  mkdir -p "${BUILD_DIR}" "${DESTINATION_DIR}"
+  cp -r modules "${BUILD_DIR}"
+  cp -- *tf "${BUILD_DIR}"
+  cd "${BUILD_DIR}"
   sed -i "s/VERSION_SUB/${VERSION}/g" variables.tf
-  zip -r9 ${RELEASE_NAME}.zip .
-  mv ${RELEASE_NAME}.zip ${DESTINATION_DIR}/.
-  cd $DESTINATION_DIR
-  rm -rf ${BUILD_DIR}
+  zip -r9 "${RELEASE_NAME}".zip .
+  mv "${RELEASE_NAME}".zip "${DESTINATION_DIR}"/.
+  cd "$DESTINATION_DIR"
+  rm -rf "${BUILD_DIR}"
 }
 
 function create_wheel() {
@@ -45,13 +45,15 @@ curl -X POST \
   "$RELEASE_URL"/assets?name="${RELEASE_NAME}".zip
 
 ### Post the wheel
+content=$(cat dmrpp_generator/version.py)
+[[ $content =~ ([0-9]+.[0-9]+.[0-9]+) ]]
 curl -L \
   -X POST \
   -H "Accept: application/vnd.github+json" \
   -H "Authorization: Bearer $GITHUB_TOKEN" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
   -H "Content-Type: application/octet-stream" \
-  "$RELEASE_URL/assets?name=dmrpp_file_generator-${VERSION:1}-py3-none-any.whl" \
+  "$RELEASE_URL/assets?name=dmrpp_file_generator-${BASH_REMATCH[1]}-py3-none-any.whl" \
   --data-binary "@example.zip"
 
 ## Create Release for dmrpp docker image
