@@ -30,7 +30,10 @@ function create_zip_file() {
   rm -rf ${BUILD_DIR}
 }
 
-
+function create_wheel() {
+  echo pwd
+  python -m build --wheel --outdir . .
+}
 
 #### Release package
 create_zip_file
@@ -40,6 +43,16 @@ curl -X POST \
   -H "Authorization: token $GITHUB_TOKEN" --data-binary "@${RELEASE_NAME}.zip" \
   -H "Content-type: application/octet-stream" \
   "$RELEASE_URL"/assets?name="${RELEASE_NAME}".zip
+
+### Post the wheel
+curl -L \
+  -X POST \
+  -H "Accept: application/vnd.github+json" \
+  -H "Authorization: Bearer $GITHUB_TOKEN" \
+  -H "X-GitHub-Api-Version: 2022-11-28" \
+  -H "Content-Type: application/octet-stream" \
+  "$RELEASE_URL/assets?name=dmrpp_file_generator-${VERSION:1}-py3-none-any.whl" \
+  --data-binary "@example.zip"
 
 ## Create Release for dmrpp docker image
 #curl -H\
