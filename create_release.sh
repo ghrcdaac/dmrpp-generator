@@ -31,7 +31,7 @@ function create_zip_file() {
 }
 
 function create_wheel() {
-  echo pwd
+  pip install -r requirements_dev.txt
   python -m build --wheel --outdir . .
 }
 
