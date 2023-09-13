@@ -59,7 +59,7 @@ curl -L \
   -H "X-GitHub-Api-Version: 2022-11-28" \
   -H "Content-Type: application/octet-stream" \
   "$RELEASE_URL/assets?name=dmrpp_file_generator-${BASH_REMATCH[1]}-py3-none-any.whl" \
-  --data-binary "@example.zip"
+  --data-binary "@dmrpp_file_generator-${BASH_REMATCH[1]}-py3-none-any.whl"
 
 ## Create Release for dmrpp docker image
 #curl -H\
