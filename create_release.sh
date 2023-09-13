@@ -47,6 +47,9 @@ curl -X POST \
 ### Post the wheel
 pwd
 ls
+cd ../
+pwd
+ls
 content=$(cat ./dmrpp_generator/version.py)
 [[ $content =~ ([0-9]+.[0-9]+.[0-9]+) ]]
 curl -L \
