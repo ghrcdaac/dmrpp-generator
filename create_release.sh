@@ -44,13 +44,9 @@ curl -X POST \
   -H "Content-type: application/octet-stream" \
   "$RELEASE_URL"/assets?name="${RELEASE_NAME}".zip
 
-### Post the wheel
-pwd
-ls
+### Create and post the wheel
 cd ../
 create_wheel
-pwd
-ls
 content=$(cat ./dmrpp_generator/version.py)
 [[ $content =~ ([0-9]+.[0-9]+.[0-9]+) ]]
 curl -L \
@@ -61,14 +57,3 @@ curl -L \
   -H "Content-Type: application/octet-stream" \
   "$RELEASE_URL/assets?name=dmrpp_file_generator-${BASH_REMATCH[1]}-py3-none-any.whl" \
   --data-binary "@dmrpp_file_generator-${BASH_REMATCH[1]}-py3-none-any.whl"
-
-pwd
-ls
-
-## Create Release for dmrpp docker image
-#curl -H\
-#  "Authorization: token $GITHUB_TOKEN"\
-#   -d "{\"tag_name\": \"$VERSION\", \"target_commitsh\": \"$VERSION\", \"name\": \"$VERSION\", \"body\": \"Release $VERSION https://ghrcdaac.github.io/dmrpp-generator\" }"\
-#   -H "Content-Type: application/json"\
-#   -X POST\
-#   https://api.github.com/repos/$GUTHUB_DOCKER_IMAGE/releases
