@@ -10,7 +10,7 @@
 This repo consists of two components. The DMR++ activity terraform module and a python CLI to the DMR++ Docker 
 container.
 
-Current used OPeNDAP BESD image:
+Current OPeNDAP BESD image:
 https://github.com/ghrcdaac/dmrpp-generator/blob/ce1b53772cf9d501d4576a8d94f4f6868e526f7d/Dockerfile#L1
 
 ## Versioning
