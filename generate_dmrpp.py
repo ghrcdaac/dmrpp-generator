@@ -1,3 +1,4 @@
+import ast
 from os import listdir, getenv
 from os.path import isfile, join, basename
 import json
@@ -8,6 +9,7 @@ logging.getLogger()
 
 if __name__ == "__main__":
     payload = getenv('PAYLOAD', '{}')
+    args = json.loads(getenv('DMRPP_ARGS', '[]'))
     meta = json.loads(payload)
     workstation_path = getenv('MOUNT_VOL', '/usr/share/hyrax/')
     join_path = lambda x: join(workstation_path, x)
@@ -17,4 +19,5 @@ if __name__ == "__main__":
     dmrpp.processing_regex = meta.get('dmrpp_regex', dmrpp.processing_regex)
     for input_file in input_files:
         if match(f"{dmrpp.processing_regex}$", basename(input_file)):
-            dmrpp.dmrpp_generate(input_file, local=True, dmrpp_meta=meta)
+            dmrpp.dmrpp_generate(input_file, local=True, dmrpp_meta=meta, args=args)
+

@@ -7,12 +7,12 @@ services:
     image: ghrcdaac/dmrpp-generator:v3.2.1.1
     environment:
       - PAYLOAD=${PAYLOAD}
+      - DMRPP_ARGS=${DMRPP_ARGS}
     # Mount volume
     volumes:
       - ${NC_FILES_PATH:-/tmp}:/usr/share/hyrax
 
   hyrax:
-
     # image to fetch from docker hub
     image: opendap/hyrax:snapshot
     ports:

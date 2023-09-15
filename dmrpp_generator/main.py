@@ -54,7 +54,6 @@ class DMRPPGenerator(Process):
 
     @property
     def input_keys(self):
-
         return {
             'input_files': f"{self.processing_regex}(\\.cmr\\.xml|\\.json)?$"
         }
@@ -175,6 +174,7 @@ class DMRPPGenerator(Process):
             stderr = subprocess.STDOUT
 
         try:
+            print(f'Running cmd: {cmd}')
             out = subprocess.run(cmd.split(), stdout=stdout, stderr=stderr, timeout=self.timeout, check=True)
         except Exception as e:
             self.logger_to_cw.info(f'cmd: {cmd}')
@@ -182,7 +182,7 @@ class DMRPPGenerator(Process):
 
         return out
 
-    def dmrpp_generate(self, input_file, local=False, dmrpp_meta=None):
+    def dmrpp_generate(self, input_file, local=False, dmrpp_meta=None, args=None):
         """
         Generate DMRPP from S3 file
         """
@@ -190,6 +190,9 @@ class DMRPPGenerator(Process):
         dmrpp_meta = dmrpp_meta if isinstance(dmrpp_meta, dict) else {}
         file_name = input_file if local else s3.download(input_file, path=self.path)
         cmd = self.get_dmrpp_command(dmrpp_meta, self.path, file_name, local)
+        if args:
+            cmd = f'{cmd} {" ".join(args)}'
+        print(f'dmrpp cmd: {cmd}')
         self.run_command(cmd)
         out_files = [f"{file_name}.dmrpp"] + self.add_missing_files(dmrpp_meta, f'{file_name}.dmrpp.missing')
         return out_files
