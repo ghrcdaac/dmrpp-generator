@@ -13,7 +13,8 @@ RUN wget https://repo.anaconda.com/miniconda/Miniconda3-py38_4.8.2-Linux-x86_64.
     rm Miniconda3-py38_4.8.2-Linux-x86_64.sh
 ENV HOME="/home/worker" PATH="/home/worker/miniconda3/bin:${PATH}"
 RUN pip install ipython &&\
-    pip install pytest
+    pip install pytest &&\
+    pip install coverage
 RUN mkdir $HOME/build
 ENV BUILD=$HOME/build
 COPY --chown=worker setup.py requirements*txt $BUILD/
@@ -25,7 +26,9 @@ RUN \
   cd $BUILD; \
   python setup.py install
 WORKDIR $BUILD
-RUN pytest --junitxml=./test_results/test_dmrpp_generator.xml tests && \
-    rm -rf tests
+#RUN pytest --junitxml=./test_results/test_dmrpp_generator.xml tests && \
+#    rm -rf tests
+RUN coverage run -m pytest
+RUN coverage report
 CMD ["python", "generate_dmrpp.py"]
 ENTRYPOINT []

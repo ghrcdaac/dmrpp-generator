@@ -51,14 +51,16 @@ def check_docker_version(log_file_path):
 def run_docker_compose(payload, dmrpp_args, nc_hdf_path, port, dmrrpp_service, log_file_path):
     dockercompose_file_location = generate_docker_compose()
     dkr_comp_version = check_docker_version(log_file_path)
-
+    print(payload)
+    print(dmrpp_args)
     with open(log_file_path, "a", encoding='utf-8') as output:
         try:
             cmd = f"PAYLOAD='{payload}' " \
                   f"DMRPP_ARGS='{dmrpp_args}' " \
                   f"NC_FILES_PATH={nc_hdf_path} " \
-                  f"PORT={port} {dkr_comp_version} " \
-                  f"-f {dockercompose_file_location} up {dmrrpp_service}"
+                  f"PORT={port} " \
+                  f"{dkr_comp_version} -f {dockercompose_file_location} up {dmrrpp_service}"
+            print(f'Docker Compose: {cmd}')
             subprocess.run(
                 cmd,
                 shell=True, check=False, stdout=output,
@@ -81,7 +83,8 @@ def main():
                         help='Port number to Hyrax local server')
     parser.add_argument('-pyld', '--payload', dest='payload', default=os.getenv('PAYLOAD', '{}'),
                         help='Payload to pass to the besd get_dmrpp call. '
-                             'If not set, will check for PAYLOAD environment variable, or default to \'{}\'')
+                             'If not set, will check for PAYLOAD environment variable, or default to \'{}\''
+                             'The value should be a json dictionary string \'{"key": "value"}\'')
     parser.add_argument('--validate', action='store_true',
                         help='Validate netCDF4 and HDF5 files against OPeNDAP local server. '
                              'This is the default behavior')
