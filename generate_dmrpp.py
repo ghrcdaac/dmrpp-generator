@@ -8,14 +8,6 @@ from dmrpp_generator.main import DMRPPGenerator
 logging.getLogger()
 
 
-def validate_json_string_dict():
-    pass
-
-
-def validate_json_string_list():
-    pass
-
-
 def try_json_decode(key, required_type):
     print(f'getting os_var: {key}')
     os_var = getenv(key, required_type)
