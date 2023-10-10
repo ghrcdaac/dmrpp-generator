@@ -30,7 +30,7 @@ module "dmrpp_service" {
     GET_DMRPP_TIMEOUT  = var.get_dmrpp_timeout
   }
   command = [
-    "dmrpp-generator",
+    "dmrpp-process",
     "activity",
     "--arn",
     module.dmrpp_ecs_task_module.task_id
