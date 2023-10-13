@@ -126,18 +126,40 @@ class DMRPPGenerator(Process):
                         dmrpp_files.append(dmrpp_file)
                         self.upload_file_to_s3(output_file_path, f's3://{dmrpp_file["bucket"]}/{dmrpp_file["key"]}')
 
-            # Remove old dmrpp files if they exist before adding new ones
-            i = 0
-            while i < len(granule['files']):
-                temp = granule['files'][i]
-                if str(temp.get('fileName')).endswith('dmrpp'):
-                    granule['files'].pop(i)
-                else:
-                    i += 1
+            if dmrpp_files == 0:
+                raise Exception(f'No dmrpp files were produced for {granule}')
 
+            self.strip_old_dmrpp_files(granule)
             granule['files'] += dmrpp_files
 
+        self.verify_outputs_produced(granules)
+
         return self.input
+
+    def strip_old_dmrpp_files(self, granule):
+        # Remove old dmrpp files if they exist before adding new ones
+        i = 0
+        while i < len(granule['files']):
+            temp = granule['files'][i]
+            if str(temp.get('fileName')).endswith('dmrpp'):
+                granule['files'].pop(i)
+            else:
+                i += 1
+
+    def verify_outputs_produced(self, granules):
+        has_output = False
+        for granule in granules:
+            self.logger_to_cw.info(granule)
+            for file in granule['files']:
+                self.logger_to_cw.info(file.get('fileName'))
+                if str(file.get('fileName')).endswith('dmrpp'):
+                    has_output = True
+                    break
+            if has_output:
+                break
+
+        if not has_output:
+            raise Exception('No dmrpp outputs produced.')
 
     def get_dmrpp_command(self, dmrpp_meta, input_path, output_filename, local=False):
         """
