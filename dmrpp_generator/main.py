@@ -136,7 +136,8 @@ class DMRPPGenerator(Process):
 
         return self.input
 
-    def strip_old_dmrpp_files(self, granule):
+    @staticmethod
+    def strip_old_dmrpp_files(granule):
         # Remove old dmrpp files if they exist before adding new ones
         i = 0
         while i < len(granule['files']):
@@ -146,12 +147,11 @@ class DMRPPGenerator(Process):
             else:
                 i += 1
 
-    def verify_outputs_produced(self, granules):
+    @staticmethod
+    def verify_outputs_produced(granules):
         has_output = False
         for granule in granules:
-            self.logger_to_cw.info(granule)
             for file in granule['files']:
-                self.logger_to_cw.info(file.get('fileName'))
                 if str(file.get('fileName')).endswith('dmrpp'):
                     has_output = True
                     break

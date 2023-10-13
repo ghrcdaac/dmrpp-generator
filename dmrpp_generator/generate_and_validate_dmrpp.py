@@ -6,34 +6,7 @@ import os
 from multiprocessing import Process
 import tempfile
 
-
-def generate_docker_compose():
-    _, dockercompose_file_location = tempfile.mkstemp(suffix=".yml")
-    with open(dockercompose_file_location, 'w', encoding="utf-8") as dockercompose_file:
-        dockercompose_file.write(
-            """
-version: '3'
-services:
-  dmrpp:
-    image: ghrcdaac/dmrpp-generator:v4.2.0
-    environment:
-      - PAYLOAD=${PAYLOAD}
-      - DMRPP_ARGS=${DMRPP_ARGS}
-    # Mount volume
-    volumes:
-      - ${NC_FILES_PATH:-/tmp}:/usr/share/hyrax
-
-  hyrax:
-    image: opendap/hyrax:snapshot
-    ports:
-    - "${PORT:-8080}:8080"
-    volumes:
-      - ${NC_FILES_PATH:-/tmp}:/usr/share/hyrax/
-    working_dir: /usr/share/hyrax
-    container_name: hyrax
-            """
-        )
-    return dockercompose_file_location
+from dmrpp_generator import version
 
 
 def check_docker_version(log_file_path):
@@ -49,29 +22,29 @@ def check_docker_version(log_file_path):
 
 
 def run_docker_compose(payload, dmrpp_args, nc_hdf_path, port, dmrrpp_service, log_file_path):
-    dockercompose_file_location = generate_docker_compose()
+    docker_compose = f'{os.path.dirname(os.path.realpath(__file__))}/docker-compose.yml'
     dkr_comp_version = check_docker_version(log_file_path)
-    print(payload)
-    print(dmrpp_args)
-    with open(log_file_path, "a", encoding='utf-8') as output:
+    os.environ['DMRPP_VERSION'] = version.__version__
+    with open(log_file_path, "r+", encoding='utf-8') as output:
         try:
             cmd = f"PAYLOAD='{payload}' " \
                   f"DMRPP_ARGS='{dmrpp_args}' " \
                   f"NC_FILES_PATH={nc_hdf_path} " \
                   f"PORT={port} " \
-                  f"{dkr_comp_version} -f {dockercompose_file_location} up {dmrrpp_service}"
-            print(f'Docker Compose: {cmd}')
+                  f"{dkr_comp_version} -f {docker_compose} up {dmrrpp_service}"
             subprocess.run(
                 cmd,
                 shell=True, check=False, stdout=output,
                 stderr=output)
         except KeyboardInterrupt:
-            cmd = f" {dkr_comp_version} -f {dockercompose_file_location} down {dmrrpp_service}"
+            cmd = f" {dkr_comp_version} -f {docker_compose} down {dmrrpp_service}"
             subprocess.run(cmd, shell=True, check=False, stdout=output, stderr=output)
-            os.remove(dockercompose_file_location)
+        output.seek(0)
+        print(output.read())
 
 
 def main():
+    print(f'dmrpp {version.__version__}\n')
     parser = argparse.ArgumentParser(
         description='Generate and validate DMRPP files. Any DMR++ commandline option can be provided in addition to'
                     ' the options listed below. To see what options are available check the documentation: '
