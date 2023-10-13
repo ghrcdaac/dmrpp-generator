@@ -15,7 +15,7 @@ def generate_docker_compose():
 version: '3'
 services:
   dmrpp:
-    image: mlh/dmrpp:latest
+    image: ghrcdaac/dmrpp-generator:v4.2.0
     environment:
       - PAYLOAD=${PAYLOAD}
       - DMRPP_ARGS=${DMRPP_ARGS}
