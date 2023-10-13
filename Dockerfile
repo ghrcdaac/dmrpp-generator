@@ -26,9 +26,8 @@ RUN \
   cd $BUILD; \
   python setup.py install
 WORKDIR $BUILD
-#RUN pytest --junitxml=./test_results/test_dmrpp_generator.xml tests && \
-#    rm -rf tests
 RUN coverage run -m pytest
 RUN coverage report
+RUN rm -rf tests .coverage .pytest_cache
 CMD ["python", "generate_dmrpp.py"]
 ENTRYPOINT []
