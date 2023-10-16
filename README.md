@@ -245,12 +245,12 @@ optional arguments:
 
 The folder `<absolute/path/to/files>` should contain netCDF and/or HDF files
 ```shell
-$ dmrpp --path /home/michael/dmrpp-generator/temp/ --no-validate
+$ dmrpp --path /path/to/inputs/ --no-validate
 ```
 
 # Generate DMRpp files locally with Hyrax server (for validation)
 ```shell
-$ dmrpp --path /home/michael/dmrpp-generator/temp/ --validate
+$ dmrpp --path /path/to/inputs/ --validate
 Log file: /tmp/dmrpp-generator-13z6cizs
 Results served at : http://localhost:8080/opendap (^C to kill the server)
 ^C
@@ -258,7 +258,7 @@ Shutting down the server...
 ```
 A prompt will ask you to visit localhost:8080. If you want to change the default port run the command with
 ```shell
-$ dmrpp --path /home/michael/dmrpp-generator/temp/ --validate -prt 8889
+$ dmrpp --path /path/to/inputs/ --validate -prt 8889
 Log file: /tmp/dmrpp-generator-34blq6gn
 Results served at : http://localhost:8889/opendap (^C to kill the server)
 ^C
