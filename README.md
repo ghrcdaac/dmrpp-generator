@@ -217,14 +217,17 @@ PAYLOAD='{"dmrpp_regex": "^.*.nc4", "options":[{"flag": "-M"}, {"flag": "-s", "o
 `dmrpp_regex` is optional to override the DMRPP-Generator regex
 
 # Generate DMRpp files locally without Hyrax server
-`generate-validate-dmrpp` now uses docker compose v2.  Please update to  
+`dmrpp` now uses docker compose v2.  Please update to  
 docker compose v2 or you will get the error  
 `/bin/sh: 1: docker compose: not found`
-```shell
-$generate-validate-dmrpp --help
-usage: generate-validate-dmrpp [-h] -p NC_HDF_PATH [-prt PORT] [-pyld PAYLOAD] [-vldt VALIDATE]
 
-Generate and validate DMRPP files.
+Overview:
+```shell
+$ dmrpp -h
+usage: dmrpp [-h] -p NC_HDF_PATH [-prt PORT] [-pyld PAYLOAD] [--validate] [--no-validate]
+
+Generate and validate DMRPP files. Any DMR++ commandline option can be provided in addition to the options listed below. To see what options are available check the documentation:
+https://docs.opendap.org/index.php?title=DMR%2B%2B#Command_line_options
 
 optional arguments:
   -h, --help            show this help message and exit
@@ -233,39 +236,31 @@ optional arguments:
   -prt PORT, --port PORT
                         Port number to Hyrax local server
   -pyld PAYLOAD, --payload PAYLOAD
-                        Payload to execute get_dmrpp binary
-  -vldt VALIDATE, --validate VALIDATE
-                        Validate netCDF4 and HDF5 files against OPeNDAP local server
+                        Payload to pass to the besd get_dmrpp call. If not set, will check for PAYLOAD environment variable, or default to '{}'
+  --validate            Validate netCDF4 and HDF5 files against OPeNDAP local server. This is the default behavior
+  --no-validate         Do not validate netCDF4 and HDF5 files against OPeNDAP local server. The default behavior is --validate.
+
 
 ```
 
-The folder `<absolute/path/to/nc/hdf/files>` should contain netCDF and/or HDF files
-```code
-generate-validate-dmrpp -p <absolute/path/to/nc/hdf/files> -vldt false
-```
-<a href="https://asciinema.org/a/p6xzJQguUni26FIbjCxm8giWw" target="_blank"><img src="https://asciinema.org/a/p6xzJQguUni26FIbjCxm8giWw.svg" /></a>
-# Generate DMRpp files locally with Hyrax server (for validation)
-
+The folder `<absolute/path/to/files>` should contain netCDF and/or HDF files
 ```shell
-generate-validate-dmrpp -p <absolute/path/to/nc/hdf/files>
+$ dmrpp --path /path/to/inputs/ --no-validate
+```
+
+# Generate DMRpp files locally with Hyrax server (for validation)
+```shell
+$ dmrpp --path /path/to/inputs/ --validate
+Log file: /tmp/dmrpp-generator-13z6cizs
+Results served at : http://localhost:8080/opendap (^C to kill the server)
+^C
+Shutting down the server...
 ```
 A prompt will ask you to visit localhost:8080. If you want to change the default port run the command with
 ```shell
-generate-validate-dmrpp -p <absolute/path/to/nc/hdf/files> -prt 8889
-Now you can validate the result in localhost:8889
+$ dmrpp --path /path/to/inputs/ --validate -prt 8889
+Log file: /tmp/dmrpp-generator-34blq6gn
+Results served at : http://localhost:8889/opendap (^C to kill the server)
+^C
+Shutting down the server...
 ```
-<a href="https://asciinema.org/a/1NbdKMckp3ONLAuD1zbDkCFIw" target="_blank"><img src="https://asciinema.org/a/1NbdKMckp3ONLAuD1zbDkCFIw.svg" /></a>
-
-# Generate missing metadata for non-netcdf compliant data (the -b switch)
-```code
-generate-validate-dmrpp -p <absolute/path/to/nc/hdf/files> -pyld $PAYLOAD
-```
-or
-```shell
-docker run --rm -it --env-file ./env.list -v <absolute/path/to/nc/hdf/files>:/workstation ghrcdaac/dmrpp-generator
-```
-where PAYLOAD contains your flags and switches
-```shell
-PAYLOAD={"options":[{"flag": "-M"}, {"flag": "-u", "opt": "/usr/share/hyrax"}]}
-```
-

@@ -54,7 +54,6 @@ class DMRPPGenerator(Process):
 
     @property
     def input_keys(self):
-
         return {
             'input_files': f"{self.processing_regex}(\\.cmr\\.xml|\\.json)?$"
         }
@@ -127,18 +126,40 @@ class DMRPPGenerator(Process):
                         dmrpp_files.append(dmrpp_file)
                         self.upload_file_to_s3(output_file_path, f's3://{dmrpp_file["bucket"]}/{dmrpp_file["key"]}')
 
-            # Remove old dmrpp files if they exist before adding new ones
-            i = 0
-            while i < len(granule['files']):
-                temp = granule['files'][i]
-                if str(temp.get('fileName')).endswith('dmrpp'):
-                    granule['files'].pop(i)
-                else:
-                    i += 1
+            if dmrpp_files == 0:
+                raise Exception(f'No dmrpp files were produced for {granule}')
 
+            self.strip_old_dmrpp_files(granule)
             granule['files'] += dmrpp_files
 
+        self.verify_outputs_produced(granules)
+
         return self.input
+
+    @staticmethod
+    def strip_old_dmrpp_files(granule):
+        # Remove old dmrpp files if they exist before adding new ones
+        i = 0
+        while i < len(granule['files']):
+            temp = granule['files'][i]
+            if str(temp.get('fileName')).endswith('dmrpp'):
+                granule['files'].pop(i)
+            else:
+                i += 1
+
+    @staticmethod
+    def verify_outputs_produced(granules):
+        has_output = False
+        for granule in granules:
+            for file in granule['files']:
+                if str(file.get('fileName')).endswith('dmrpp'):
+                    has_output = True
+                    break
+            if has_output:
+                break
+
+        if not has_output:
+            raise Exception('No dmrpp outputs produced.')
 
     def get_dmrpp_command(self, dmrpp_meta, input_path, output_filename, local=False):
         """
@@ -175,6 +196,7 @@ class DMRPPGenerator(Process):
             stderr = subprocess.STDOUT
 
         try:
+            print(f'Running cmd: {cmd}')
             out = subprocess.run(cmd.split(), stdout=stdout, stderr=stderr, timeout=self.timeout, check=True)
         except Exception as e:
             self.logger_to_cw.info(f'cmd: {cmd}')
@@ -182,7 +204,7 @@ class DMRPPGenerator(Process):
 
         return out
 
-    def dmrpp_generate(self, input_file, local=False, dmrpp_meta=None):
+    def dmrpp_generate(self, input_file, local=False, dmrpp_meta=None, args=None):
         """
         Generate DMRPP from S3 file
         """
@@ -190,6 +212,9 @@ class DMRPPGenerator(Process):
         dmrpp_meta = dmrpp_meta if isinstance(dmrpp_meta, dict) else {}
         file_name = input_file if local else s3.download(input_file, path=self.path)
         cmd = self.get_dmrpp_command(dmrpp_meta, self.path, file_name, local)
+        if args:
+            cmd = f'{cmd} {" ".join(args)}'
+        print(f'dmrpp cmd: {cmd}')
         self.run_command(cmd)
         out_files = [f"{file_name}.dmrpp"] + self.add_missing_files(dmrpp_meta, f'{file_name}.dmrpp.missing')
         return out_files

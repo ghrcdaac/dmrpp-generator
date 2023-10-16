@@ -15,14 +15,14 @@ class TestDMRPPFileGeneration(TestCase):
     """
     Test generating dmrpp files.
     """
-    granule_id = "tpw_v07r01_201910"
-    granule_name = "tpw_v07r01_201910.nc"
+    granule_id = "f16_ssmis_20231011v7"
+    granule_name = "f16_ssmis_20231011v7.nc"
     fixture_path = os.path.join(os.path.dirname(__file__), "fixtures")
     input_file = {
         "granules": [
             {
                 "granuleId": granule_id,
-                "dataType": "MODIS_A-JPL-L2P-v2019.0",
+                "dataType": "rssmif16d",
                 "sync_granule_duration": 3759,
                 "files": [
                   {
@@ -55,7 +55,7 @@ class TestDMRPPFileGeneration(TestCase):
     }
 
     payload_file = f"{fixture_path}/payload.json"
-    with open(payload_file, encoding= 'UTF-8') as fle:
+    with open(payload_file, encoding='UTF-8') as fle:
         payload = json.load(fle)
 
     payload_data = payload
@@ -88,7 +88,6 @@ class TestDMRPPFileGeneration(TestCase):
         self.assertListEqual(['granules'], list(StorageValues.processing_output.keys()))
 
     def test_3_checkout_dmrpp_output(self):
-
         dmrpp_file = f"{self.granule_name}.dmrpp"
         dmrpp_exists = False
         for granules in StorageValues.processing_output.get('granules'):
