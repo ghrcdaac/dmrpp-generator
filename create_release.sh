@@ -32,7 +32,7 @@ function create_zip_file() {
 
 function create_wheel() {
   pip install -r requirements_dev.txt
-  python -m build --wheel --outdir . .
+  python setup.py bdist_wheel
 }
 
 #### Release package
