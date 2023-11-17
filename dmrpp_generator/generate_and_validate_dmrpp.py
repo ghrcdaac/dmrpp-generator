@@ -3,8 +3,8 @@ import argparse
 import json
 import subprocess
 import os
-from multiprocessing import Process
 import tempfile
+from time import sleep
 
 from dmrpp_generator import version
 
@@ -32,15 +32,17 @@ def run_docker_compose(payload, dmrpp_args, nc_hdf_path, port, dmrrpp_service, l
                   f"NC_FILES_PATH={nc_hdf_path} " \
                   f"PORT={port} " \
                   f"{dkr_comp_version} -f {docker_compose} up {dmrrpp_service}"
-            subprocess.run(
-                cmd,
-                shell=True, check=False, stdout=output,
-                stderr=output)
+            compose_ps = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+            for line in compose_ps.stdout:
+                line = line.decode().strip()
+                output.write(f'{line}\n')
+                print(line)
+
         except KeyboardInterrupt:
+            print('\nShutting down the Hyrax server. Please wait...')
             cmd = f" {dkr_comp_version} -f {docker_compose} down {dmrrpp_service}"
             subprocess.run(cmd, shell=True, check=False, stdout=output, stderr=output)
-        output.seek(0)
-        print(output.read())
 
 
 def main():
@@ -72,23 +74,15 @@ def main():
     log_file_location = tempfile.mkstemp(prefix='dmrpp-generator-')[1]
     print(f'Log file: {log_file_location}')
 
+    dmrrpp_service = 'dmrpp-generator'
     if validate:
         dmrrpp_service = ''
         visit_link_path_message = f'http://localhost:{port}/opendap (^C to kill the server)'
         message_visit_server = f'Results served at : {visit_link_path_message}'
         print(message_visit_server)
-    else:
-        dmrrpp_service = 'dmrpp'
+        sleep(2)
 
-    try:
-        docker_compose = Process(
-            target=run_docker_compose,
-            args=(payload, unknown, nc_hdf_path, port, dmrrpp_service, log_file_location)
-        )
-        docker_compose.start()
-        docker_compose.join()
-    except KeyboardInterrupt:
-        print("\nShutting down the server...")
+    run_docker_compose(payload, unknown, nc_hdf_path, port, dmrrpp_service, log_file_location)
 
 
 if __name__ == "__main__":

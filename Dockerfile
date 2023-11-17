@@ -2,10 +2,10 @@ FROM opendap/besd:3.20.13-998
 RUN yum -y update && \
     yum -y upgrade
 HEALTHCHECK NONE
-# Adding a user
-RUN adduser worker
 RUN yum install -y nano && \
     yum install -y wget
+# Adding a user
+RUN adduser worker
 USER worker
 WORKDIR /home/worker
 RUN wget https://repo.anaconda.com/miniconda/Miniconda3-py38_4.8.2-Linux-x86_64.sh && \
