@@ -5,11 +5,16 @@ import json
 from re import match
 import logging
 from dmrpp_generator.main import DMRPPGenerator
-logging.getLogger()
+logging.basicConfig(
+    format='%(asctime)s %(levelname)-8s %(message)s',
+    level=logging.INFO,
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+logger = logging.getLogger()
 
 
 def try_json_decode(key, required_type):
-    print(f'getting os_var: {key}')
+    logger.info(f'getting os_var: {key}')
     os_var = getenv(key, required_type)
     try:
         os_var = json.loads(os_var)
@@ -19,15 +24,15 @@ def try_json_decode(key, required_type):
                 f' is required.'
             )
     except JSONDecodeError:
-        print(f'Environment variable {key} was not a valid json string.')
-        print(f'Value: {os_var}')
-        print('Required Format: \'{{"key": "value"}}\'')
+        logger.info(f'Environment variable {key} was not a valid json string.')
+        logger.info(f'Value: {os_var}')
+        logger.info('Required Format: \'{{"key": "value"}}\'')
         raise
 
     return os_var
 
 
-if __name__ == "__main__":
+def main():
     meta = try_json_decode('PAYLOAD', {})
     args = try_json_decode('DMRPP_ARGS', [])
     workstation_path = getenv('MOUNT_VOL', '/usr/share/hyrax/')
@@ -39,4 +44,9 @@ if __name__ == "__main__":
     for input_file in input_files:
         if match(f"{dmrpp.processing_regex}$", basename(input_file)):
             out_files = dmrpp.dmrpp_generate(input_file, local=True, dmrpp_meta=meta, args=args)
-            print(f'Generated: {out_files}')
+            logger.info(f'Generated: {out_files}')
+
+
+if __name__ == "__main__":
+    main()
+    pass
