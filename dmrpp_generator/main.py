@@ -1,5 +1,6 @@
 import logging
 import os
+import time
 from re import search
 import subprocess
 from cumulus_process import Process, s3
@@ -44,13 +45,15 @@ class DMRPPGenerator(Process):
         self.logger_to_cw = LOGGER_TO_CW if enable_logging else logging
         self.logger_to_cw.info(f'config: {self.config}')
         self.timeout = int(self.dmrpp_meta.get(
-            'get_dmrpp_timeout', os.getenv('GET_DMRPP_TIMEOUT', '60'))
+            'get_dmrpp_timeout', os.getenv('GET_DMRPP_TIMEOUT', '600'))
         )
         self.enable_subprocess_logging = self.dmrpp_meta.get(
             'enable_subprocess_logging', os.getenv('ENABLE_SUBPROCESS_LOGGING', False)
         )
 
         self.logger_to_cw.info(f'get_dmrpp_timeout: {self.timeout}')
+        self.logger_to_cw.info(f'enagled_cw_logging: {enable_logging}')
+        self.logger_to_cw.info(f'enable_subprocess_logging: {self.enable_subprocess_logging}')
 
     @property
     def input_keys(self):
@@ -195,12 +198,8 @@ class DMRPPGenerator(Process):
             stdout = subprocess.PIPE
             stderr = subprocess.STDOUT
 
-        try:
-            print(f'Running cmd: {cmd}')
-            out = subprocess.run(cmd.split(), stdout=stdout, stderr=stderr, timeout=self.timeout, check=True)
-        except Exception as e:
-            self.logger_to_cw.info(f'cmd: {cmd}')
-            raise Exception(f'get_dmrpp failed. \ncmd: {cmd} \nException: {e}')
+        self.logger_to_cw.info(f'Running cmd: {cmd}')
+        out = subprocess.run(cmd.split(), stdout=stdout, stderr=stderr, timeout=self.timeout, check=True)
 
         return out
 
@@ -211,10 +210,11 @@ class DMRPPGenerator(Process):
         # Force dmrpp_meta to be an object
         dmrpp_meta = dmrpp_meta if isinstance(dmrpp_meta, dict) else {}
         file_name = input_file if local else s3.download(input_file, path=self.path)
+        self.logger_to_cw.info(f'file_name: {file_name}')
         cmd = self.get_dmrpp_command(dmrpp_meta, self.path, file_name, local)
         if args:
-            cmd = f'{cmd} {" ".join(args)}'
-        print(f'dmrpp cmd: {cmd}')
+            cmd_split = cmd.split(' ', maxsplit=1)
+            cmd = f'{cmd_split[0]} {" ".join(args)} {cmd_split[1]}'
         self.run_command(cmd)
         out_files = [f"{file_name}.dmrpp"] + self.add_missing_files(dmrpp_meta, f'{file_name}.dmrpp.missing')
         return out_files
