@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/ghrcdaac/dmrpp-generator/badge.svg)](https://coveralls.io/github/ghrcdaac/dmrpp-generator)
+
 ```code
  ____  __  __ ____  ____  ____
 |  _ \|  \/  |  _ \|  _ \|  _ \
