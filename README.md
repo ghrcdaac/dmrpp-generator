@@ -1,3 +1,5 @@
+<a href='https://coveralls.io/github/ghrcdaac/dmrpp-generator?branch=master'><img src='https://coveralls.io/repos/github/ghrcdaac/dmrpp-generator/badge.svg?branch=master' alt='Coverage Status' /></a>
+
 ```code
  ____  __  __ ____  ____  ____
 |  _ \|  \/  |  _ \|  _ \|  _ \
