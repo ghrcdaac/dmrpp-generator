@@ -10,9 +10,9 @@ jobs:
     name: Push Docker image to Docker Hub
     runs-on: ubuntu-latest
     steps:
-      - name: Check out the repo
+      - name: Checkout the repo
         uses: actions/checkout@v3
-      
+
       - name: Get tag version
         id: tag_name
         run: echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
@@ -29,4 +29,16 @@ jobs:
           context: .
           push: true
           tags: ghrcdaac/dmrpp-generator:${{ steps.tag_name.outputs.SOURCE_TAG }}
+
+      - name: Extract coverage report
+        run: |
+          mkdir coverage
+          CID=$(docker create ghrcdaac/dmrpp-generator:${{ steps.tag_name.outputs.SOURCE_TAG }})
+          docker cp "${CID}":/home/worker/build/coverage/lcov.info ./coverage
+          docker rm "${CID}"
+
+      - name: Coveralls
+        uses: coverallsapp/github-action@master
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           

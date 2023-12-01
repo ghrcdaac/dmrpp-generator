@@ -28,6 +28,7 @@ RUN \
 WORKDIR $BUILD
 RUN coverage run -m pytest
 RUN coverage report
+RUN coverage lcov -o ./coverage/lcov.info
 RUN rm -rf tests .coverage .pytest_cache
 CMD ["python", "generate_dmrpp.py"]
 ENTRYPOINT []
