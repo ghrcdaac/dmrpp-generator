@@ -1,4 +1,4 @@
-<a href='https://coveralls.io/github/ghrcdaac/dmrpp-generator?branch=master'><img src='https://coveralls.io/repos/github/ghrcdaac/dmrpp-generator/badge.svg?branch=master' alt='Coverage Status' /></a>
+[![Coverage Status](https://coveralls.io/repos/github/ghrcdaac/dmrpp-generator/badge.svg)](https://coveralls.io/github/ghrcdaac/dmrpp-generator)
 
 ```code
  ____  __  __ ____  ____  ____
