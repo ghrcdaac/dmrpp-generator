@@ -1,9 +1,12 @@
 name: Push To Docker hub
 
 on:
+  pull_request:
   push:
     tags:
-        - v*
+      - v*
+    branches:
+      - master
 
 jobs:
   push_to_registry:
@@ -13,27 +16,34 @@ jobs:
       - name: Checkout the repo
         uses: actions/checkout@v3
 
-      - name: Get tag version
-        id: tag_name
-        run: echo ::set-output name=SOURCE_TAG::${GITHUB_REF#refs/tags/}
-      
+      - name: Get tag name
+        id: tag-name
+        run: |
+          if [ ${{ contains(github.ref, 'tags') }} = true ]; then
+            echo "Getting name for tag action..."
+            echo "tag_name=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          else
+            echo "Getting name for action..."
+            echo "tag_name=coverage" >> $GITHUB_OUTPUT
+          fi
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_TOKEN }}
-      
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v2
         with:
           context: .
-          push: true
-          tags: ghrcdaac/dmrpp-generator:${{ steps.tag_name.outputs.SOURCE_TAG }}
+          push: ${{ contains(github.ref, 'tags') }}
+          tags: ghrcdaac/dmrpp-generator:${{ steps.tag-name.outputs.tag_name }}
 
       - name: Extract coverage report
         run: |
           mkdir coverage
-          CID=$(docker create ghrcdaac/dmrpp-generator:${{ steps.tag_name.outputs.SOURCE_TAG }})
+          CID=$(docker create ghrcdaac/dmrpp-generator:${{ steps.tag-name.outputs.tag_name }})
           docker cp "${CID}":/home/worker/build/coverage/lcov.info ./coverage
           docker rm "${CID}"
 
