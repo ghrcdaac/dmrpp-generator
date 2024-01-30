@@ -1,4 +1,4 @@
-FROM opendap/besd:3.20.13-998
+FROM opendap/besd:3.21.0-46
 RUN yum -y update && \
     yum -y upgrade
 HEALTHCHECK NONE
@@ -8,9 +8,9 @@ RUN yum install -y nano && \
 RUN adduser worker
 USER worker
 WORKDIR /home/worker
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-py38_4.8.2-Linux-x86_64.sh && \
-    bash Miniconda3-py38_4.8.2-Linux-x86_64.sh -b && \
-    rm Miniconda3-py38_4.8.2-Linux-x86_64.sh
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-py310_23.10.0-1-Linux-x86_64.sh && \
+    bash Miniconda3-py310_23.10.0-1-Linux-x86_64.sh -b && \
+    rm Miniconda3-py310_23.10.0-1-Linux-x86_64.sh
 ENV HOME="/home/worker" PATH="/home/worker/miniconda3/bin:${PATH}"
 RUN pip install ipython &&\
     pip install pytest &&\
