@@ -32,6 +32,7 @@ def run_docker_compose(payload, dmrpp_args, nc_hdf_path, port, dmrrpp_service, l
                   f"NC_FILES_PATH={nc_hdf_path} " \
                   f"PORT={port} " \
                   f"{dkr_comp_version} -f {docker_compose} up {dmrrpp_service}"
+            print(cmd)
             compose_ps = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
             for line in compose_ps.stdout:
