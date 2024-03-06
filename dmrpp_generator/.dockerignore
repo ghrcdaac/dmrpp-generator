@@ -1,0 +1,12 @@
+.git*
+build/
+*.egg*
+temp/
+test_files/
+modules/
+# tests
+.coverage
+create_release
+env.sh
+LICENSE
+*.tf

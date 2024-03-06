@@ -1,0 +1,157 @@
+{
+  "input": {
+    "cumulus_meta": {
+      "cumulus_version": "16.1.1",
+      "execution_name": "dg-nalmaraw-b4046847-5b67-4e08-928b-b7ab5255d13c",
+      "message_source": "sfn",
+      "queueExecutionLimits": {
+        "https://sqs.us-west-2.amazonaws.com/322322076095/sharedsbx-backgroundJobQueue": 900,
+        "https://sqs.us-west-2.amazonaws.com/322322076095/sharedsbx-backgroundProcessing": 5,
+        "https://sqs.us-west-2.amazonaws.com/322322076095/sharedsbx-near-real-time": 900,
+        "https://sqs.us-west-2.amazonaws.com/322322076095/sharedsbx-ongoing": 900
+      },
+      "state_machine": "arn:aws:states:us-west-2:322322076095:stateMachine:sharedsbx-DiscoverGranules",
+      "system_bucket": "sharedsbx-internal",
+      "workflow_start_time": 1706302853146,
+      "queueUrl": "arn:aws:sqs:us-west-2:322322076095:sharedsbx-startSF"
+    },
+    "exception": "None",
+    "meta": {
+      "buckets": {
+        "dashboard": {
+          "name": "sharedsbx-dashboard",
+          "type": "public"
+        },
+        "internal": {
+          "name": "sharedsbx-internal",
+          "type": "internal"
+        },
+        "orca_default": {
+          "name": "",
+          "type": "notorca"
+        },
+        "private": {
+          "name": "sharedsbx-private",
+          "type": "private"
+        },
+        "protected": {
+          "name": "sharedsbx-protected",
+          "type": "protected"
+        },
+        "public": {
+          "name": "sharedsbx-public",
+          "type": "public"
+        },
+        "sharedprivate": {
+          "name": "ghrcw-private",
+          "type": "sharedprivate"
+        }
+      },
+      "cmr": {
+        "clientId": "ghrc_cdev",
+        "cmrEnvironment": "UAT",
+        "cmrLimit": 100,
+        "cmrPageSize": 50,
+        "oauthProvider": "launchpad",
+        "passwordSecretName": "",
+        "provider": "GHRC_CDEV",
+        "username": "ghrc_cdev"
+      },
+      "collection": {
+        "createdAt": 1648138282528,
+        "updatedAt": 1706126645134,
+        "name": "nalmaraw",
+        "version": "1",
+        "process": "metadataextractor",
+        "url_path": "nalmaraw__1",
+        "duplicateHandling": "skip",
+        "granuleId": "^.*_NALMA_.*(\\.dat)$",
+        "granuleIdExtraction": "((.*_NALMA_).*)",
+        "files": [
+          {
+            "regex": "^.*_NALMA_.*\\.cmr\\.(xml|json)$",
+            "bucket": "public",
+            "reportToEms": true,
+            "sampleFileName": "LK_NALMA_courtland_201015_035000.dat.gz.cmr.xml"
+          },
+          {
+            "regex": "^.*_NALMA_.*(\\.gz)$",
+            "bucket": "protected",
+            "reportToEms": true,
+            "sampleFileName": "LK_NALMA_courtland_201015_035000.dat.gz"
+          },
+          {
+            "regex": "^.*_NALMA_.*(\\.dat)$",
+            "bucket": "private",
+            "reportToEms": false,
+            "sampleFileName": "LK_NALMA_courtland_201015_035000.dat"
+          }
+        ],
+        "reportToEms": true,
+        "sampleFileName": "LK_NALMA_courtland_230615_035000.dat",
+        "meta": {
+          "orca": {
+            "excludedFileExtensions": [
+              ".*dat$"
+            ],
+            "granuleRecoveryWorkflow": "OrcaRecoveryWorkflow"
+          },
+          "discover_tf": {
+            "depth": 0,
+            "dir_reg_ex": "",
+            "batch_delay": 30,
+            "batch_limit": 1000,
+            "file_reg_ex": "",
+            "force_replace": false,
+            "cumulus_filter": true,
+            "skip_queue_granules": true
+          },
+          "large_dataset": "false",
+          "provider_path": "lma/nalma/raw/2022/12",
+          "collection_type": "ongoing",
+          "hyrax_processing": "false",
+          "metadata_extractor": [
+            {
+              "regex": "^.*_NALMA_(.*)(\\.dat)$",
+              "module": "ascii"
+            }
+          ]
+        }
+      },
+      "distribution_endpoint": "https://wcj5mpq9sd.execute-api.us-west-2.amazonaws.com:7000/dev/",
+      "launchpad": {
+        "api": "https://api.launchpad.nasa.gov/icam/api/sm/v1",
+        "certificate": "launchpad.pfx",
+        "passphraseSecretName": "sharedsbx-message-template-launchpad-passphrase20211016220702758900000005"
+      },
+      "provider": {
+        "id": "prod_private",
+        "host": "ghrcw-private",
+        "protocol": "s3",
+        "createdAt": 1637083762431,
+        "updatedAt": 1637083762431
+      },
+      "stack": "sharedsbx",
+      "template": "s3://sharedsbx-internal/sharedsbx/workflow_template.json",
+      "workflow_name": "DiscoverGranules",
+      "workflow_tasks": {
+        "0": {
+          "name": "sharedsbx-dynamic_change_event",
+          "version": "$LATEST",
+          "arn": "arn:aws:lambda:us-west-2:322322076095:function:sharedsbx-dynamic_change_event"
+        }
+      },
+      "queueUrl": "https://sqs.us-west-2.amazonaws.com/322322076095/sharedsbx-ongoing"
+    },
+    "payload": {},
+    "replace": {
+      "Bucket": "sharedsbx-internal",
+      "Key": "events/8f90db2e-4f5a-41b7-807c-11add11c500f",
+      "TargetPath": "$.payload"
+    }
+  },
+  "inputDetails": {
+    "truncated": false
+  },
+  "name": "GHRCDiscoverGranulesLambda"
+}

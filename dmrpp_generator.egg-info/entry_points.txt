@@ -1,0 +1,4 @@
+[console_scripts]
+dmrpp = dmrpp_generator.generate_and_validate_dmrpp:main
+dmrpp-process = dmrpp_generator.main:DMRPPGenerator.cli
+

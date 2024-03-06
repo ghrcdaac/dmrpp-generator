@@ -1,0 +1,16 @@
+Metadata-Version: 1.1
+Name: dmrpp-generator
+Version: 4.3.0
+Summary: Library to generate DMRpp files from netCDF and HDF files, can be used with ECS activity
+Home-page: https://github.com/ghrcdaac/dmrpp-generator
+Author: Abdelhak Marouane (am0089@uah.edu)
+Author-email: UNKNOWN
+License: Apache 2.0
+Description: UNKNOWN
+Platform: UNKNOWN
+Classifier: Framework :: Pytest
+Classifier: Topic :: Scientific/Engineering
+Classifier: Intended Audience :: Developers
+Classifier: Intended Audience :: Science/Research
+Classifier: License :: Freeware
+Classifier: Programming Language :: Python :: 3.10
