@@ -1,4 +1,4 @@
-FROM opendap/besd:3.21.0-46
+FROM opendap/besd:3.21.0-272
 RUN yum -y update && \
     yum -y upgrade
 HEALTHCHECK NONE
