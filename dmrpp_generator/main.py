@@ -172,7 +172,13 @@ class DMRPPGenerator(Process):
         dmrpp_options = DMRppOptions(self.path)
         options = dmrpp_options.get_dmrpp_option(dmrpp_meta=dmrpp_meta)
         local_option = f"-u file://{output_filename}" if '-u' in options else ''
-        dmrpp_cmd = f"get_dmrpp {options} {input_path} -o {output_filename}.dmrpp" \
+
+        use_lambda = dmrpp_meta.get('use_lambda', False)
+        s_option = ''
+        if isinstance(use_lambda, bool) and use_lambda:
+            s_option = '-s /etc/bes/site.conf'
+
+        dmrpp_cmd = f"get_dmrpp {s_option} {options} {input_path} -o {output_filename}.dmrpp" \
                     f" {local_option} {os.path.basename(output_filename)}"
         return " ".join(dmrpp_cmd.split())
 
@@ -218,6 +224,12 @@ class DMRPPGenerator(Process):
         self.run_command(cmd)
         out_files = [f"{file_name}.dmrpp"] + self.add_missing_files(dmrpp_meta, f'{file_name}.dmrpp.missing')
         return out_files
+
+
+def main(event, context):
+    print('main event')
+    print(event)
+    return DMRPPGenerator(**event).process()
 
 
 if __name__ == "__main__":

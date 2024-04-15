@@ -12,3 +12,13 @@ module "dmrpp_service" {
   enable_cw_logging   = var.enable_cw_logging
   get_dmrpp_timeout   = var.get_dmrpp_timeout
 }
+
+module "dmrpp_lambda" {
+  source = "./modules/dmrpp_lambda"
+
+  region = var.region
+  prefix = var.prefix
+  enable_cw_logging  = var.enable_cw_logging
+  get_dmrpp_timeout  = var.get_dmrpp_timeout
+  cumulus_lambda_role_arn = var.cumulus_lambda_role_arn
+}

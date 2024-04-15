@@ -3,12 +3,10 @@ variable "aws_profile" {
   default = null
 }
 
-
 variable "region" {
   type    = string
   default = "us-west-2"
 }
-
 
 variable "prefix" {
   type        = string
@@ -43,7 +41,6 @@ variable "volumes" {
   default     = []
 }
 
-
 variable "enable_cw_logging" {
   description = "Enable logging to cloud watch"
   type        = bool
@@ -60,4 +57,25 @@ variable "default_log_retention_days" {
   type = number
   default = 30
   description = "Default value that user chooses for their log retention periods"
+}
+
+# Lambda Variables
+variable "cumulus_lambda_role_arn" {
+  type = string
+  nullable = true
+}
+
+variable "timeout" {
+  description = "Lambda function time-out"
+  default     = 900
+}
+
+variable "memory_size" {
+  description = "Lambda RAM limit"
+  default     = 256
+}
+
+variable "ephemeral_storage" {
+  description = "Lambda /tmp storage limit"
+  default     = 512
 }
