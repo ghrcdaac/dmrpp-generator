@@ -37,17 +37,8 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          target: "lambda-image"
           push: ${{ contains(github.ref, 'tags') }}
-          tags: ghrcdaac/dmrpp-generator:${{ steps.tag-name.outputs.tag_name }}-lambda
-
-      - name: Build and push activity Docker image
-          uses: docker/build-push-action@v2
-          with:
-            context: .
-            target: "image"
-            push: ${{ contains(github.ref, 'tags') }}
-            tags: ghrcdaac/dmrpp-generator:${{ steps.tag-name.outputs.tag_name }}-lambda
+          tags: ghrcdaac/dmrpp-generator:${{ steps.tag-name.outputs.tag_name }}
 
       - name: Extract coverage report
         run: |

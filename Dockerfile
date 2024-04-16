@@ -38,14 +38,9 @@ RUN coverage report
 RUN coverage lcov -o ./coverage/lcov.info
 RUN rm -rf tests .coverage .pytest_cache
 
-FROM base AS lambda-image
 ARG BUILD
 RUN pip install --target $BUILD awslambdaric
 COPY site.conf /etc/bes/
 
-ENTRYPOINT ["/home/worker/miniconda/bin/python3.10", "-m", "awslambdaric"]
-CMD ["dmrpp_generator.lambda_handler.handler"]
-
-FROM base AS image
 CMD ["python", "generate_dmrpp.py"]
 ENTRYPOINT []
