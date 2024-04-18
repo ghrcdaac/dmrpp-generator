@@ -3,6 +3,10 @@ variable "aws_profile" {
   default = null
 }
 
+variable "account_id" {
+  type = string
+}
+
 variable "region" {
   type    = string
   default = "us-west-2"
@@ -65,7 +69,7 @@ variable "default_log_retention_days" {
 # Lambda Variables
 variable "cumulus_lambda_role_arn" {
   type = string
-  nullable = true
+  default = ""
 }
 
 variable "timeout" {

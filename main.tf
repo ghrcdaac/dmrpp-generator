@@ -15,6 +15,7 @@ module "dmrpp_service" {
 
 module "dmrpp_lambda" {
   source = "./modules/dmrpp_lambda"
+  account_id = var.account_id
 
   region = var.region
   prefix = var.prefix

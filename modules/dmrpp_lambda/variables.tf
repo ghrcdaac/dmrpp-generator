@@ -3,6 +3,10 @@ variable "region" {
   default = "us-west-2"
 }
 
+variable "account_id" {
+  type = string
+}
+
 variable "prefix" {
   type        = string
   description = "Cumulus stack prefix"
@@ -40,4 +44,10 @@ variable "get_dmrpp_timeout" {
   default = 60
 }
 
-variable "docker_image" {}
+variable "docker_image" {
+    description = "ECR Lambda docker image"
+    type    = string
+    default = "ghrcdaac/dmrpp-generator:VERSION_SUB"
+}
+
+
