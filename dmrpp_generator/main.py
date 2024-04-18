@@ -173,9 +173,8 @@ class DMRPPGenerator(Process):
         options = dmrpp_options.get_dmrpp_option(dmrpp_meta=dmrpp_meta)
         local_option = f"-u file://{output_filename}" if '-u' in options else ''
 
-        use_lambda = dmrpp_meta.get('use_lambda', False)
         s_option = ''
-        if isinstance(use_lambda, bool) and use_lambda:
+        if os.getenv('AWS_LAMBDA_FUNCTION_NAME'):
             s_option = '-s /etc/bes/site.conf'
 
         dmrpp_cmd = f"get_dmrpp {s_option} {options} {input_path} -o {output_filename}.dmrpp" \
