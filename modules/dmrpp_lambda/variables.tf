@@ -49,5 +49,3 @@ variable "docker_image" {
     type    = string
     default = "ghrcdaac/dmrpp-generator:VERSION_SUB"
 }
-
-

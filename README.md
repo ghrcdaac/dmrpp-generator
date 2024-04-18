@@ -37,13 +37,14 @@ In [main.tf](https://github.com/nasa/cumulus-template-deploy/blob/master/cumulus
  (where you defined cumulus module) add
  ```terraform
 module "dmrpp-generator" {
-  // Required parameters
+  // Required Parameters
   source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/<tag_num>/dmrpp-generator.zip"
   cluster_arn = module.cumulus.ecs_cluster_arn
   region = var.region
   prefix = var.prefix
+  account_id = var.account_id
   
-  // Optional parameters
+  // Optional Activity Parameters
   docker_image = "ghrcdaac/dmrpp-generator:<tag_num>" // default to the correct release
   cpu = 800 // default to 800
   enable_cw_logging = False // default to False
