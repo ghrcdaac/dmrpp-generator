@@ -14,7 +14,7 @@ variable "prefix" {
 
 variable "cumulus_lambda_role_arn" {
   type = string
-  nullable = true
+  default = ""
 }
 
 variable "timeout" {
