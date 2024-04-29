@@ -9,8 +9,7 @@
 ```
 
 # Overview
-This repo consists of two components. The DMR++ activity terraform module and a python CLI to the DMR++ Docker 
-container.
+This repo consists of the code for the DMR++ ECS module, lambda, and a python CLI to interact with the DMR++ container.
 
 ## Versioning
 We are following `v<major>.<minor>.<patch>` versioning convention, where:
@@ -38,14 +37,14 @@ In [main.tf](https://github.com/nasa/cumulus-template-deploy/blob/master/cumulus
  (where you defined cumulus module) add
  ```terraform
 module "dmrpp-generator" {
-  // Required parameters
+  // Required Parameters
   source = "https://github.com/ghrcdaac/dmrpp-generator/releases/download/<tag_num>/dmrpp-generator.zip"
   cluster_arn = module.cumulus.ecs_cluster_arn
   region = var.region
   prefix = var.prefix
+  account_id = var.account_id
   
-
-  // Optional parameters
+  // Optional Activity Parameters
   docker_image = "ghrcdaac/dmrpp-generator:<tag_num>" // default to the correct release
   cpu = 800 // default to 800
   enable_cw_logging = False // default to False
@@ -53,8 +52,28 @@ module "dmrpp-generator" {
   prefix = "Cumulus stack prefix" // default Cumulus stack prefix
   desired_count = 1  // Default to 1
   log_destination_arn = var.aws_log_mechanism // default to null
+  
+  // Optional Lambda Specific Configuration  
+  cumulus_lambda_role_arn = module.cumulus.lambda_processing_role_arn // If provided the lambda will be provisioned
+  timeout = 900
+  memory_size = 256
+  ephemeral_storage = 512
+}
+```
+Note: When the lambda is provisioned the module will create a private ECR repository for the dmrpp_generator container. 
+The first deployment could take +5 minutes as the image needs to be pulled from docker hub and pushed to this new ECR
+repository. This is a temporary work around until a public ECR repository can be created for the lambda image.
+
+## Outputs
+The module returns the service id and the lambda ARN:
+```terraform
+output "dmrpp_task_id" {
+  value = module.dmrpp_service.dmrpp_task_id
 }
 
+output "dmrpp_lambda_arn" {
+  value = module.dmrpp_lambda.dmrpp_lambda_arn
+}
 ```
 In [variables.tf](https://github.com/nasa/cumulus-template-deploy/blob/master/cumulus-tf/variables.tf)
 file you need to define
@@ -65,7 +84,7 @@ variable "dmrpp-generator-docker-image" {
 ```
 Assuming you already defined the region and the prefix
 
-# Add the activity to your workflow
+# Add the activity/lambda to your workflow
 In your [workflow.tf](https://github.com/nasa/cumulus-template-deploy/blob/master/cumulus-tf/hello_world_workflow.tf) add
 ```code
    "HyraxProcessing": {

@@ -3,12 +3,14 @@ variable "aws_profile" {
   default = null
 }
 
+variable "account_id" {
+  type = string
+}
 
 variable "region" {
   type    = string
   default = "us-west-2"
 }
-
 
 variable "prefix" {
   type        = string
@@ -25,12 +27,15 @@ variable "cpu" {
 variable "memory_reservation" {
   default = 900
 }
+
 variable "cluster_arn" {}
+
 variable "log_destination_arn" {
   type        = string
   default     = null
   description = "A shared AWS:Log:Destination that receives logs in log_groups"
 }
+
 variable "docker_image" {
     description = "Docker image used to generate DMRPP"
     type    = string
@@ -42,7 +47,6 @@ variable "volumes" {
   type        = list(object({ name = string, host_path = string, container_path = string }))
   default     = []
 }
-
 
 variable "enable_cw_logging" {
   description = "Enable logging to cloud watch"
@@ -60,4 +64,25 @@ variable "default_log_retention_days" {
   type = number
   default = 30
   description = "Default value that user chooses for their log retention periods"
+}
+
+# Lambda Variables
+variable "cumulus_lambda_role_arn" {
+  type = string
+  default = ""
+}
+
+variable "timeout" {
+  description = "Lambda function time-out"
+  default     = 900
+}
+
+variable "memory_size" {
+  description = "Lambda RAM limit"
+  default     = 256
+}
+
+variable "ephemeral_storage" {
+  description = "Lambda /tmp storage limit"
+  default     = 512
 }

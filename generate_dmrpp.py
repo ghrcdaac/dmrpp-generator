@@ -2,7 +2,7 @@ from json import JSONDecodeError
 from os import listdir, getenv
 from os.path import isfile, join, basename
 import json
-from re import match
+from re import search
 import logging
 from dmrpp_generator.main import DMRPPGenerator
 logging.basicConfig(
@@ -42,7 +42,7 @@ def main():
     dmrpp.path = workstation_path
     dmrpp.processing_regex = meta.get('dmrpp_regex', dmrpp.processing_regex)
     for input_file in input_files:
-        if match(f"{dmrpp.processing_regex}$", basename(input_file)):
+        if search(f"{dmrpp.processing_regex}", basename(input_file)):
             out_files = dmrpp.dmrpp_generate(input_file, local=True, dmrpp_meta=meta, args=args)
             logger.info(f'Generated: {out_files}')
 
