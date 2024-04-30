@@ -13,7 +13,7 @@ module "dmrpp_service" {
   source = "https://github.com/nasa/cumulus/releases/download/v18.2.0/terraform-aws-cumulus-ecs-service.zip"
 
   prefix              = var.prefix
-  name                = "${var.prefix}_dmrpp_generator"
+  name                = "dmrpp_generator"
   tags                = local.default_tags
   cluster_arn         = var.cluster_arn
   desired_count       = var.desired_count
