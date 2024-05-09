@@ -15,3 +15,6 @@ variable "default_log_retention_days" {
   default = 30
   description = "Default value that user chooses for their log retention periods"
 }
+
+variable "efs_fs_id" {}
+variable "access_point_id" {}

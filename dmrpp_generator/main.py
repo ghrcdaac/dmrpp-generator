@@ -39,6 +39,7 @@ class DMRPPGenerator(Process):
 
         super().__init__(**kwargs)
         self.path = self.path.rstrip('/') + "/"
+        self.path = '/efs/lambda/'
         # Enable logging the default is True
         enable_logging = os.getenv('ENABLE_CW_LOGGING', 'True') in [True, "true", "t", 1]
         self.dmrpp_version = f"DMRPP {__version__}"
@@ -100,6 +101,7 @@ class DMRPPGenerator(Process):
         Override the processing wrapper
         :return:
         """
+        self.logger_to_cw.info(f'listdir: {os.listdir("/efs/lambda/")}')
         collection = self.config.get('collection')
         collection_files = collection.get('files', [])
         buckets = self.config.get('buckets')
@@ -107,14 +109,21 @@ class DMRPPGenerator(Process):
         for granule in granules:
             dmrpp_files = []
             for file_ in granule['files']:
+                self.logger_to_cw.info(f'file: {file_}')
                 if not search(f"{self.processing_regex}$", file_['fileName']):
                     self.logger_to_cw.debug(f"{self.dmrpp_version}: regex {self.processing_regex}"
                                             f" does not match filename {file_['fileName']}")
                     continue
                 self.logger_to_cw.debug(f"{self.dmrpp_version}: regex {self.processing_regex}"
                                         f" matches filename to process {file_['fileName']}")
-                input_file_path = file_.get('filename', f's3://{file_["bucket"]}/{file_["key"]}')
-                output_file_paths = self.dmrpp_generate(input_file=input_file_path, dmrpp_meta=self.dmrpp_meta)
+                input_file_path = file_.get('fileName', f's3://{file_["bucket"]}/{file_["key"]}')
+                self.logger_to_cw.info(f'input_file_path: {input_file_path}')
+                temp = f'/efs/lambda/{input_file_path}'
+                local = os.path.isfile(temp)
+                self.logger_to_cw.info(f'local: {local}')
+                output_file_paths = self.dmrpp_generate(
+                    input_file=temp, local=local, dmrpp_meta=self.dmrpp_meta
+                )
 
                 for output_file_path in output_file_paths:
                     if output_file_path:
@@ -127,6 +136,8 @@ class DMRPPGenerator(Process):
                             "type": self.get_file_type(output_file_basename, collection_files),
                         }
                         dmrpp_files.append(dmrpp_file)
+                        upload_location = f's3://{dmrpp_file["bucket"]}/{dmrpp_file["key"]}'
+                        self.logger_to_cw.info(f'upload_location: {upload_location}')
                         self.upload_file_to_s3(output_file_path, f's3://{dmrpp_file["bucket"]}/{dmrpp_file["key"]}')
 
             if dmrpp_files == 0:
@@ -138,6 +149,9 @@ class DMRPPGenerator(Process):
         self.verify_outputs_produced(granules)
 
         return self.input
+
+    def clean_all(self):
+        self.logger_to_cw.info('Not cleaning')
 
     @staticmethod
     def strip_old_dmrpp_files(granule):

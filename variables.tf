@@ -3,10 +3,6 @@ variable "aws_profile" {
   default = null
 }
 
-variable "account_id" {
-  type = string
-}
-
 variable "region" {
   type    = string
   default = "us-west-2"
@@ -86,3 +82,6 @@ variable "ephemeral_storage" {
   description = "Lambda /tmp storage limit"
   default     = 512
 }
+
+variable "efs_fs_id" {}
+variable "access_point_id" {}

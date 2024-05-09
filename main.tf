@@ -11,11 +11,13 @@ module "dmrpp_service" {
   volumes             = var.volumes
   enable_cw_logging   = var.enable_cw_logging
   get_dmrpp_timeout   = var.get_dmrpp_timeout
+
+  efs_fs_id = var.efs_fs_id
+  access_point_id = var.access_point_id
 }
 
 module "dmrpp_lambda" {
   source = "./modules/dmrpp_lambda"
-  account_id = var.account_id
 
   region = var.region
   prefix = var.prefix
