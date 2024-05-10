@@ -42,7 +42,6 @@ module "dmrpp-generator" {
   cluster_arn = module.cumulus.ecs_cluster_arn
   region = var.region
   prefix = var.prefix
-  account_id = var.account_id
   
   // Optional Activity Parameters
   docker_image = "ghrcdaac/dmrpp-generator:<tag_num>" // default to the correct release

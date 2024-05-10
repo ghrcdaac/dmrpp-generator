@@ -3,10 +3,6 @@ variable "aws_profile" {
   default = null
 }
 
-variable "account_id" {
-  type = string
-}
-
 variable "region" {
   type    = string
   default = "us-west-2"
