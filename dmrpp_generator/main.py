@@ -226,9 +226,13 @@ class DMRPPGenerator(Process):
 
 
 def main(event, context):
-    print('main event')
-    print(event)
-    return DMRPPGenerator(**event).process()
+    dmrpp = DMRPPGenerator(**event)
+    try:
+        ret = dmrpp.process()
+    finally:
+        dmrpp.clean_all()
+
+    return ret
 
 
 if __name__ == "__main__":
