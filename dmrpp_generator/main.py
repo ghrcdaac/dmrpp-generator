@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import time
@@ -39,7 +40,7 @@ class DMRPPGenerator(Process):
 
         super().__init__(**kwargs)
         self.path = self.path.rstrip('/') + "/"
-        self.path = '/efs/lambda/'
+        self.path = '/mnt/ebs_test/'
         # Enable logging the default is True
         enable_logging = os.getenv('ENABLE_CW_LOGGING', 'True') in [True, "true", "t", 1]
         self.dmrpp_version = f"DMRPP {__version__}"
@@ -101,11 +102,17 @@ class DMRPPGenerator(Process):
         Override the processing wrapper
         :return:
         """
-        self.logger_to_cw.info(f'listdir: {os.listdir("/efs/lambda/")}')
+        local_store = os.getenv('EBS_MNT')
+        with open(f'{local_store}/gdg_out.json', 'r') as output:
+            contents = json.load(output)
+            self.input = {'granules': contents.get('granules')}
+
+        # self.logger_to_cw.info(f'listdir: {os.listdir("/efs/lambda/")}')
         collection = self.config.get('collection')
         collection_files = collection.get('files', [])
         buckets = self.config.get('buckets')
         granules = self.input['granules']
+        print(f'processing {len(granules)} files...')
         for granule in granules:
             dmrpp_files = []
             for file_ in granule['files']:
@@ -241,7 +248,7 @@ class DMRPPGenerator(Process):
 
 def main(event, context):
     print('main event')
-    print(event)
+    # print(event)
     return DMRPPGenerator(**event).process()
 
 
