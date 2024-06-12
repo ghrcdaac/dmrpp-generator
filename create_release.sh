@@ -31,7 +31,7 @@ function create_zip_file() {
 }
 
 function create_wheel() {
-  pip install -r requirements_dev.txt
+  pip install -r requirements-dev.txt
   python -m build --wheel --outdir . .
 }
 
