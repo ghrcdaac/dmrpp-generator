@@ -65,7 +65,8 @@ def main():
 
 def handler(event, context):
     # print(f'EVENT: {event}')
-    meta = event.get('config').get('collection').get('meta', {})
+    collection = event.get('config').get('collection')
+    meta = collection.get('meta', {})
     args = []
     workstation_path = getenv('/efs_test/rssmif17d3d__7', '/usr/share/hyrax/')
     # join_path = lambda x: join(workstation_path, x)
@@ -73,9 +74,18 @@ def handler(event, context):
 
     input_files = []
     local_store = os.getenv('EBS_MNT')
-    for file in os.listdir(local_store):
-        if file.endswith('.nc'):
-            input_files.append(f'{local_store}/{file}')
+    c_id = f'{collection.get("name")}__{collection.get("version")}'
+    collection_store = f'{local_store}/{c_id}'
+
+    with open(f'{collection_store}/{c_id}.json', 'r') as output:
+        contents = json.load(output)
+        print(f'Granule Count: {len(contents.get("granules"))}')
+        granules = {'granules': contents.get('granules')}
+
+    for granule in granules.get('granules'):
+        for file in granule.get('files'):
+            input_files.append(f'{local_store}/{file.get("name")}')
+
     print(f'input_files: {input_files}')
     dmrpp = DMRPPGenerator(input=input_files)
     dmrpp.path = local_store
@@ -102,15 +112,6 @@ if __name__ == "__main__":
         print(f'argv: {type(sys.argv[1])}')
         print(f'argv: {sys.argv[1]}')
         ret = handler(json.loads(sys.argv[1]), {})
-
-        # efs_dir = '/efs_test'
-        # # efs_dir = '/ebs_test'
-        # print(f'is {efs_dir} a directory: {os.path.isdir(efs_dir)}')
-        # filename = f'{efs_dir}/gdg_out.json'
-        # print(f'Creating file: {filename}')
-        # with open(filename, 'w+') as test_file:
-        #     test_file.write(json.dumps(ret))
-        # print(f'{efs_dir} contents: {os.listdir("/efs_test")}')
 
     # main()
     pass
