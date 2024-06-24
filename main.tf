@@ -15,7 +15,7 @@ module "dmrpp_service" {
 
 module "dmrpp_lambda" {
   source = "./modules/dmrpp_lambda"
-
+  ephemeral_storage = var.ephemeral_storage
   region = var.region
   prefix = var.prefix
   docker_image = var.docker_image
