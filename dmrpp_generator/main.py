@@ -40,7 +40,7 @@ class DMRPPGenerator(Process):
         super().__init__(**kwargs)
         self.path = self.path.rstrip('/') + "/"
         # Enable logging the default is True
-        enable_logging = os.getenv('ENABLE_CW_LOGGING', 'True') in [True, "true", "t", 1]
+        enable_logging = (os.getenv('ENABLE_CW_LOGGING', 'true').lower() == 'true')
         self.dmrpp_version = f"DMRPP {__version__}"
         self.logger_to_cw = LOGGER_TO_CW if enable_logging else logging
         self.logger_to_cw.info(f'config: {self.config}')
@@ -48,12 +48,15 @@ class DMRPPGenerator(Process):
             'get_dmrpp_timeout', os.getenv('GET_DMRPP_TIMEOUT', '600'))
         )
         self.enable_subprocess_logging = self.dmrpp_meta.get(
-            'enable_subprocess_logging', os.getenv('ENABLE_SUBPROCESS_LOGGING', False)
+            'enable_subprocess_logging', os.getenv('ENABLE_SUBPROCESS_LOGGING', 'false').lower() == 'true'
         )
-
+        self.verify_output = self.dmrpp_meta.get(
+            'verify_output', os.getenv('VERIFY_OUTPUT', 'true').lower() == 'true'
+        )
         self.logger_to_cw.info(f'get_dmrpp_timeout: {self.timeout}')
         self.logger_to_cw.info(f'enagled_cw_logging: {enable_logging}')
         self.logger_to_cw.info(f'enable_subprocess_logging: {self.enable_subprocess_logging}')
+        self.logger_to_cw.info(f'verify_output: {self.verify_output}')
 
     @property
     def input_keys(self):
@@ -129,13 +132,15 @@ class DMRPPGenerator(Process):
                         dmrpp_files.append(dmrpp_file)
                         self.upload_file_to_s3(output_file_path, f's3://{dmrpp_file["bucket"]}/{dmrpp_file["key"]}')
 
-            if dmrpp_files == 0:
-                raise Exception(f'No dmrpp files were produced for {granule}')
-
+            if len(dmrpp_files) == 0:
+                message = f'No dmrpp files were produced for {granule}'
+                if self.verify_output:
+                    raise Exception(message)
+                else:
+                    self.logger_to_cw.warning(message)
+                
             self.strip_old_dmrpp_files(granule)
             granule['files'] += dmrpp_files
-
-        self.verify_outputs_produced(granules)
 
         return self.input
 
@@ -149,20 +154,6 @@ class DMRPPGenerator(Process):
                 granule['files'].pop(i)
             else:
                 i += 1
-
-    @staticmethod
-    def verify_outputs_produced(granules):
-        has_output = False
-        for granule in granules:
-            for file in granule['files']:
-                if str(file.get('fileName')).endswith('dmrpp'):
-                    has_output = True
-                    break
-            if has_output:
-                break
-
-        if not has_output:
-            raise Exception('No dmrpp outputs produced.')
 
     def get_dmrpp_command(self, dmrpp_meta, input_path, output_filename, local=False):
         """
