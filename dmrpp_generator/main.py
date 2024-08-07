@@ -107,6 +107,8 @@ class DMRPPGenerator(Process):
         collection_files = collection.get('files', [])
         buckets = self.config.get('buckets')
         granules = self.input['granules']
+
+        output_generated = False
         for granule in granules:
             dmrpp_files = []
             for file_ in granule['files']:
@@ -118,6 +120,9 @@ class DMRPPGenerator(Process):
                                         f" matches filename to process {file_['fileName']}")
                 input_file_path = file_.get('filename', f's3://{file_["bucket"]}/{file_["key"]}')
                 output_file_paths = self.dmrpp_generate(input_file=input_file_path, dmrpp_meta=self.dmrpp_meta)
+
+                if not output_generated and len(output_file_paths) > 0:
+                    output_generated = True
 
                 for output_file_path in output_file_paths:
                     if output_file_path:
@@ -131,17 +136,16 @@ class DMRPPGenerator(Process):
                         }
                         dmrpp_files.append(dmrpp_file)
                         self.upload_file_to_s3(output_file_path, f's3://{dmrpp_file["bucket"]}/{dmrpp_file["key"]}')
+            
+                if len(dmrpp_files) == 0:
+                    self.logger_to_cw.warning(f'No dmrpp files were produced for {granule}')
 
-            if len(dmrpp_files) == 0:
-                message = f'No dmrpp files were produced for {granule}'
-                if self.verify_output:
-                    raise Exception(message)
-                else:
-                    self.logger_to_cw.warning(message)
-                
             self.strip_old_dmrpp_files(granule)
             granule['files'] += dmrpp_files
 
+        if self.verify_output and not output_generated:
+            raise Exception('No dmrpp files were produced and verify_output was enabled.')
+                    
         return self.input
 
     @staticmethod
