@@ -1,4 +1,4 @@
-FROM opendap/besd:3.21.0-388 AS base
+FROM opendap/besd:3.21.0-501 AS base
 HEALTHCHECK NONE
 
 RUN yum -y update && \
@@ -36,6 +36,7 @@ RUN coverage run -m pytest && \
 
 RUN pip install --target $BUILD awslambdaric
 COPY site.conf /etc/bes/
+COPY bes.conf /etc/bes/
 
 CMD ["python", "generate_dmrpp.py"]
 ENTRYPOINT []
