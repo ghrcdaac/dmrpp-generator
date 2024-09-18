@@ -1,6 +1,8 @@
 import json
 import logging
 import os
+import re
+import shutil
 import time
 from re import search
 import subprocess
@@ -28,6 +30,7 @@ class DMRPPGenerator(Process):
     """
 
     def __init__(self, **kwargs):
+        print(f'KWARGS: {kwargs}')
         config = kwargs.get('config', {})
         # any keys on collection config override keys from workflow config
         self.dmrpp_meta = {
@@ -35,12 +38,12 @@ class DMRPPGenerator(Process):
             **config.get('collection', {}).get('meta', {}).get('dmrpp', {}),  # from collection
         }
         self.processing_regex = self.dmrpp_meta.get(
-            'dmrpp_regex', '.*\\.(((?i:(h|hdf)))(e)?5|nc(4)?)(\\.bz2|\\.gz|\\.Z)?'
+            'dmrpp_regex', '.*(?i:nc)$'
         )
 
         super().__init__(**kwargs)
-        self.path = self.path.rstrip('/') + "/"
-        self.path = '/mnt/ebs_test/'
+        # self.path = self.path.rstrip('/') + "/"
+        # self.path = '/mnt/ebs_test/'
         # Enable logging the default is True
         enable_logging = os.getenv('ENABLE_CW_LOGGING', 'True') in [True, "true", "t", 1]
         self.dmrpp_version = f"DMRPP {__version__}"
@@ -98,6 +101,60 @@ class DMRPPGenerator(Process):
         return s3.upload(filename, uri, extra={})
 
     def process(self):
+        if 'EBS_MNT' in os.environ:
+            print('Using DAAC Split Processing')
+            ret = self.process_dmrpp_ebs()
+        else:
+            print('Using Cumulus Processing')
+            ret = self.process_cumulus()
+
+        return ret
+
+    def process_dmrpp_ebs(self):
+        collection = self.config.get('collection')
+        local_store = os.getenv('EBS_MNT')
+        c_id = f'{collection.get("name")}__{collection.get("version")}'
+        collection_store = f'{local_store}/{c_id}'
+        event_file = f'{collection_store}/{c_id}.json'
+        with open(event_file, 'r') as output:
+            contents = json.load(output)
+            print(f'Granule Count: {len(contents.get("granules"))}')
+            granules = {'granules': contents.get('granules')}
+
+        for granule in granules.get('granules'):
+            dmrpp_files = []
+            for file in granule.get('files'):
+                filename = file.get('name')
+                if not re.search(self.processing_regex, filename):
+                    continue
+                else:
+                    print(f'regex {self.processing_regex} matched file {filename}: {re.search(self.processing_regex, filename).group()}')
+                src = f'{collection_store}/{filename}'
+                dst = f'{self.path}/{filename}'
+                print(f'Copying: {src} -> {dst}')
+                shutil.copy(src, dst)
+                # file_path = f'{collection_store}/{filename}'
+                dmrpp_files = self.dmrpp_generate(dst, True, self.dmrpp_meta)
+
+            for dmrpp in dmrpp_files:
+                dest = f'{collection_store}/{os.path.basename(dmrpp)}'
+                print(f'Copying: {dmrpp} -> {dest}')
+                shutil.copy(dmrpp, dest)
+                os.remove(dmrpp)
+                granule.get('files').append({
+                    'name': os.path.basename(dest),
+                    'path': os.path.dirname(dest),
+                    'size': os.path.getsize(dest)
+                })
+                
+        shutil.move(event_file, f'{event_file}.dmrpp.in')
+        with open(event_file, 'w+') as file:
+            file.write(json.dumps(granules))
+
+        print('DMR++ processing completed.')
+        return {"granules": granules, "input": self.output}
+
+    def process_cumulus(self):
         """
         Override the processing wrapper
         :return:
@@ -247,9 +304,9 @@ class DMRPPGenerator(Process):
 
 
 def main(event, context):
-    print('main event')
-    # print(event)
-    return DMRPPGenerator(**event).process()
+    # print(f'DMRPP main event: {event}')
+    kwargs = {'input': event.get('input'), 'config': event.get('config')}
+    return DMRPPGenerator(**kwargs).process()
 
 
 if __name__ == "__main__":

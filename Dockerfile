@@ -23,6 +23,7 @@ RUN pip install ipython  && \
 
 COPY setup.py requirements*txt generate_dmrpp.py ./
 COPY dmrpp_generator ./dmrpp_generator/
+COPY dmrpp_generator/handler.py ./dmrpp_generator/
 COPY tests ./tests/
 RUN pip install -r requirements.txt && \
     python setup.py install
