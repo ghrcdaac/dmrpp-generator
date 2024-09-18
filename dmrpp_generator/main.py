@@ -36,7 +36,7 @@ class DMRPPGenerator(Process):
         self.processing_regex = self.dmrpp_meta.get(
             'dmrpp_regex', '.*\\.(((?i:(h|hdf)))(e)?5|nc(4)?)(\\.bz2|\\.gz|\\.Z)?'
         )
-
+        kwargs.update({'path': '/tmp'})
         super().__init__(**kwargs)
         self.path = self.path.rstrip('/') + "/"
         # Enable logging the default is True
@@ -159,6 +159,25 @@ class DMRPPGenerator(Process):
             else:
                 i += 1
 
+    def dmrpp_type(self, filename):
+        """
+        Attempts to open and read bytes from the file to process and determine if it is HDF4 or HDF5
+        """
+        ret = 'get_dmrpp'
+        try:
+            with open(filename, 'rb') as file:
+                bts = file.read(4)
+                if bts == b'\x89HDF':
+                    self.logger_to_cw.info(f'{filename}: HDF5')
+                elif bts == b'\x0e\x03\x13\x01':
+                    self.logger_to_cw.info(f'{filename}: HDF4')
+                    ret = f'{ret}_h4'
+                else:
+                    self.logger_to_cw.info(f'{filename}: not HDF4 or HDF5')
+        except FileNotFoundError:
+            self.logger_to_cw.warning('Unable to read file type. Using default command: {ret}')
+        return ret
+
     def get_dmrpp_command(self, dmrpp_meta, input_path, output_filename, local=False):
         """
         Getting the command line to create DMRPP files
@@ -170,10 +189,16 @@ class DMRPPGenerator(Process):
 
         s_option = ''
         if os.getenv('AWS_LAMBDA_FUNCTION_NAME'):
-            s_option = '-s /etc/bes/site.conf'
+            s_option = '-c /etc/bes/bes.conf'
 
-        dmrpp_cmd = f"get_dmrpp {s_option} {options} {input_path} -o {output_filename}.dmrpp" \
-                    f" {local_option} {os.path.basename(output_filename)}"
+        base_dmrpp_cmd = self.dmrpp_type(output_filename)
+
+        if 'h4' not in base_dmrpp_cmd:
+            dmrpp_cmd = f"{base_dmrpp_cmd} {s_option} {options} {input_path} -o {output_filename}.dmrpp" \
+                        f" {local_option} {os.path.basename(output_filename)}"
+        else:
+            dmrpp_cmd = f"{base_dmrpp_cmd} -i {output_filename} {s_option}"
+
         return " ".join(dmrpp_cmd.split())
 
     def add_missing_files(self, dmrpp_meta, file_name):
