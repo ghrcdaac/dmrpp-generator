@@ -45,7 +45,7 @@ class DMRPPGenerator(Process):
         # self.path = self.path.rstrip('/') + "/"
         # self.path = '/mnt/ebs_test/'
         # Enable logging the default is True
-        enable_logging = os.getenv('ENABLE_CW_LOGGING', 'True') in [True, "true", "t", 1]
+        enable_logging = (os.getenv('ENABLE_CW_LOGGING', 'true').lower() == 'true')
         self.dmrpp_version = f"DMRPP {__version__}"
         self.logger_to_cw = LOGGER_TO_CW if enable_logging else logging
         self.logger_to_cw.info(f'config: {self.config}')
@@ -53,12 +53,15 @@ class DMRPPGenerator(Process):
             'get_dmrpp_timeout', os.getenv('GET_DMRPP_TIMEOUT', '600'))
         )
         self.enable_subprocess_logging = self.dmrpp_meta.get(
-            'enable_subprocess_logging', os.getenv('ENABLE_SUBPROCESS_LOGGING', False)
+            'enable_subprocess_logging', os.getenv('ENABLE_SUBPROCESS_LOGGING', 'false').lower() == 'true'
         )
-
+        self.verify_output = self.dmrpp_meta.get(
+            'verify_output', os.getenv('VERIFY_OUTPUT', 'true').lower() == 'true'
+        )
         self.logger_to_cw.info(f'get_dmrpp_timeout: {self.timeout}')
         self.logger_to_cw.info(f'enagled_cw_logging: {enable_logging}')
         self.logger_to_cw.info(f'enable_subprocess_logging: {self.enable_subprocess_logging}')
+        self.logger_to_cw.info(f'verify_output: {self.verify_output}')
 
     @property
     def input_keys(self):
@@ -170,6 +173,7 @@ class DMRPPGenerator(Process):
         buckets = self.config.get('buckets')
         granules = self.input['granules']
         print(f'processing {len(granules)} files...')
+        output_generated = False
         for granule in granules:
             dmrpp_files = []
             for file_ in granule['files']:
@@ -189,6 +193,9 @@ class DMRPPGenerator(Process):
                     input_file=temp, local=local, dmrpp_meta=self.dmrpp_meta
                 )
 
+                if not output_generated and len(output_file_paths) > 0:
+                    output_generated = True
+
                 for output_file_path in output_file_paths:
                     if output_file_path:
                         output_file_basename = os.path.basename(output_file_path)
@@ -203,15 +210,16 @@ class DMRPPGenerator(Process):
                         upload_location = f's3://{dmrpp_file["bucket"]}/{dmrpp_file["key"]}'
                         self.logger_to_cw.info(f'upload_location: {upload_location}')
                         self.upload_file_to_s3(output_file_path, f's3://{dmrpp_file["bucket"]}/{dmrpp_file["key"]}')
-
-            if dmrpp_files == 0:
-                raise Exception(f'No dmrpp files were produced for {granule}')
+            
+                if len(dmrpp_files) == 0:
+                    self.logger_to_cw.warning(f'No dmrpp files were produced for {granule}')
 
             self.strip_old_dmrpp_files(granule)
             granule['files'] += dmrpp_files
 
-        self.verify_outputs_produced(granules)
-
+        if self.verify_output and not output_generated:
+            raise Exception('No dmrpp files were produced and verify_output was enabled.')
+                    
         return self.input
 
     def clean_all(self):
@@ -227,20 +235,6 @@ class DMRPPGenerator(Process):
                 granule['files'].pop(i)
             else:
                 i += 1
-
-    @staticmethod
-    def verify_outputs_produced(granules):
-        has_output = False
-        for granule in granules:
-            for file in granule['files']:
-                if str(file.get('fileName')).endswith('dmrpp'):
-                    has_output = True
-                    break
-            if has_output:
-                break
-
-        if not has_output:
-            raise Exception('No dmrpp outputs produced.')
 
     def get_dmrpp_command(self, dmrpp_meta, input_path, output_filename, local=False):
         """
@@ -305,8 +299,16 @@ class DMRPPGenerator(Process):
 
 def main(event, context):
     # print(f'DMRPP main event: {event}')
-    kwargs = {'input': event.get('input'), 'config': event.get('config')}
-    return DMRPPGenerator(**kwargs).process()
+    # kwargs = {'input': event.get('input'), 'config': event.get('config')}
+    # return DMRPPGenerator(**kwargs).process()
+
+    dmrpp = DMRPPGenerator(**event)
+    try:
+        ret = dmrpp.process()
+    finally:
+        dmrpp.clean_all()
+
+    return ret
 
 
 if __name__ == "__main__":

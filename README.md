@@ -213,10 +213,18 @@ variable.
 When making the subprocess call, stdout and stderr will default to `None` to prevent an issue from occurring where the 
 timeout is not respected. This can be configured in two ways.
 1. Setting the `ENABLE_SUBPROCESS_LOGGING` environment variable in terraform
-2. Adding `enable_subprocess_logging` to the collection definition: `collection.meta.dmrpp`. Can be `true` or `false`.
+2. Adding `enable_subprocess_logging` to the collection definition: `collection.meta.dmrpp`.  
 
 If the value is provided in the collection definition this will take precedence over the environment
-variable.
+variable. Can be `true` or `false`.
+
+## Verify Output Configuration
+The processing code will verify that dmrpp outputs are produced and if not an exception will be raised. This behavior can be disabled if needed. This can be configured in two ways.
+1. Setting the `VERIFY_OUTPUT` environment variable in terraform
+2. Adding `verify_output` to the collection definition: `collection.meta.dmrpp`.  
+
+If the value is provided in the collection definition this will take precedence over the environment
+variable. Can be `true` or `false`.
 
 # DMR++ Python CLI
 # How to install
