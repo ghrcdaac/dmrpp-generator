@@ -36,7 +36,6 @@ class DMRPPGenerator(Process):
         self.processing_regex = self.dmrpp_meta.get(
             'dmrpp_regex', '.*\\.(((?i:(h|hdf)))(e)?5|nc(4)?)(\\.bz2|\\.gz|\\.Z)?'
         )
-        kwargs.update({'path': '/tmp'})
         super().__init__(**kwargs)
         self.path = self.path.rstrip('/') + "/"
         # Enable logging the default is True
@@ -113,10 +112,10 @@ class DMRPPGenerator(Process):
             dmrpp_files = []
             for file_ in granule['files']:
                 if not search(f"{self.processing_regex}$", file_['fileName']):
-                    self.logger_to_cw.debug(f"{self.dmrpp_version}: regex {self.processing_regex}"
+                    self.logger_to_cw.info(f"{self.dmrpp_version}: regex {self.processing_regex}"
                                             f" does not match filename {file_['fileName']}")
                     continue
-                self.logger_to_cw.debug(f"{self.dmrpp_version}: regex {self.processing_regex}"
+                self.logger_to_cw.info(f"{self.dmrpp_version}: regex {self.processing_regex}"
                                         f" matches filename to process {file_['fileName']}")
                 input_file_path = file_.get('filename', f's3://{file_["bucket"]}/{file_["key"]}')
                 output_file_paths = self.dmrpp_generate(input_file=input_file_path, dmrpp_meta=self.dmrpp_meta)
@@ -141,7 +140,7 @@ class DMRPPGenerator(Process):
                     self.logger_to_cw.warning(f'No dmrpp files were produced for {granule}')
 
             self.strip_old_dmrpp_files(granule)
-            granule['files'] += dmrpp_files
+            granule['files'].extend(dmrpp_files)
 
         if self.verify_output and not output_generated:
             raise Exception('No dmrpp files were produced and verify_output was enabled.')
@@ -190,14 +189,16 @@ class DMRPPGenerator(Process):
         s_option = ''
         if os.getenv('AWS_LAMBDA_FUNCTION_NAME'):
             s_option = '-c /etc/bes/bes.conf'
+            os.chdir(self.path)
 
         base_dmrpp_cmd = self.dmrpp_type(output_filename)
+        LOGGER_TO_CW.info(f'BASE_CMD: {base_dmrpp_cmd}')
 
         if 'h4' not in base_dmrpp_cmd:
             dmrpp_cmd = f"{base_dmrpp_cmd} {s_option} {options} {input_path} -o {output_filename}.dmrpp" \
                         f" {local_option} {os.path.basename(output_filename)}"
         else:
-            dmrpp_cmd = f"{base_dmrpp_cmd} -i {output_filename} {s_option}"
+            dmrpp_cmd = f"{base_dmrpp_cmd} -i {output_filename}"
 
         return " ".join(dmrpp_cmd.split())
 
@@ -224,7 +225,17 @@ class DMRPPGenerator(Process):
             stderr = subprocess.STDOUT
 
         self.logger_to_cw.info(f'Running cmd: {cmd}')
-        out = subprocess.run(cmd.split(), stdout=stdout, stderr=stderr, timeout=self.timeout, check=True)
+        out = subprocess.run(cmd.split(), stdout=stdout, stderr=stderr, timeout=self.timeout)
+
+        if out.returncode != 0:
+            for log_file_name in ['bes_conf', 'bes_cmd', 'dmr']:
+                directory = '/tmp'
+                for file in os.listdir():
+                    if log_file_name in file:
+                        with open(f'{directory}/{file}', 'r') as file:
+                            LOGGER_TO_CW.info(file.read())
+
+            out.check_returncode()
 
         return out
 
