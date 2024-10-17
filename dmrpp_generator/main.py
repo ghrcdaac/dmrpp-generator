@@ -127,12 +127,12 @@ class DMRPPGenerator(Process):
         for granule in granules.get('granules'):
             dmrpp_files = []
             for file in granule.get('files'):
-                filename = file.get('name')
+                filename = file.get('fileName')
                 if not re.search(self.processing_regex, filename):
                     continue
                 else:
                     print(f'regex {self.processing_regex} matched file {filename}: {re.search(self.processing_regex, filename).group()}')
-                src = f'{collection_store}/{filename}'
+                src = file.get('key')
                 dst = f'{self.path}/{filename}'
                 print(f'Copying: {src} -> {dst}')
                 shutil.copy(src, dst)
@@ -145,8 +145,8 @@ class DMRPPGenerator(Process):
                 shutil.copy(dmrpp, dest)
                 os.remove(dmrpp)
                 granule.get('files').append({
-                    'name': os.path.basename(dest),
-                    'path': os.path.dirname(dest),
+                    'fileName': os.path.basename(dest),
+                    'key': dest,
                     'size': os.path.getsize(dest)
                 })
                 
@@ -162,12 +162,6 @@ class DMRPPGenerator(Process):
         Override the processing wrapper
         :return:
         """
-        local_store = os.getenv('EBS_MNT')
-        with open(f'{local_store}/gdg_out.json', 'r') as output:
-            contents = json.load(output)
-            self.input = {'granules': contents.get('granules')}
-
-        # self.logger_to_cw.info(f'listdir: {os.listdir("/efs/lambda/")}')
         collection = self.config.get('collection')
         collection_files = collection.get('files', [])
         buckets = self.config.get('buckets')
@@ -184,14 +178,9 @@ class DMRPPGenerator(Process):
                     continue
                 self.logger_to_cw.debug(f"{self.dmrpp_version}: regex {self.processing_regex}"
                                         f" matches filename to process {file_['fileName']}")
-                input_file_path = file_.get('fileName', f's3://{file_["bucket"]}/{file_["key"]}')
+                input_file_path = f's3://{file_["bucket"]}/{file_["key"]}'
                 self.logger_to_cw.info(f'input_file_path: {input_file_path}')
-                temp = f'/efs/lambda/{input_file_path}'
-                local = os.path.isfile(temp)
-                self.logger_to_cw.info(f'local: {local}')
-                output_file_paths = self.dmrpp_generate(
-                    input_file=temp, local=local, dmrpp_meta=self.dmrpp_meta
-                )
+                output_file_paths = self.dmrpp_generate(input_file=input_file_path, dmrpp_meta=self.dmrpp_meta)
 
                 if not output_generated and len(output_file_paths) > 0:
                     output_generated = True
