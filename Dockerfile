@@ -28,12 +28,12 @@ COPY tests ./tests/
 RUN pip install -r requirements.txt && \
     python setup.py install
 
-#RUN coverage run -m pytest && \
-#    coverage report && \
-#    coverage lcov -o ./coverage/lcov.info && \
-#    rm -rf tests .coverage .pytest_cache && \
-#    pip uninstall pytest -y && \
-#    pip uninstall coverage -y
+RUN coverage run -m pytest && \
+   coverage report && \
+   coverage lcov -o ./coverage/lcov.info && \
+   rm -rf tests .coverage .pytest_cache && \
+   pip uninstall pytest -y && \
+   pip uninstall coverage -y
 
 RUN pip install --target $BUILD awslambdaric
 COPY site.conf /etc/bes/

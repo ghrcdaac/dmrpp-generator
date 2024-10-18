@@ -30,7 +30,6 @@ class DMRPPGenerator(Process):
     """
 
     def __init__(self, **kwargs):
-        print(f'KWARGS: {kwargs}')
         config = kwargs.get('config', {})
         # any keys on collection config override keys from workflow config
         self.dmrpp_meta = {
@@ -38,12 +37,11 @@ class DMRPPGenerator(Process):
             **config.get('collection', {}).get('meta', {}).get('dmrpp', {}),  # from collection
         }
         self.processing_regex = self.dmrpp_meta.get(
-            'dmrpp_regex', '.*(?i:nc)$'
+            'dmrpp_regex', '.*\\.(((?i:(h|hdf)))(e)?5|nc(4)?)(\\.bz2|\\.gz|\\.Z)?$'
         )
 
         super().__init__(**kwargs)
-        # self.path = self.path.rstrip('/') + "/"
-        # self.path = '/mnt/ebs_test/'
+        self.path = self.path.rstrip('/') + "/"
         # Enable logging the default is True
         enable_logging = (os.getenv('ENABLE_CW_LOGGING', 'true').lower() == 'true')
         self.dmrpp_version = f"DMRPP {__version__}"
@@ -133,10 +131,9 @@ class DMRPPGenerator(Process):
                 else:
                     print(f'regex {self.processing_regex} matched file {filename}: {re.search(self.processing_regex, filename).group()}')
                 src = file.get('key')
-                dst = f'{self.path}/{filename}'
+                dst = f'{self.path}{filename}'
                 print(f'Copying: {src} -> {dst}')
                 shutil.copy(src, dst)
-                # file_path = f'{collection_store}/{filename}'
                 dmrpp_files = self.dmrpp_generate(dst, True, self.dmrpp_meta)
 
             for dmrpp in dmrpp_files:
@@ -179,7 +176,6 @@ class DMRPPGenerator(Process):
                 self.logger_to_cw.debug(f"{self.dmrpp_version}: regex {self.processing_regex}"
                                         f" matches filename to process {file_['fileName']}")
                 input_file_path = f's3://{file_["bucket"]}/{file_["key"]}'
-                self.logger_to_cw.info(f'input_file_path: {input_file_path}')
                 output_file_paths = self.dmrpp_generate(input_file=input_file_path, dmrpp_meta=self.dmrpp_meta)
 
                 if not output_generated and len(output_file_paths) > 0:
@@ -210,9 +206,7 @@ class DMRPPGenerator(Process):
             raise Exception('No dmrpp files were produced and verify_output was enabled.')
                     
         return self.input
-
-    def clean_all(self):
-        self.logger_to_cw.info('Not cleaning')
+    
 
     @staticmethod
     def strip_old_dmrpp_files(granule):
@@ -287,10 +281,6 @@ class DMRPPGenerator(Process):
 
 
 def main(event, context):
-    # print(f'DMRPP main event: {event}')
-    # kwargs = {'input': event.get('input'), 'config': event.get('config')}
-    # return DMRPPGenerator(**kwargs).process()
-
     dmrpp = DMRPPGenerator(**event)
     try:
         ret = dmrpp.process()
