@@ -1,5 +1,8 @@
+import json
 import logging
 import os
+import re
+import shutil
 import time
 from re import search
 import subprocess
@@ -34,7 +37,7 @@ class DMRPPGenerator(Process):
             **config.get('collection', {}).get('meta', {}).get('dmrpp', {}),  # from collection
         }
         self.processing_regex = self.dmrpp_meta.get(
-            'dmrpp_regex', '.*\\.(((?i:(h|hdf)))(e)?5|nc(4)?)(\\.bz2|\\.gz|\\.Z)?'
+            'dmrpp_regex', '.*\\.(((?i:(h|hdf)))(e)?5|nc(4)?)(\\.bz2|\\.gz|\\.Z)?$'
         )
 
         super().__init__(**kwargs)
@@ -99,6 +102,59 @@ class DMRPPGenerator(Process):
         return s3.upload(filename, uri, extra={})
 
     def process(self):
+        if 'EBS_MNT' in os.environ:
+            print('Using DAAC Split Processing')
+            ret = self.process_dmrpp_ebs()
+        else:
+            print('Using Cumulus Processing')
+            ret = self.process_cumulus()
+
+        return ret
+
+    def process_dmrpp_ebs(self):
+        collection = self.config.get('collection')
+        local_store = os.getenv('EBS_MNT')
+        c_id = f'{collection.get("name")}__{collection.get("version")}'
+        collection_store = f'{local_store}/{c_id}'
+        event_file = f'{collection_store}/{c_id}.json'
+        with open(event_file, 'r') as output:
+            contents = json.load(output)
+            print(f'Granule Count: {len(contents.get("granules"))}')
+            granules = {'granules': contents.get('granules')}
+
+        for granule in granules.get('granules'):
+            dmrpp_files = []
+            for file in granule.get('files'):
+                filename = file.get('fileName')
+                if not re.search(self.processing_regex, filename):
+                    continue
+                else:
+                    print(f'regex {self.processing_regex} matched file {filename}: {re.search(self.processing_regex, filename).group()}')
+                src = file.get('key')
+                dst = f'{self.path}{filename}'
+                print(f'Copying: {src} -> {dst}')
+                shutil.copy(src, dst)
+                dmrpp_files = self.dmrpp_generate(dst, True, self.dmrpp_meta)
+
+            for dmrpp in dmrpp_files:
+                dest = f'{collection_store}/{os.path.basename(dmrpp)}'
+                print(f'Copying: {dmrpp} -> {dest}')
+                shutil.copy(dmrpp, dest)
+                os.remove(dmrpp)
+                granule.get('files').append({
+                    'fileName': os.path.basename(dest),
+                    'key': dest,
+                    'size': os.path.getsize(dest)
+                })
+                
+        shutil.move(event_file, f'{event_file}.dmrpp.in')
+        with open(event_file, 'w+') as file:
+            file.write(json.dumps(granules))
+
+        print('DMR++ processing completed.')
+        return {"granules": granules, "input": self.output}
+
+    def process_cumulus(self):
         """
         Override the processing wrapper
         :return:
@@ -107,18 +163,19 @@ class DMRPPGenerator(Process):
         collection_files = collection.get('files', [])
         buckets = self.config.get('buckets')
         granules = self.input['granules']
-
+        print(f'processing {len(granules)} files...')
         output_generated = False
         for granule in granules:
             dmrpp_files = []
             for file_ in granule['files']:
+                self.logger_to_cw.info(f'file: {file_}')
                 if not search(f"{self.processing_regex}$", file_['fileName']):
                     self.logger_to_cw.debug(f"{self.dmrpp_version}: regex {self.processing_regex}"
                                             f" does not match filename {file_['fileName']}")
                     continue
                 self.logger_to_cw.debug(f"{self.dmrpp_version}: regex {self.processing_regex}"
                                         f" matches filename to process {file_['fileName']}")
-                input_file_path = file_.get('filename', f's3://{file_["bucket"]}/{file_["key"]}')
+                input_file_path = f's3://{file_["bucket"]}/{file_["key"]}'
                 output_file_paths = self.dmrpp_generate(input_file=input_file_path, dmrpp_meta=self.dmrpp_meta)
 
                 if not output_generated and len(output_file_paths) > 0:
@@ -135,6 +192,8 @@ class DMRPPGenerator(Process):
                             "type": self.get_file_type(output_file_basename, collection_files),
                         }
                         dmrpp_files.append(dmrpp_file)
+                        upload_location = f's3://{dmrpp_file["bucket"]}/{dmrpp_file["key"]}'
+                        self.logger_to_cw.info(f'upload_location: {upload_location}')
                         self.upload_file_to_s3(output_file_path, f's3://{dmrpp_file["bucket"]}/{dmrpp_file["key"]}')
             
                 if len(dmrpp_files) == 0:
@@ -147,6 +206,7 @@ class DMRPPGenerator(Process):
             raise Exception('No dmrpp files were produced and verify_output was enabled.')
                     
         return self.input
+    
 
     @staticmethod
     def strip_old_dmrpp_files(granule):
