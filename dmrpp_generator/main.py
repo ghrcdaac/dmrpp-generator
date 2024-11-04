@@ -281,7 +281,7 @@ class DMRPPGenerator(Process):
 
 
 def main(event, context):
-    dmrpp = DMRPPGenerator(**event)
+    dmrpp = DMRPPGenerator(input=event.get('input'), config=event.get('config'))
     try:
         ret = dmrpp.process()
     finally:
