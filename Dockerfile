@@ -1,4 +1,4 @@
-FROM opendap/besd:3.21.0-501 AS base
+FROM opendap/besd:3.21.0-526 AS base
 HEALTHCHECK NONE
 
 RUN yum -y update && \
@@ -23,16 +23,17 @@ RUN pip install ipython  && \
 
 COPY setup.py requirements*txt generate_dmrpp.py ./
 COPY dmrpp_generator ./dmrpp_generator/
+COPY dmrpp_generator/handler.py ./dmrpp_generator/
 COPY tests ./tests/
 RUN pip install -r requirements.txt && \
     python setup.py install
 
 RUN coverage run -m pytest && \
-    coverage report && \
-    coverage lcov -o ./coverage/lcov.info && \
-    rm -rf tests .coverage .pytest_cache && \
-    pip uninstall pytest -y && \
-    pip uninstall coverage -y
+   coverage report && \
+   coverage lcov -o ./coverage/lcov.info && \
+   rm -rf tests .coverage .pytest_cache && \
+   pip uninstall pytest -y && \
+   pip uninstall coverage -y
 
 RUN pip install --target $BUILD awslambdaric
 COPY site.conf /etc/bes/
