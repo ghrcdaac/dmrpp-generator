@@ -37,6 +37,7 @@ RUN coverage run -m pytest && \
 
 RUN pip install --target $BUILD awslambdaric
 COPY site.conf /etc/bes/
+COPY bes.conf /etc/bes/
 
 CMD ["python", "generate_dmrpp.py"]
 ENTRYPOINT []

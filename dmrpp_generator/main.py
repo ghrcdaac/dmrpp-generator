@@ -39,7 +39,6 @@ class DMRPPGenerator(Process):
         self.processing_regex = self.dmrpp_meta.get(
             'dmrpp_regex', '.*\\.(((?i:(h|hdf)))(e)?5|nc(4)?)(\\.bz2|\\.gz|\\.Z)?$'
         )
-
         super().__init__(**kwargs)
         self.path = self.path.rstrip('/') + "/"
         # Enable logging the default is True
@@ -170,10 +169,10 @@ class DMRPPGenerator(Process):
             for file_ in granule['files']:
                 self.logger_to_cw.info(f'file: {file_}')
                 if not search(f"{self.processing_regex}$", file_['fileName']):
-                    self.logger_to_cw.debug(f"{self.dmrpp_version}: regex {self.processing_regex}"
+                    self.logger_to_cw.info(f"{self.dmrpp_version}: regex {self.processing_regex}"
                                             f" does not match filename {file_['fileName']}")
                     continue
-                self.logger_to_cw.debug(f"{self.dmrpp_version}: regex {self.processing_regex}"
+                self.logger_to_cw.info(f"{self.dmrpp_version}: regex {self.processing_regex}"
                                         f" matches filename to process {file_['fileName']}")
                 input_file_path = f's3://{file_["bucket"]}/{file_["key"]}'
                 output_file_paths = self.dmrpp_generate(input_file=input_file_path, dmrpp_meta=self.dmrpp_meta)
@@ -200,7 +199,7 @@ class DMRPPGenerator(Process):
                     self.logger_to_cw.warning(f'No dmrpp files were produced for {granule}')
 
             self.strip_old_dmrpp_files(granule)
-            granule['files'] += dmrpp_files
+            granule['files'].extend(dmrpp_files)
 
         if self.verify_output and not output_generated:
             raise Exception('No dmrpp files were produced and verify_output was enabled.')
@@ -219,6 +218,25 @@ class DMRPPGenerator(Process):
             else:
                 i += 1
 
+    def dmrpp_type(self, filename):
+        """
+        Attempts to open and read bytes from the file to process and determine if it is HDF4 or HDF5
+        """
+        ret = 'get_dmrpp'
+        try:
+            with open(filename, 'rb') as file:
+                bts = file.read(4)
+                if bts == b'\x89HDF':
+                    self.logger_to_cw.info(f'{filename}: HDF5')
+                elif bts == b'\x0e\x03\x13\x01':
+                    self.logger_to_cw.info(f'{filename}: HDF4')
+                    ret = f'{ret}_h4'
+                else:
+                    self.logger_to_cw.info(f'{filename}: not HDF4 or HDF5')
+        except FileNotFoundError:
+            self.logger_to_cw.warning('Unable to read file type. Using default command: {ret}')
+        return ret
+
     def get_dmrpp_command(self, dmrpp_meta, input_path, output_filename, local=False):
         """
         Getting the command line to create DMRPP files
@@ -228,12 +246,18 @@ class DMRPPGenerator(Process):
         options = dmrpp_options.get_dmrpp_option(dmrpp_meta=dmrpp_meta)
         local_option = f"-u file://{output_filename}" if '-u' in options else ''
 
-        s_option = ''
         if os.getenv('AWS_LAMBDA_FUNCTION_NAME'):
-            s_option = '-s /etc/bes/site.conf'
+            os.chdir(self.path)
 
-        dmrpp_cmd = f"get_dmrpp {s_option} {options} {input_path} -o {output_filename}.dmrpp" \
-                    f" {local_option} {os.path.basename(output_filename)}"
+        base_dmrpp_cmd = self.dmrpp_type(output_filename)
+        LOGGER_TO_CW.info(f'BASE_CMD: {base_dmrpp_cmd}')
+
+        if 'h4' not in base_dmrpp_cmd:
+            dmrpp_cmd = f"{base_dmrpp_cmd} {options} {input_path} -o {output_filename}.dmrpp" \
+                        f" {local_option} {os.path.basename(output_filename)}"
+        else:
+            dmrpp_cmd = f"{base_dmrpp_cmd} -i {output_filename}"
+
         return " ".join(dmrpp_cmd.split())
 
     def add_missing_files(self, dmrpp_meta, file_name):
@@ -259,9 +283,7 @@ class DMRPPGenerator(Process):
             stderr = subprocess.STDOUT
 
         self.logger_to_cw.info(f'Running cmd: {cmd}')
-        out = subprocess.run(cmd.split(), stdout=stdout, stderr=stderr, timeout=self.timeout, check=True)
-
-        return out
+        subprocess.run(cmd.split(), stdout=stdout, stderr=stderr, timeout=self.timeout, check=True)
 
     def dmrpp_generate(self, input_file, local=False, dmrpp_meta=None, args=None):
         """
