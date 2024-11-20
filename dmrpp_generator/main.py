@@ -41,6 +41,7 @@ class DMRPPGenerator(Process):
         )
         super().__init__(**kwargs)
         self.path = self.path.rstrip('/') + "/"
+        os.chdir(self.path)
         # Enable logging the default is True
         enable_logging = (os.getenv('ENABLE_CW_LOGGING', 'true').lower() == 'true')
         self.dmrpp_version = f"DMRPP {__version__}"
@@ -245,12 +246,8 @@ class DMRPPGenerator(Process):
         dmrpp_options = DMRppOptions(self.path)
         options = dmrpp_options.get_dmrpp_option(dmrpp_meta=dmrpp_meta)
         local_option = f"-u file://{output_filename}" if '-u' in options else ''
-
-        if os.getenv('AWS_LAMBDA_FUNCTION_NAME'):
-            os.chdir(self.path)
-
         base_dmrpp_cmd = self.dmrpp_type(output_filename)
-        LOGGER_TO_CW.info(f'BASE_CMD: {base_dmrpp_cmd}')
+        self.logger_to_cw.info(f'BASE_CMD: {base_dmrpp_cmd}')
 
         if 'h4' not in base_dmrpp_cmd:
             dmrpp_cmd = f"{base_dmrpp_cmd} {options} {input_path} -o {output_filename}.dmrpp" \
