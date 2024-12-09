@@ -3,8 +3,8 @@
 set -o errexit
 set -o nounset
 set -o pipefail
-export REPO_NAME=rss
-export SERVICE_NAME=RSS
+export REPO_NAME=ghrcw-dmrpp-generator-lambda
+export SERVICE_NAME=dmrpp_generator
 export AWS_REGION=$bamboo_AWS_REGION
 
 
@@ -40,7 +40,7 @@ function push_to_ecr() {
   echo "pushing image to ecr"
   docker push $docker_image_name
 
-  stop_ecs_task $2 $SERVICE_NAME
+  # stop_ecs_task $2 $SERVICE_NAME
 
   docker rmi $docker_image_name
 }
@@ -77,10 +77,8 @@ do
   export AWS_SECRET_ACCESS_KEY=${secret_keys[$i]}
   export ACCOUNT_NUMBER=${account_numbers[$i]}
   export prefix=${prefixes[$i]}
-
-    # Push amsua to all account's ecr
-    push_to_ecr $ACCOUNT_NUMBER $prefix
-  done
+  push_to_ecr $ACCOUNT_NUMBER $prefix
+done
 
 
 docker rmi $REPO_NAME
