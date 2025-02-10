@@ -146,6 +146,7 @@ class DMRPPGenerator(Process):
                     'key': dest,
                     'size': os.path.getsize(dest)
                 })
+            dmrpp_files.clear()
                 
         shutil.move(event_file, f'{event_file}.dmrpp.in')
         with open(event_file, 'w+') as file:
