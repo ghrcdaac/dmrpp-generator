@@ -145,6 +145,7 @@ class DMRPPGenerator(Process):
                     'key': dest,
                     'size': os.path.getsize(dest)
                 })
+            dmrpp_files.clear()
                 
         shutil.move(event_file, f'{event_file}.dmrpp.in')
         with open(event_file, 'w+') as file:
@@ -303,7 +304,7 @@ class DMRPPGenerator(Process):
 
 
 def main(event, context):
-    dmrpp = DMRPPGenerator(**event)
+    dmrpp = DMRPPGenerator(input=event.get('input'), config=event.get('config'))
     try:
         ret = dmrpp.process()
     finally:
