@@ -3,70 +3,61 @@ from unittest import TestCase
 
 from dmrpp_generator.main import DMRPPGenerator
 
-class TestDMRPPCommandLine(TestCase):
+class TestDMRPPCommandGeneration(TestCase):
     """
     test DMRPP comand line
     """
+    test_fixtures_dir = '/home/worker/build/tests/fixtures/'
 
-    dmrpp = DMRPPGenerator(input=[], config={})
-    def test_1_local(self):
-        """
-        Testing local no env var
-        :return:
-        """
-        self.assertEqual('get_dmrpp -b foo -o bar.dmrpp bar', self.dmrpp.get_dmrpp_command({}, 'foo', 'bar'))
+    def setUp(self):
+        fixture_path = os.path.join(os.path.dirname(__file__), "fixtures")
+        self.dmrpp = DMRPPGenerator(input=[], config={}, path=fixture_path)
+        return super().setUp()
 
-    def test_2_local_m(self):
+    def test_1_hdf4(self):
         """
-        Testing local with env var true
-        :return:
+        Testing command generation for hdf4 files
         """
+        file_full_path = f'{self.test_fixtures_dir}test_file.hdf4'
+        self.assertEqual(
+            f'gen_dmrpp_side_car -i {file_full_path} -U -H',
+            self.dmrpp.get_dmrpp_command(dmrpp_meta={}, file_full_path=file_full_path)
+        )
 
-        meta = {'options': [{'flag': '-M'}]}
-        self.assertEqual('get_dmrpp -M -b foo -o bar.dmrpp bar', self.dmrpp.get_dmrpp_command(dmrpp_meta=meta,
-                                                                                              input_path='foo',
-                                                                                              output_filename='bar'))
+    def test_2_hdf5(self):
+        """
+        Testing command generation for hdf5 files
+        """
+        file_full_path = f'{self.test_fixtures_dir}test_file.hdf5'
+        self.assertEqual(
+            f'gen_dmrpp_side_car -i {file_full_path} -U',
+            self.dmrpp.get_dmrpp_command(dmrpp_meta={}, file_full_path=file_full_path)
+        )
 
-    def test_3_local_no_m(self):
+    def test_3_matlab_hdf5(self):
         """
-        Testing local with env var false
-        :return:
+        Testing command generation for matlab files
         """
-        meta = {'options': []}
-        self.assertEqual('get_dmrpp -b foo -o bar.dmrpp bar', self.dmrpp.get_dmrpp_command(meta, 'foo', 'bar'))
+        file_full_path = f'{self.test_fixtures_dir}test_file.matlab.hdf5'
+        self.assertEqual(
+            f'gen_dmrpp_side_car -i {file_full_path} -U',
+            self.dmrpp.get_dmrpp_command(dmrpp_meta={}, file_full_path=file_full_path)
+        )
 
-    def test_4_local_m(self):
+    def test_4_option(self):
         """
-        Testing local with env var 1
-        :return:
+        Testing command generation with options
         """
-        meta = {'options': [{'flag': '-M'}]}
-        self.assertEqual('get_dmrpp -M -b foo -o bar.dmrpp bar', self.dmrpp.get_dmrpp_command(meta, 'foo', 'bar'))
+        file_full_path = f'{self.test_fixtures_dir}test_file.matlab.hdf5'
+        test_meta = {
+            'options': [
+                {
+                    'flag': '-c'
+                }
+            ]
 
-    def test_5_cumulus_no_meta_config(self):
-        """
-        Testing cumulus no config 1
-        :return:
-        """
-
-        self.assertEqual('get_dmrpp -b foo -o bar.dmrpp bar', self.dmrpp.get_dmrpp_command({}, 'foo', 'bar'))
-
-
-    def test_6_cumulus_m(self):
-        """
-        Testing cumulus true
-        :return:
-        """
-        dmrpp_meta = {'options': [{'flag': '-M'}]}
-        self.assertEqual('get_dmrpp -M -b foo -o bar.dmrpp bar', self.dmrpp.get_dmrpp_command(dmrpp_meta, 'foo', 'bar'))
-
-
-    def test_7_cumulus_adding_wrongval(self):
-        """
-        Testing dmrpp ignoring wrong value
-        :return:
-        """
-        dmrpp_meta = {
-            "create_missing_cf": "foobar"
         }
-        self.assertEqual('get_dmrpp -b foo -o bar.dmrpp bar', self.dmrpp.get_dmrpp_command(dmrpp_meta, 'foo', 'bar'))
+        self.assertEqual(
+            f'gen_dmrpp_side_car -i {file_full_path} -U -c',
+            self.dmrpp.get_dmrpp_command(dmrpp_meta=test_meta, file_full_path=file_full_path)
+        )

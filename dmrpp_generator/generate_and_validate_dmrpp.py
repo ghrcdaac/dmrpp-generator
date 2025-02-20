@@ -24,7 +24,8 @@ def check_docker_version(log_file_path):
 def run_docker_compose(payload, dmrpp_args, nc_hdf_path, port, dmrrpp_service, log_file_path):
     docker_compose = f'{os.path.dirname(os.path.realpath(__file__))}/docker-compose.yml'
     dkr_comp_version = check_docker_version(log_file_path)
-    os.environ['DMRPP_VERSION'] = version.__version__
+    if 'DMRPP_VERSION' not in os.environ:
+        os.environ['DMRPP_VERSION'] = version.__version__
     with open(log_file_path, "r+", encoding='utf-8') as output:
         try:
             cmd = f"PAYLOAD='{payload}' " \
@@ -46,7 +47,7 @@ def run_docker_compose(payload, dmrpp_args, nc_hdf_path, port, dmrrpp_service, l
 
 
 def main():
-    print(f'dmrpp {version.__version__}\n')
+    print(f'dmrpp-generator {version.__version__}\n')
     parser = argparse.ArgumentParser(
         description='Generate and validate DMRPP files. Any DMR++ commandline option can be provided in addition to'
                     ' the options listed below. To see what options are available check the documentation: '

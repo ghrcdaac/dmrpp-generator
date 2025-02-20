@@ -38,7 +38,7 @@ def main():
     workstation_path = getenv('MOUNT_VOL', '/usr/share/hyrax/')
     join_path = lambda x: join(workstation_path, x)
     input_files = [join_path(f) for f in listdir(workstation_path) if isfile(join_path(f))]
-    dmrpp = DMRPPGenerator(input=input_files)
+    dmrpp = DMRPPGenerator(input=input_files, path=workstation_path)
     dmrpp.path = workstation_path
     dmrpp.processing_regex = meta.get('dmrpp_regex', dmrpp.processing_regex)
     for input_file in input_files:
