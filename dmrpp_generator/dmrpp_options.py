@@ -86,35 +86,8 @@ class DMRppOptions:
             download = option.get('download') == 'true'
             location = self.__download_files(file_link) if download else file_link
             res_str = f'{res_str} {location}'
-        return " ".join(f"{res_str} -b".split())
+        return " ".join(f"{res_str}".split())
 
 
 if __name__ == '__main__':
-    test_dict = {
-          "options": [
-            {
-              "flag": "-M"
-            },
-            {
-              "flag": "-s",
-              "opt": "https://catalog.uah.edu/grad/colleges-departments/science/earth-system-science/earth-system-science.pdf",
-              "download": "true"
-            },
-            {
-              "flag": "-c",
-              "opt": "s3://ghrcsbxw-public/aces1cont__1/aces1cont_2002.212_v2.50.tar.cmr.json",
-              "download": "false"
-            },
-            {
-              "flag": "-k",
-              "opt": "<file3_link_to_s3_or_http>"
-            }
-          ]
-        }
-
-    sn = DMRppOptions()
-    print(sn.get_dmrpp_option(test_dict))
-    # sn.get_http_file(url='https://catalog.uah.edu/grad/colleges-departments/science/earth-system-science/
-    # earth-system-science.pdf', host_path='.')
-    # sn.get_s3_file(s3_link='s3://ghrcsbxw-public/aces1cont__1/aces1cont_2002.212_v2.50.tar.cmr.json', host_path='.')
     pass

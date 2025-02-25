@@ -41,6 +41,8 @@ class DMRPPGenerator(Process):
         )
         super().__init__(**kwargs)
         self.path = self.path.rstrip('/') + "/"
+        os.chdir(self.path)
+
         # Enable logging the default is True
         enable_logging = (os.getenv('ENABLE_CW_LOGGING', 'true').lower() == 'true')
         self.dmrpp_version = f"DMRPP {__version__}"
@@ -219,60 +221,33 @@ class DMRPPGenerator(Process):
             else:
                 i += 1
 
-    def dmrpp_type(self, filename):
+    def get_conditional_options(self, filename):
         """
         Attempts to open and read bytes from the file to process and determine if it is HDF4 or HDF5
         """
-        ret = 'get_dmrpp'
-        try:
-            with open(filename, 'rb') as file:
-                bts = file.read(4)
-                if bts == b'\x89HDF':
-                    self.logger_to_cw.info(f'{filename}: HDF5')
-                elif bts == b'\x0e\x03\x13\x01':
-                    self.logger_to_cw.info(f'{filename}: HDF4')
-                    ret = f'{ret}_h4'
-                else:
-                    self.logger_to_cw.info(f'{filename}: not HDF4 or HDF5')
-        except FileNotFoundError:
-            self.logger_to_cw.warning('Unable to read file type. Using default command: {ret}')
+        ret = ''
+        with open(filename, 'rb') as file:
+            bts = file.read(93).lower()
+            if bts[:4] == b'\x89hdf' or b'hdf5' in bts:
+                pass
+            elif bts == b'\x0e\x03\x13\x01' or b'hdf4' in bts:
+                ret = '-H'
+            else:
+                raise ValueError(f'Unable to determine if {filename} is HDF4 or HDF5. File Signature: {bts}')
+
         return ret
 
-    def get_dmrpp_command(self, dmrpp_meta, input_path, output_filename, local=False):
+    def get_dmrpp_command(self, dmrpp_meta, file_full_path):
         """
         Getting the command line to create DMRPP files
         """
         dmrpp_meta = dmrpp_meta if isinstance(dmrpp_meta, dict) else {}
         dmrpp_options = DMRppOptions(self.path)
         options = dmrpp_options.get_dmrpp_option(dmrpp_meta=dmrpp_meta)
-        local_option = f"-u file://{output_filename}" if '-u' in options else ''
-
-        if os.getenv('AWS_LAMBDA_FUNCTION_NAME'):
-            os.chdir(self.path)
-
-        base_dmrpp_cmd = self.dmrpp_type(output_filename)
-        LOGGER_TO_CW.info(f'BASE_CMD: {base_dmrpp_cmd}')
-
-        if 'h4' not in base_dmrpp_cmd:
-            dmrpp_cmd = f"{base_dmrpp_cmd} {options} {input_path} -o {output_filename}.dmrpp" \
-                        f" {local_option} {os.path.basename(output_filename)}"
-        else:
-            dmrpp_cmd = f"{base_dmrpp_cmd} -i {output_filename}"
+        required_options = self.get_conditional_options(file_full_path)
+        dmrpp_cmd = f'gen_dmrpp_side_car -i {file_full_path} -U {required_options} {options}'
 
         return " ".join(dmrpp_cmd.split())
-
-    def add_missing_files(self, dmrpp_meta, file_name):
-        """
-        Adds missing file
-        """
-        # If the missing file was not generated
-        if not os.path.isfile(file_name):
-            return []
-        # If it was generated and the flag was set
-        options = dmrpp_meta.get('options', [])
-        if {'flag': '-M'} in options:
-            return [file_name]
-        return []
 
     def run_command(self, cmd):
         """ Run cmd as a system command """
@@ -292,14 +267,18 @@ class DMRPPGenerator(Process):
         """
         # Force dmrpp_meta to be an object
         dmrpp_meta = dmrpp_meta if isinstance(dmrpp_meta, dict) else {}
-        file_name = input_file if local else s3.download(input_file, path=self.path)
-        self.logger_to_cw.info(f'file_name: {file_name}')
-        cmd = self.get_dmrpp_command(dmrpp_meta, self.path, file_name, local)
+        file_full_path = input_file if local else s3.download(input_file, path=self.path)
+        cmd = self.get_dmrpp_command(dmrpp_meta, file_full_path)
         if args:
             cmd_split = cmd.split(' ', maxsplit=1)
             cmd = f'{cmd_split[0]} {" ".join(args)} {cmd_split[1]}'
         self.run_command(cmd)
-        out_files = [f"{file_name}.dmrpp"] + self.add_missing_files(dmrpp_meta, f'{file_name}.dmrpp.missing')
+
+        out_files = []
+        for filename in os.listdir(self.path):
+            if filename.endswith('.dmrpp') or 'mvs' in filename:
+                out_files.append(f'{self.path}/{filename}')
+
         return out_files
 
 
@@ -314,6 +293,4 @@ def main(event, context):
 
 
 if __name__ == "__main__":
-    dmr = DMRPPGenerator(input=[], config={})
-    meta = {"options": [{"flag": "-s", "opt": "htp://localhost/config.conf", "download": "true"}, {"flag": "-M"}]}
-    dmr.get_dmrpp_command(meta, dmr.path, "file_name.nc")
+    pass

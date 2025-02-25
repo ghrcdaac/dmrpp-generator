@@ -48,9 +48,6 @@
       "meta": {
         "dmrpp": {
           "options" : [
-            {
-              "flag": "-M"
-            }
           ]
         }
       },

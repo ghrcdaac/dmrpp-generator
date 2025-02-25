@@ -1,4 +1,4 @@
-FROM opendap/besd:3.21.0-526 AS base
+FROM opendap/besd:3.21.1-83 AS base
 HEALTHCHECK NONE
 
 RUN yum -y update && \
@@ -17,19 +17,22 @@ ENV PATH="${HOME}/miniconda/bin:${PATH}"
 ARG BUILD=${HOME}/build
 WORKDIR ${BUILD}
 
+ENV PIP_ROOT_USER_ACTION=ignore
 RUN pip install ipython  && \
     pip install pytest  && \
     pip install coverage
 
-COPY setup.py requirements*txt generate_dmrpp.py ./
-COPY dmrpp_generator ./dmrpp_generator/
-COPY dmrpp_generator/handler.py ./dmrpp_generator/
-COPY tests ./tests/
-RUN pip install -r requirements.txt && \
-    python setup.py install
+COPY requirements.txt ./
+RUN pip install -r requirements.txt
 
+COPY ./dmrpp_generator/ ./dmrpp_generator/
+COPY ./setup.py ./
+COPY generate_dmrpp.py .
+RUN python setup.py install
+
+COPY tests ./tests/
 RUN coverage run -m pytest && \
-   coverage report && \
+   coverage report -m && \
    coverage lcov -o ./coverage/lcov.info && \
    rm -rf tests .coverage .pytest_cache && \
    pip uninstall pytest -y && \
