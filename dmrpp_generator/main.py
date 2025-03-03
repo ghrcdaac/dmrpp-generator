@@ -230,7 +230,7 @@ class DMRPPGenerator(Process):
             bts = file.read(93).lower()
             if bts[:4] == b'\x89hdf' or b'hdf5' in bts:
                 pass
-            elif bts == b'\x0e\x03\x13\x01' or b'hdf4' in bts:
+            elif bts[:4] == b'\x0e\x03\x13\x01' or b'hdf4' in bts:
                 ret = '-H'
             else:
                 raise ValueError(f'Unable to determine if {filename} is HDF4 or HDF5. File Signature: {bts}')
