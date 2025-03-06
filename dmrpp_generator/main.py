@@ -37,7 +37,7 @@ class DMRPPGenerator(Process):
             **config.get('collection', {}).get('meta', {}).get('dmrpp', {}),  # from collection
         }
         self.processing_regex = self.dmrpp_meta.get(
-            'dmrpp_regex', '.*\\.(((?i:(h|hdf)))(e)?5|nc(4)?)(\\.bz2|\\.gz|\\.Z)?$'
+            'dmrpp_regex', '.*\.(?i:(((hd?f?e?)|(nc))(4|5)?)(\.((b|g)z2?|(Z)))?)'
         )
         super().__init__(**kwargs)
         self.path = self.path.rstrip('/') + "/"
