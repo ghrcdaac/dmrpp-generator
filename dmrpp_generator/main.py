@@ -37,7 +37,7 @@ class DMRPPGenerator(Process):
             **config.get('collection', {}).get('meta', {}).get('dmrpp', {}),  # from collection
         }
         self.processing_regex = self.dmrpp_meta.get(
-            'dmrpp_regex', '.*\\.(((?i:(h|hdf)))(e)?5|nc(4)?)(\\.bz2|\\.gz|\\.Z)?$'
+            'dmrpp_regex', '.*\.(?i:(((hd?f?e?)|(nc))(4|5)?)(\.((b|g)z2?|(Z)))?)'
         )
         super().__init__(**kwargs)
         self.path = self.path.rstrip('/') + "/"
@@ -230,7 +230,7 @@ class DMRPPGenerator(Process):
             bts = file.read(93).lower()
             if bts[:4] == b'\x89hdf' or b'hdf5' in bts:
                 pass
-            elif bts == b'\x0e\x03\x13\x01' or b'hdf4' in bts:
+            elif bts[:4] == b'\x0e\x03\x13\x01' or b'hdf4' in bts:
                 ret = '-H'
             else:
                 raise ValueError(f'Unable to determine if {filename} is HDF4 or HDF5. File Signature: {bts}')
