@@ -13,7 +13,6 @@ services:
     volumes:
       - ${NC_FILES_PATH:-/tmp}:/usr/share/hyrax
       - /tmp:/tmp
-    working_dir: /usr/share/hyrax
 
   hyrax-server:
     container_name: hyrax
