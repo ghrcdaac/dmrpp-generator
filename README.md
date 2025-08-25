@@ -131,6 +131,7 @@ Add the options desired to the collection definition as follows:
 ```code
 {
   "config": {
+    "requester_pay": false,
     "meta": {
       "dmrpp": {
         "options": [
@@ -153,6 +154,7 @@ Add the options desired to the collection definition as follows:
   }
 }
 ```
+To enable S3 Requester Pays, the optional `requester_pay` field must be set to `true`. Requester Pays is disabled by default.
 For a list of all configuration options see: https://docs.opendap.org/index.php?title=DMR%2B%2B#:~:text=4.2%20Command%20line%20options
 
 ## Cumulus Workflow Configuration
