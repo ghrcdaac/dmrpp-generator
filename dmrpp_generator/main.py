@@ -101,7 +101,7 @@ class DMRPPGenerator(Process):
     def _get_s3_extra(self):
         """Helper to build the extra dict for S3 operations."""
         extra = {}
-        if self.config.get("requester_pay", False):
+        if self.dmrpp_meta.get("requester_pay", False):
             extra["RequestPayer"] = "requester"
         return extra
 
