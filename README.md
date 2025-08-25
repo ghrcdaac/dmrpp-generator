@@ -131,9 +131,9 @@ Add the options desired to the collection definition as follows:
 ```code
 {
   "config": {
-    "requester_pay": false,
     "meta": {
       "dmrpp": {
+        "requester_pay": false,
         "options": [
           {
             "flag": "-M"
@@ -154,7 +154,6 @@ Add the options desired to the collection definition as follows:
   }
 }
 ```
-To enable S3 Requester Pays, the optional `requester_pay` field must be set to `true`. Requester Pays is disabled by default.
 For a list of all configuration options see: https://docs.opendap.org/index.php?title=DMR%2B%2B#:~:text=4.2%20Command%20line%20options
 
 ## Cumulus Workflow Configuration
@@ -169,6 +168,7 @@ any keys that are found in both the workflow and collection):
 # terraform
 
 dmrpp_config = {
+  requester_pay = false,
   options = [
     {
       flag = "-M"
@@ -201,6 +201,10 @@ dmrpp_config = {
     ...
     }
 ```
+
+## S3 Requester Pays
+Requester Pays is disabled by default. To enable S3 Requester Pays, the optional `requester_pay` field in the workflow
+or collection configuration must be set to `true`. 
 
 ## Timeout Configuration
 The subprocess call to the BESD library has a configurable timeout value. It will default to 60 seconds

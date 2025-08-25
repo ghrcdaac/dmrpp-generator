@@ -1,41 +1,40 @@
 {
   "config": {
-      "requester_pay": true,
-      "files_config": [
-        {
-              "bucket": "private",
-              "regex": "^tpw_v07r\\d{2}_\\d{6}\\.nc$",
-              "sampleFileName": "tpw_v07r01_201910.nc"
-          },
-          {
-              "bucket": "protected",
-              "regex": "^tpw_v07r\\d{2}_\\d{6}\\.dmrpp$",
-              "sampleFileName": "tpw_v07r01_201910.dmrpp"
-          }
-      ],
-      "buckets": {
-        "protected": {
-          "type": "protected",
-          "name": "ghrc-app-protected"
-        },
-        "protected-1": {
-          "type": "protected",
-          "name": "ghrc-app-restore-protected"
-        },
-        "internal": {
-          "type": "internal",
-          "name": "ghrc-app-internal"
-        },
-        "private": {
-          "type": "private",
-          "name": "ghrc-app-private"
-        },
-        "public": {
-          "type": "public",
-          "name": "ghrc-app-public"
-        }
+    "files_config": [
+      {
+        "bucket": "private",
+        "regex": "^tpw_v07r\\d{2}_\\d{6}\\.nc$",
+        "sampleFileName": "tpw_v07r01_201910.nc"
       },
-      "collection": {
+      {
+        "bucket": "protected",
+        "regex": "^tpw_v07r\\d{2}_\\d{6}\\.dmrpp$",
+        "sampleFileName": "tpw_v07r01_201910.dmrpp"
+      }
+    ],
+    "buckets": {
+      "protected": {
+        "type": "protected",
+        "name": "ghrc-app-protected"
+      },
+      "protected-1": {
+        "type": "protected",
+        "name": "ghrc-app-restore-protected"
+      },
+      "internal": {
+        "type": "internal",
+        "name": "ghrc-app-internal"
+      },
+      "private": {
+        "type": "private",
+        "name": "ghrc-app-private"
+      },
+      "public": {
+        "type": "public",
+        "name": "ghrc-app-public"
+      }
+    },
+    "collection": {
       "name": "rss1tpwnv7r01new",
       "version": "7R01",
       "dataType": "netCDF",
@@ -48,22 +47,23 @@
       "sampleFileName": "tpw_v07r01_201812.nc",
       "meta": {
         "dmrpp": {
-          "options" : [
+          "requester_pay": true,
+          "options": [
           ]
         }
       },
       "files": [
         {
-            "bucket": "private",
-            "regex": "^.*.nc$",
-            "sampleFileName": "tpw_v07r01_201910.nc"
+          "bucket": "private",
+          "regex": "^.*.nc$",
+          "sampleFileName": "tpw_v07r01_201910.nc"
         },
         {
-            "bucket": "protected",
-            "regex": "^tpw_v07r\\d{2}_\\d{6}\\.(dmrpp|missing)$",
-            "sampleFileName": "tpw_v07r01_201910.dmrpp"
+          "bucket": "protected",
+          "regex": "^tpw_v07r\\d{2}_\\d{6}\\.(dmrpp|missing)$",
+          "sampleFileName": "tpw_v07r01_201910.dmrpp"
         }
       ]
+    }
   }
-}
 }

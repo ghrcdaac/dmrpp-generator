@@ -105,6 +105,8 @@ class TestDMRPPFileGeneration(TestCase):
         assert not bool(extra_dict)
 
     def test_5_s3_extra_requester_pay_enabled(self):
-        with patch.dict(self.process_instance.config, self.payload_rp_data['config'], clear=True):
+        with patch.dict(self.process_instance.dmrpp_meta,
+                        self.payload_rp_data['config']['collection']['meta']['dmrpp'],
+                        clear=True):
             extra_dict = self.process_instance._get_s3_extra()
             assert bool(extra_dict) and extra_dict['RequestPayer'] == 'requester'
