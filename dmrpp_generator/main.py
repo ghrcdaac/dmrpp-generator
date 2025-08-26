@@ -98,9 +98,17 @@ class DMRPPGenerator(Process):
                 break
         return buckets[bucket_type]
 
+    def _get_s3_extra(self):
+        """Helper to build the extra dict for S3 operations."""
+        extra = {}
+        if self.dmrpp_meta.get("requester_pay", False):
+            extra["RequestPayer"] = "requester"
+        return extra
+
     def upload_file_to_s3(self, filename, uri):
         """ Upload a local file to s3 if collection payload provided """
-        return s3.upload(filename, uri, extra={})
+        extra = self._get_s3_extra()
+        return s3.upload(filename, uri, extra=extra)
 
     def process(self):
         if 'EBS_MNT' in os.environ:
@@ -267,7 +275,8 @@ class DMRPPGenerator(Process):
         """
         # Force dmrpp_meta to be an object
         dmrpp_meta = dmrpp_meta if isinstance(dmrpp_meta, dict) else {}
-        file_full_path = input_file if local else s3.download(input_file, path=self.path)
+        extra = self._get_s3_extra()
+        file_full_path = input_file if local else s3.download(input_file, path=self.path, extra=extra)
         cmd = self.get_dmrpp_command(dmrpp_meta, file_full_path)
         if args:
             cmd_split = cmd.split(' ', maxsplit=1)
