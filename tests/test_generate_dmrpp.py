@@ -57,8 +57,12 @@ class TestDMRPPFileGeneration(TestCase):
     payload_file = f"{fixture_path}/payload.json"
     with open(payload_file, encoding='UTF-8') as fle:
         payload = json.load(fle)
-
     payload_data = payload
+
+    payload_rp_file = f"{fixture_path}/payload_requester_pay.json"
+    with open(payload_rp_file, encoding='UTF-8') as fle:
+        payload_rp = json.load(fle)
+    payload_rp_data = payload_rp
 
     process_instance = DMRPPGenerator(input=input_file, config=payload_data['config'], path=fixture_path)
     process_instance.path = fixture_path
@@ -95,3 +99,14 @@ class TestDMRPPFileGeneration(TestCase):
                 if file["fileName"] == dmrpp_file:
                     dmrpp_exists = True
         self.assertEqual(True, dmrpp_exists)
+
+    def test_4_s3_extra_requester_pay_default(self):
+        extra_dict = self.process_instance._get_s3_extra()
+        assert not bool(extra_dict)
+
+    def test_5_s3_extra_requester_pay_enabled(self):
+        with patch.dict(self.process_instance.dmrpp_meta,
+                        self.payload_rp_data['config']['collection']['meta']['dmrpp'],
+                        clear=True):
+            extra_dict = self.process_instance._get_s3_extra()
+            assert bool(extra_dict) and extra_dict['RequestPayer'] == 'requester'

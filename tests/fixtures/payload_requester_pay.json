@@ -1,0 +1,69 @@
+{
+  "config": {
+    "files_config": [
+      {
+        "bucket": "private",
+        "regex": "^tpw_v07r\\d{2}_\\d{6}\\.nc$",
+        "sampleFileName": "tpw_v07r01_201910.nc"
+      },
+      {
+        "bucket": "protected",
+        "regex": "^tpw_v07r\\d{2}_\\d{6}\\.dmrpp$",
+        "sampleFileName": "tpw_v07r01_201910.dmrpp"
+      }
+    ],
+    "buckets": {
+      "protected": {
+        "type": "protected",
+        "name": "ghrc-app-protected"
+      },
+      "protected-1": {
+        "type": "protected",
+        "name": "ghrc-app-restore-protected"
+      },
+      "internal": {
+        "type": "internal",
+        "name": "ghrc-app-internal"
+      },
+      "private": {
+        "type": "private",
+        "name": "ghrc-app-private"
+      },
+      "public": {
+        "type": "public",
+        "name": "ghrc-app-public"
+      }
+    },
+    "collection": {
+      "name": "rss1tpwnv7r01new",
+      "version": "7R01",
+      "dataType": "netCDF",
+      "process": "rssm1tpwn",
+      "provider_path": "/vapor/monthly_1deg",
+      "url_path": "rss1tpwn__1",
+      "duplicateHandling": "replace",
+      "granuleId": "^(tpw_v07r).*\\.nc$",
+      "granuleIdExtraction": "(tpw_v07r.*)",
+      "sampleFileName": "tpw_v07r01_201812.nc",
+      "meta": {
+        "dmrpp": {
+          "requester_pay": true,
+          "options": [
+          ]
+        }
+      },
+      "files": [
+        {
+          "bucket": "private",
+          "regex": "^.*.nc$",
+          "sampleFileName": "tpw_v07r01_201910.nc"
+        },
+        {
+          "bucket": "protected",
+          "regex": "^tpw_v07r\\d{2}_\\d{6}\\.(dmrpp|missing)$",
+          "sampleFileName": "tpw_v07r01_201910.dmrpp"
+        }
+      ]
+    }
+  }
+}
