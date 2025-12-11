@@ -3,6 +3,7 @@ from unittest import TestCase
 from unittest.mock import patch
 import json
 from dmrpp_generator.main import DMRPPGenerator
+import pytest
 
 class StorageValues:
     """
@@ -15,44 +16,49 @@ class TestDMRPPFileGeneration(TestCase):
     """
     Test generating dmrpp files.
     """
-    granule_id = "f16_ssmis_20231011v7"
-    granule_name = "f16_ssmis_20231011v7.nc"
+    granule_id = "ISS_LIS_BG_V3.0_20170702_000346_FIN"
+    granule_name = "ISS_LIS_BG_V3.0_20170702_000346_FIN.nc"
+    hdf_granule_name = "ISS_LIS_BG_V3.0_20170702_000346_FIN.hdf"
     fixture_path = os.path.join(os.path.dirname(__file__), "fixtures")
-    input_file = {
-        "granules": [
-            {
-                "granuleId": granule_id,
-                "dataType": "rssmif16d",
-                "sync_granule_duration": 3759,
-                "files": [
-                  {
-                    "bucket": "fake-cumulus-protected",
-                    "checksum": "aa5204f125ae83847b3b80fa2e571b00",
-                    "checksumType": "md5",
-                    "fileName": granule_name,
-                    "key": f"fakepath/2020/001/{granule_name}",
-                    "size": 18232098,
-                    "type": "data",
-                  },
-                  {
-                    "bucket": "fake-cumulus-public",
-                    "fileName": f"{granule_name}.md5",
-                    "key": "fakepath/2020/001/{granule_name}.md5",
-                    "size": 98,
-                    "type": "metadata",
-                  },
-                  {
-                    "bucket": "fake-cumulus-public",
-                    "fileName": f"{granule_name}.cmr.json",
-                    "key": f"{granule_name}.cmr.json",
-                    "size": 1381,
-                    "type": "metadata",
-                  }
-                ],
-                "version": "2019.0"
-            }
-        ]
-    }
+
+    def get_input_file(granule_id, granule_name):
+        """
+        Wrap input file template in method for multiuse
+        """
+        return {
+            "granules": [
+                {
+                    "granuleId": granule_id,
+                    "sync_granule_duration": 3759,
+                    "files": [
+                    {
+                        "bucket": "fake-cumulus-protected",
+                        "checksum": "aa5204f125ae83847b3b80fa2e571b00",
+                        "checksumType": "md5",
+                        "fileName": granule_name,
+                        "key": f"fakepath/2020/001/{granule_name}",
+                        "size": 18232098,
+                        "type": "data",
+                    },
+                    {
+                        "bucket": "fake-cumulus-public",
+                        "fileName": f"{granule_name}.md5",
+                        "key": "fakepath/2020/001/{granule_name}.md5",
+                        "size": 98,
+                        "type": "metadata",
+                    },
+                    {
+                        "bucket": "fake-cumulus-public",
+                        "fileName": f"{granule_name}.cmr.json",
+                        "key": f"{granule_name}.cmr.json",
+                        "size": 1381,
+                        "type": "metadata",
+                    }
+                    ],
+                    "version": "2019.0"
+                }
+            ]
+        }
 
     payload_file = f"{fixture_path}/payload.json"
     with open(payload_file, encoding='UTF-8') as fle:
@@ -64,7 +70,7 @@ class TestDMRPPFileGeneration(TestCase):
         payload_rp = json.load(fle)
     payload_rp_data = payload_rp
 
-    process_instance = DMRPPGenerator(input=input_file, config=payload_data['config'], path=fixture_path)
+    process_instance = DMRPPGenerator(input=get_input_file(granule_id, granule_name), config=payload_data['config'], path=fixture_path)
     process_instance.path = fixture_path
 
     @patch('dmrpp_generator.main.DMRPPGenerator.upload_file_to_s3',
@@ -86,7 +92,7 @@ class TestDMRPPFileGeneration(TestCase):
 
     def test_2_check_output(self):
         """
-        Test the putput schema of the processnig
+        Test the output schema of the processing
         :return:
         """
         self.assertListEqual(['granules'], list(StorageValues.processing_output.keys()))
@@ -110,3 +116,25 @@ class TestDMRPPFileGeneration(TestCase):
                         clear=True):
             extra_dict = self.process_instance._get_s3_extra()
             assert bool(extra_dict) and extra_dict['RequestPayer'] == 'requester'
+
+    # Test 6 Prep
+    process_instance = DMRPPGenerator(input=get_input_file(granule_id, hdf_granule_name), config=payload_data['config'], path=fixture_path)
+    process_instance.path = fixture_path
+
+    @patch('dmrpp_generator.main.DMRPPGenerator.upload_file_to_s3',
+        return_value={granule_id:f's3://{hdf_granule_name}.dmrpp'})
+    @patch('cumulus_process.Process.fetch_all',
+        return_value={'input_key': [os.path.join(os.path.dirname(__file__), f"fixtures/{hdf_granule_name}")]})
+    @patch('os.remove', return_value=hdf_granule_name)
+    @patch('cumulus_process.s3.download', return_value=f"{process_instance.path}/{hdf_granule_name}")
+    def test_6_fail_on_no_matching_regex(self, mock_upload, mock_fetch, mock_remove, mock_download):
+        """
+        https://eosdis.slack.com/archives/CQF7K5U82/p1756324842641589?thread_ts=1755709180.274919&cid=CQF7K5U82
+        When a file created by the dmrpp process does not match any of the file regexes defined
+        within the collection definition, the process should fail
+        """
+        _ = mock_upload, mock_fetch, mock_remove, mock_download
+
+        with pytest.raises(Exception) as exception_test:
+            StorageValues.processing_output = self.process_instance.process()
+        assert str(exception_test.value) == "File 'ISS_LIS_BG_V3.0_20170702_000346_FIN.hdf_mvs.h5' does not match any file regex defined within the collection definition."
