@@ -5,11 +5,12 @@ RUN yum -y update && \
     yum -y upgrade
 
 RUN yum install -y nano && \
-    yum install -y wget
+    yum install -y wget && \
+    yum install -y gcc
 
 ARG HOME='/home/worker'
 WORKDIR ${HOME}
-RUN wget https://repo.anaconda.com/miniconda/Miniconda3-py310_23.10.0-1-Linux-x86_64.sh -O miniconda.sh && \
+RUN wget https://repo.anaconda.com/miniconda/Miniconda3-py312_25.9.1-3-Linux-x86_64.sh -O miniconda.sh && \
     bash miniconda.sh -b -p ${HOME}/miniconda && \
     rm miniconda.sh
 
