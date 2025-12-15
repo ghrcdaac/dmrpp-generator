@@ -91,11 +91,12 @@ class DMRPPGenerator(Process):
         :param buckets: Object holding buckets info
         :return: Bucket object
         """
-        bucket_type = "public"
+        bucket_type = ""
         for file in files:
             if search(file.get('regex', '*.'), filename):
                 bucket_type = file['bucket']
                 break
+        if not bucket_type: raise Exception(f"File '{filename}' does not match any file regex defined within the collection definition.")
         return buckets[bucket_type]
 
     def _get_s3_extra(self):

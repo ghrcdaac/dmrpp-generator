@@ -3,13 +3,13 @@
       "files_config": [
         {
               "bucket": "private",
-              "regex": "^tpw_v07r\\d{2}_\\d{6}\\.nc$",
-              "sampleFileName": "tpw_v07r01_201910.nc"
+              "regex": "^ISS_LIS_BG_V3.\\d_.*\\.(hdf|nc)$",
+              "sampleFileName": "ISS_LIS_BG_V3.0_20231116_203042_FIN.hdf"
           },
           {
               "bucket": "protected",
-              "regex": "^tpw_v07r\\d{2}_\\d{6}\\.dmrpp$",
-              "sampleFileName": "tpw_v07r01_201910.dmrpp"
+              "regex": "^ISS_LIS_BG_V3.\\d_.*\\.dmrpp$",
+              "sampleFileName": "ISS_LIS_BG_V3.0_20231116_203042_FIN.hdf.dmrpp"
           }
       ],
       "buckets": {
@@ -35,16 +35,14 @@
         }
       },
       "collection": {
-      "name": "rss1tpwnv7r01new",
-      "version": "7R01",
-      "dataType": "netCDF",
-      "process": "rssm1tpwn",
-      "provider_path": "/vapor/monthly_1deg",
-      "url_path": "rss1tpwn__1",
+      "name": "isslisg_v3_finTEST",
+      "version": "3",
+      "process": "metadataextractor",
+      "url_path": "isslisg_v3_fin__3/",
       "duplicateHandling": "replace",
-      "granuleId": "^(tpw_v07r).*\\.nc$",
-      "granuleIdExtraction": "(tpw_v07r.*)",
-      "sampleFileName": "tpw_v07r01_201812.nc",
+      "granuleId": "^ISS_LIS_BG_V3.\\d_.*\\.(hdf|nc)$",
+      "granuleIdExtraction": "((ISS_LIS_BG_V3.\\d_).*)",
+      "sampleFileName": "ISS_LIS_BG_V3.0_20231116_203042_FIN.hdf",
       "meta": {
         "dmrpp": {
           "options" : [
@@ -54,13 +52,13 @@
       "files": [
         {
             "bucket": "private",
-            "regex": "^.*.nc$",
-            "sampleFileName": "tpw_v07r01_201910.nc"
+            "regex": "^ISS_LIS_BG_V3.\\d_.*\\.(hdf|nc)$",
+            "sampleFileName": "ISS_LIS_BG_V3.0_20231116_203042_FIN.hdf"
         },
         {
             "bucket": "protected",
-            "regex": "^tpw_v07r\\d{2}_\\d{6}\\.(dmrpp|missing)$",
-            "sampleFileName": "tpw_v07r01_201910.dmrpp"
+            "regex": "^ISS_LIS_BG_V3.\\d_.*\\.(dmrpp|missing)$",
+            "sampleFileName": "ISS_LIS_BG_V3.0_20231116_203042_FIN.hdf.dmrpp"
         }
       ]
   }
