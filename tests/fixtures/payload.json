@@ -53,12 +53,12 @@
         {
             "bucket": "private",
             "regex": "^ISS_LIS_BG_V3.\\d_.*\\.(hdf|nc)$",
-            "sampleFileName": "f16_ssmis_20190316v7.nc"
+            "sampleFileName": "ISS_LIS_BG_V3.0_20231116_203042_FIN.hdf"
         },
         {
             "bucket": "protected",
             "regex": "^ISS_LIS_BG_V3.\\d_.*\\.(dmrpp|missing)$",
-            "sampleFileName": "f16_ssmis_20190316v7.dmrpp"
+            "sampleFileName": "ISS_LIS_BG_V3.0_20231116_203042_FIN.hdf.dmrpp"
         }
       ]
   }
