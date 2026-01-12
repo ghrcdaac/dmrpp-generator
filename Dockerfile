@@ -23,8 +23,9 @@ RUN pip install ipython  && \
     pip install pytest  && \
     pip install coverage
 
-COPY requirements.txt ./
+COPY requirements* ./
 RUN pip install -r requirements.txt
+RUN pip install -r requirements_dev.txt
 
 COPY ./dmrpp_generator/ ./dmrpp_generator/
 COPY ./setup.py ./
