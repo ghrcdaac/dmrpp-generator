@@ -14,20 +14,20 @@ class GracefulKiller:
         signal.signal(signal.SIGTERM, self.exit_gracefully)
 
     def exit_gracefully(self, signum, frame):
-        print('Exiting gracefully')
+        print("Exiting gracefully")
         self.kill_now = True
 
 
 if __name__ == "__main__":
-    print(f'DMR++ argv: {sys.argv}')
+    print(f"DMR++ argv: {sys.argv}")
     if len(sys.argv) <= 1:
         killer = GracefulKiller()
-        print('DMR++ Task is running...')
+        print("DMR++ Task is running...")
         while not killer.kill_now:
             time.sleep(1)
-        print('terminating')
+        print("terminating")
     else:
-        print('DMR++ calling function')
-        print(f'argv: {type(sys.argv[1])}')
-        print(f'argv: {sys.argv[1]}')
+        print("DMR++ calling function")
+        print(f"argv: {type(sys.argv[1])}")
+        print(f"argv: {sys.argv[1]}")
         main(json.loads(sys.argv[1]), {})
