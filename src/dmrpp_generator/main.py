@@ -3,12 +3,11 @@ import logging
 import os
 import re
 import shutil
-import time
 from re import search
 import subprocess
+import importlib.metadata
 from cumulus_process import Process, s3
 from cumulus_logger import CumulusLogger
-from .version import __version__
 from .dmrpp_options import DMRppOptions
 
 LOGGER_TO_CW = CumulusLogger(name="DMRPP-Generator")
@@ -37,7 +36,7 @@ class DMRPPGenerator(Process):
             **config.get('collection', {}).get('meta', {}).get('dmrpp', {}),  # from collection
         }
         self.processing_regex = self.dmrpp_meta.get(
-            'dmrpp_regex', '.*\.(?i:(((hd?f?e?)|(nc))(4|5)?)(\.((b|g)z2?|(Z)))?)'
+            'dmrpp_regex', r'.*\.(?i:(((hd?f?e?)|(nc))(4|5)?)(\.((b|g)z2?|(Z)))?)'
         )
         super().__init__(**kwargs)
         self.path = self.path.rstrip('/') + "/"
@@ -45,7 +44,7 @@ class DMRPPGenerator(Process):
 
         # Enable logging the default is True
         enable_logging = (os.getenv('ENABLE_CW_LOGGING', 'true').lower() == 'true')
-        self.dmrpp_version = f"DMRPP {__version__}"
+        self.dmrpp_version = f"DMRPP {importlib.metadata.version("dmrpp-generator")}"
         self.logger_to_cw = LOGGER_TO_CW if enable_logging else logging
         self.logger_to_cw.info(f'config: {self.config}')
         self.timeout = int(self.dmrpp_meta.get(
@@ -96,7 +95,8 @@ class DMRPPGenerator(Process):
             if search(file.get('regex', '*.'), filename):
                 bucket_type = file['bucket']
                 break
-        if not bucket_type: raise Exception(f"File '{filename}' does not match any file regex defined within the collection definition.")
+        if not bucket_type: 
+            raise Exception(f"File '{filename}' does not match any file regex defined within the collection definition.")
         return buckets[bucket_type]
 
     def _get_s3_extra(self):
@@ -282,6 +282,7 @@ class DMRPPGenerator(Process):
         if args:
             cmd_split = cmd.split(' ', maxsplit=1)
             cmd = f'{cmd_split[0]} {" ".join(args)} {cmd_split[1]}'
+        print(f'COMMAND: {cmd}')
         self.run_command(cmd)
 
         out_files = []

@@ -36,7 +36,7 @@ def main():
     meta = try_json_decode('PAYLOAD', {})
     args = try_json_decode('DMRPP_ARGS', [])
     workstation_path = getenv('MOUNT_VOL', '/usr/share/hyrax/')
-    join_path = lambda x: join(workstation_path, x)
+    def join_path(x): return join(workstation_path, x)
     input_files = [join_path(f) for f in listdir(workstation_path) if isfile(join_path(f))]
     dmrpp = DMRPPGenerator(input=input_files, path=workstation_path)
     dmrpp.path = workstation_path

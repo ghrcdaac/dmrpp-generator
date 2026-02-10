@@ -58,7 +58,7 @@ class TestDMRPPFileGeneration:
         # Check regex failure
         with pytest.raises(Exception) as exception_test:
             process_instance.process()
-        
+        print(f'EXCEPTION TEST: {exception_test}')
         assert str(exception_test.value) == f"File '{hdf_name}_mvs.h5' does not match any file regex defined within the collection definition."
 
     def test_s3_extra_requester_pay_default(self, process_factory, granule_id):

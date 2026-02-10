@@ -1,5 +1,5 @@
 module "dmrpp_service" {
-  source              = "./modules/dmrpp_service"
+  source              = "./dmrpp_service"
   prefix              = var.prefix
   cluster_arn         = var.cluster_arn
   desired_count       = var.desired_count
@@ -14,7 +14,7 @@ module "dmrpp_service" {
 }
 
 module "dmrpp_lambda" {
-  source = "./modules/dmrpp_lambda"
+  source = "./dmrpp_lambda"
   ephemeral_storage = var.ephemeral_storage
   region = var.region
   prefix = var.prefix

@@ -1,0 +1,51 @@
+[project]
+name = "dmrpp-generator"
+version = "6.2.2"
+description = "Generates DMRPP files from HDF-EOS5 granules."
+readme = "README.md"
+requires-python = ">=3.12.0"
+dependencies = [
+    "awslambdaric==3.1.1",
+    "boto3~=1.40.29",
+    "cumulus-process~=1.6.0",
+    "requests==2.32.4"
+]
+
+[dependency-groups]
+dev = [
+    "build==1.0.3",
+    "mypy~=1.19.0",
+    "pytest~=9.0.2",
+    "pytest-mock~=3.15.1"
+]
+lint = [
+    "ruff~=0.14.0"
+]
+
+[project.urls]
+homepage = "https://github.com/ghrcdaac/dmrpp-generator"
+repository = "https://github.com/ghrcdaac/dmrpp-generator.git"
+documentation = "https://github.com/ghrcdaac/dmrpp-generator/blob/master/README.md"
+
+[tool.uv]
+package = true
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[project.scripts]
+dmrpp = "dmrpp_generator.generate_and_validate_dmrpp:main"
+dmrpp-process = "dmrpp_generator.main:DMRPPGenerator.cli"
+
+[tool.pytest]
+minversion = "9.0"
+addopts = [
+    "--maxfail=1",
+    "-ra",
+]
+pythonpath = [
+    "src"
+]
+testpaths = [
+    "tests"
+]
