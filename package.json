@@ -1,0 +1,25 @@
+{
+    "name": "dmrpp-generator",
+    "private": true,
+    "version": "6.2.2",
+    "description": "Generates DMRPP files from HDF-EOS5 granules.",
+    "homepage": "https://github.com/ghrcdaac/dmrpp-generator",
+    "repository": {
+      "type": "git",
+      "url": "https://github.com/ghrcdaac/dmrpp-generator.git"
+    },
+    "scripts": {
+      "test": "uv run pytest -q",
+      "lint": "uv run ruff check . && uv run ruff format --diff .",
+      "clean": "rm -rf dist && rm -rf lib && rm -rf .venv && mkdir dist && mkdir lib",
+      "build": "uv sync",
+      "prepare": "npm run build",
+      "package": "npm run clean && ./bin/create_release.sh",
+      "install-python-deps": "npm run build"
+    },
+    "publishConfig": {
+      "access": "restricted"
+    },
+    "author": "GHRC Developers",
+    "license": "Apache-2.0"
+  }
