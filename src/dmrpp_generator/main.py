@@ -6,8 +6,11 @@ import shutil
 from re import search
 import subprocess
 import importlib.metadata
+from typing import Any
+
 from cumulus_process import Process, s3
 from cumulus_logger import CumulusLogger
+
 from .dmrpp_options import DMRppOptions
 
 LOGGER_TO_CW = CumulusLogger(name="DMRPP-Generator")
@@ -70,11 +73,11 @@ class DMRPPGenerator(Process):
         self.logger_to_cw.info(f"verify_output: {self.verify_output}")
 
     @property
-    def input_keys(self):
+    def input_keys(self) -> dict[str, str]:
         return {"input_files": f"{self.processing_regex}(\\.cmr\\.xml|\\.json)?$"}
 
     @staticmethod
-    def get_file_type(filename, files):
+    def get_file_type(filename: str, files: list[dict]) -> str:
         """
         Get custom file type, default to metadata
         :param filename: Granule file name
@@ -88,7 +91,7 @@ class DMRPPGenerator(Process):
         return "metadata"
 
     @staticmethod
-    def get_bucket(filename, files, buckets):
+    def get_bucket(filename: str, files: list[dict], buckets: dict) -> dict:
         """
         Extract the bucket from the files
         :param filename: Granule file name
@@ -107,19 +110,20 @@ class DMRPPGenerator(Process):
             )
         return buckets[bucket_type]
 
-    def _get_s3_extra(self):
+    def _get_s3_extra(self) -> dict[str, str]:
         """Helper to build the extra dict for S3 operations."""
         extra = {}
         if self.dmrpp_meta.get("requester_pay", False):
             extra["RequestPayer"] = "requester"
         return extra
 
-    def upload_file_to_s3(self, filename, uri):
+    def upload_file_to_s3(self, filename: str, uri: str) -> Any:
         """Upload a local file to s3 if collection payload provided"""
         extra = self._get_s3_extra()
         return s3.upload(filename, uri, extra=extra)
 
-    def process(self):
+    def process(self) -> dict[str, Any]:
+        # TODO: DAAC Split is pretty much dead so this could be simplified
         if "EBS_MNT" in os.environ:
             print("Using DAAC Split Processing")
             ret = self.process_dmrpp_ebs()
@@ -129,7 +133,7 @@ class DMRPPGenerator(Process):
 
         return ret
 
-    def process_dmrpp_ebs(self):
+    def process_dmrpp_ebs(self) -> dict[str, Any]:
         collection = self.config.get("collection")
         local_store = os.getenv("EBS_MNT")
         c_id = f"{collection.get('name')}__{collection.get('version')}"
@@ -140,15 +144,13 @@ class DMRPPGenerator(Process):
             print(f"Granule Count: {len(contents.get('granules'))}")
             granules = {"granules": contents.get("granules")}
 
-        for granule in granules.get("granules"):
+        for granule in granules.get("granules", []):
             dmrpp_files = []
             for file in granule.get("files"):
                 filename = file.get("fileName")
-                if not re.search(self.processing_regex, filename):
-                    continue
-                else:
+                if file_match := re.search(self.processing_regex, filename):
                     print(
-                        f"regex {self.processing_regex} matched file {filename}: {re.search(self.processing_regex, filename).group()}"
+                        f"regex {self.processing_regex} matched file {filename}: {file_match.group()}"
                     )
                 src = file.get("key")
                 dst = f"{self.path}{filename}"
@@ -177,7 +179,7 @@ class DMRPPGenerator(Process):
         print("DMR++ processing completed.")
         return {"granules": granules, "input": self.output}
 
-    def process_cumulus(self):
+    def process_cumulus(self) -> dict[str, Any]:
         """
         Override the processing wrapper
         :return:
@@ -252,7 +254,7 @@ class DMRPPGenerator(Process):
         return self.input
 
     @staticmethod
-    def strip_old_dmrpp_files(granule):
+    def strip_old_dmrpp_files(granule: dict[str, Any]) -> None:
         # Remove old dmrpp files if they exist before adding new ones
         i = 0
         while i < len(granule["files"]):
@@ -262,7 +264,7 @@ class DMRPPGenerator(Process):
             else:
                 i += 1
 
-    def get_conditional_options(self, filename):
+    def get_conditional_options(self, filename: str) -> str:
         """
         Attempts to open and read bytes from the file to process and determine if it is HDF4 or HDF5
         """
@@ -275,12 +277,12 @@ class DMRPPGenerator(Process):
                 ret = "-H"
             else:
                 raise ValueError(
-                    f"Unable to determine if {filename} is HDF4 or HDF5. File Signature: {bts}"
+                    f"Unable to determine if {filename} is HDF4 or HDF5. File Signature: {bts.decode('utf-8')}"
                 )
 
         return ret
 
-    def get_dmrpp_command(self, dmrpp_meta, file_full_path):
+    def get_dmrpp_command(self, dmrpp_meta: dict, file_full_path: str) -> str:
         """
         Getting the command line to create DMRPP files
         """
@@ -294,10 +296,10 @@ class DMRPPGenerator(Process):
 
         return " ".join(dmrpp_cmd.split())
 
-    def run_command(self, cmd):
+    def run_command(self, cmd: str) -> None:
         """Run cmd as a system command"""
-        stdout = None
-        stderr = None
+        stdout: int | None = None
+        stderr: int | None = None
 
         if self.enable_subprocess_logging:
             stdout = subprocess.PIPE
@@ -308,7 +310,13 @@ class DMRPPGenerator(Process):
             cmd.split(), stdout=stdout, stderr=stderr, timeout=self.timeout, check=True
         )
 
-    def dmrpp_generate(self, input_file, local=False, dmrpp_meta=None, args=None):
+    def dmrpp_generate(
+        self,
+        input_file,
+        local=False,
+        dmrpp_meta: dict[str, Any] | None = None,
+        args: list[str] | None = None,
+    ) -> list[str]:
         """
         Generate DMRPP from S3 file
         """
@@ -335,7 +343,7 @@ class DMRPPGenerator(Process):
         return out_files
 
 
-def main(event, context):
+def main(event: dict[str, list[str] | dict], context: object) -> Any:
     dmrpp = DMRPPGenerator(input=event.get("input"), config=event.get("config"))
     try:
         ret = dmrpp.process()

@@ -1,15 +1,19 @@
-#! /usr/bin/python3
 import argparse
 import json
 import subprocess
 import os
 import tempfile
+import importlib.metadata
 from time import sleep
+from typing import Any
 
-from dmrpp_generator import version
 
+def _check_docker_version(log_file_path: str) -> str:
+    """
+    Docstring for check_docker_version
 
-def check_docker_version(log_file_path):
+    :param log_file_path: Path to log
+    """
     with open(log_file_path, "a+", encoding="utf-8") as output:
         dkr_comp_version = "docker compose"
         cmd = f"{dkr_comp_version} version"
@@ -21,13 +25,18 @@ def check_docker_version(log_file_path):
     return dkr_comp_version
 
 
-def run_docker_compose(
-    payload, dmrpp_args, nc_hdf_path, port, dmrrpp_service, log_file_path
+def _run_docker_compose(
+    payload: dict[str, Any],
+    dmrpp_args: str,
+    nc_hdf_path,
+    port: str | int,
+    dmrrpp_service: str,
+    log_file_path: str,
 ):
     docker_compose = f"{os.path.dirname(os.path.realpath(__file__))}/docker-compose.yml"
-    dkr_comp_version = check_docker_version(log_file_path)
+    dkr_comp_version = _check_docker_version(log_file_path)
     if "DMRPP_VERSION" not in os.environ:
-        os.environ["DMRPP_VERSION"] = version.__version__
+        os.environ["DMRPP_VERSION"] = importlib.metadata.version("dmrpp-generator")
     with open(log_file_path, "r+", encoding="utf-8") as output:
         try:
             cmd = (
@@ -37,12 +46,20 @@ def run_docker_compose(
                 f"PORT={port} "
                 f"{dkr_comp_version} -f {docker_compose} up {dmrrpp_service}"
             )
-            compose_ps = subprocess.Popen(
-                cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+            # compose_ps = subprocess.Popen(
+            #     cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT
+            # )
+            compose_ps = subprocess.run(
+                cmd,
+                shell=True,
+                check=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                capture_output=True,
+                text=True,
             )
-
             for line in compose_ps.stdout:
-                line = line.decode().strip()
+                # line = line.decode().strip()
                 output.write(f"{line}\n")
                 print(line)
 
@@ -53,7 +70,7 @@ def run_docker_compose(
 
 
 def main():
-    print(f"dmrpp-generator {version.__version__}\n")
+    print(f"dmrpp-generator {importlib.metadata.version('dmrpp-generator')}\n")
     parser = argparse.ArgumentParser(
         description="Generate and validate DMRPP files. Any DMR++ commandline option can be provided in addition to"
         " the options listed below. To see what options are available check the documentation: "
@@ -98,7 +115,7 @@ def main():
     parser.set_defaults(validate=True)
 
     args, unknown = parser.parse_known_args()
-    unknown = json.dumps(unknown)
+    unknown_str = json.dumps(unknown)
     nc_hdf_path, port, payload, validate = [getattr(args, ele) for ele in vars(args)]
     log_file_location = tempfile.mkstemp(prefix="dmrpp-generator-")[1]
     print(f"Log file: {log_file_location}")
@@ -113,8 +130,8 @@ def main():
         print(message_visit_server)
         sleep(2)
 
-    run_docker_compose(
-        payload, unknown, nc_hdf_path, port, dmrrpp_service, log_file_location
+    _run_docker_compose(
+        payload, unknown_str, nc_hdf_path, port, dmrrpp_service, log_file_location
     )
 
 

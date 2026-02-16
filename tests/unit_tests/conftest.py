@@ -1,33 +1,37 @@
+from typing import Any, Callable
 import pytest
 import os
 import json
+
 from dmrpp_generator.main import DMRPPGenerator
 
 
 @pytest.fixture(scope="session")
-def fixture_path():
+def fixture_path() -> str:
     return os.path.join(os.path.dirname(__file__), "fixtures")
 
 
 @pytest.fixture(scope="session")
-def granule_id():
+def granule_id() -> str:
     return "ISS_LIS_BG_V3.0_20170702_000346_FIN"
 
 
 @pytest.fixture(scope="module")
-def config_data(fixture_path):
+def config_data(fixture_path: str) -> dict[str, Any]:
     with open(os.path.join(fixture_path, "payload.json"), encoding="UTF-8") as fle:
         return json.load(fle)["config"]
 
 
 @pytest.fixture(scope="module")
-def payload_rp_data():
+def payload_rp_data() -> dict[str, Any]:
     return {"requester_pay": True, "options": []}
 
 
 @pytest.fixture
-def process_factory(granule_id, config_data, fixture_path):
-    def _make_instance(filename):
+def process_factory(
+    granule_id: str, config_data: dict[str, Any], fixture_path: str
+) -> Callable[[str], DMRPPGenerator]:
+    def _make_instance(filename) -> DMRPPGenerator:
         input_file = {
             "granules": [
                 {
@@ -68,5 +72,5 @@ def process_factory(granule_id, config_data, fixture_path):
 
 
 @pytest.fixture(scope="session")
-def dmrpp_cli(fixture_path):
+def dmrpp_cli(fixture_path) -> DMRPPGenerator:
     return DMRPPGenerator(input=[], config={}, path=fixture_path)

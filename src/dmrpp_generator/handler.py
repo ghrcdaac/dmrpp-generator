@@ -2,8 +2,9 @@ import json
 import signal
 import sys
 import time
+from types import FrameType
 
-from dmrpp_generator.main import main
+from .main import main
 
 
 class GracefulKiller:
@@ -13,7 +14,7 @@ class GracefulKiller:
         signal.signal(signal.SIGINT, self.exit_gracefully)
         signal.signal(signal.SIGTERM, self.exit_gracefully)
 
-    def exit_gracefully(self, signum, frame):
+    def exit_gracefully(self, signum: int, frame: FrameType | None) -> None:
         print("Exiting gracefully")
         self.kill_now = True
 

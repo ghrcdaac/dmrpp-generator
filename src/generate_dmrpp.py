@@ -4,6 +4,8 @@ from os.path import isfile, join, basename
 import json
 from re import search
 import logging
+from typing import Any
+
 from dmrpp_generator.main import DMRPPGenerator
 
 logging.basicConfig(
@@ -14,7 +16,7 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 
-def try_json_decode(key, required_type):
+def try_json_decode(key: str, required_type: Any) -> Any:
     logger.info(f"getting os_var: {key}")
     os_var = getenv(key, required_type)
     try:

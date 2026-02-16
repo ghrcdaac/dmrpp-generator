@@ -3,7 +3,7 @@ import os
 
 
 class TestDMRPPFileGeneration:
-    def test_generate_dmrpp_success(self, mocker, process_factory, granule_id):
+    def test_generate_dmrpp_success(self, mocker, process_factory, granule_id) -> None:
         """
         Combined logic of original test_1, test_2, and test_3.
         Tests successful generation and output schema.
@@ -48,7 +48,9 @@ class TestDMRPPFileGeneration:
         )
         assert dmrpp_exists is True
 
-    def test_fail_on_no_matching_regex(self, mocker, process_factory, granule_id):
+    def test_fail_on_no_matching_regex(
+        self, mocker, process_factory, granule_id
+    ) -> None:
         """
         Original test_6: Specifically tests the regex failure using an .hdf extension.
         """
@@ -80,14 +82,14 @@ class TestDMRPPFileGeneration:
             == f"File '{hdf_name}_mvs.h5' does not match any file regex defined within the collection definition."
         )
 
-    def test_s3_extra_requester_pay_default(self, process_factory, granule_id):
+    def test_s3_extra_requester_pay_default(self, process_factory, granule_id) -> None:
         process_instance = process_factory(f"{granule_id}.nc")
         extra_dict = process_instance._get_s3_extra()
         assert not bool(extra_dict)
 
     def test_s3_extra_requester_pay_enabled(
         self, mocker, process_factory, granule_id, payload_rp_data
-    ):
+    ) -> None:
         process_instance = process_factory(f"{granule_id}.nc")
         mocker.patch.dict(process_instance.dmrpp_meta, payload_rp_data, clear=True)
         extra_dict = process_instance._get_s3_extra()

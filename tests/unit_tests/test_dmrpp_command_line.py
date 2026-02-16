@@ -1,4 +1,6 @@
-def test_hdf4(fixture_path, dmrpp_cli):
+from dmrpp_generator.main import DMRPPGenerator
+
+def test_hdf4(fixture_path: str, dmrpp_cli: DMRPPGenerator) -> None:
     """
     Testing command generation for hdf4 files
     """
@@ -9,7 +11,7 @@ def test_hdf4(fixture_path, dmrpp_cli):
     )
 
 
-def test_hdf5(fixture_path, dmrpp_cli):
+def test_hdf5(fixture_path: str, dmrpp_cli: DMRPPGenerator) -> None:
     """
     Testing command generation for hdf5 files
     """
@@ -20,7 +22,7 @@ def test_hdf5(fixture_path, dmrpp_cli):
     )
 
 
-def test_matlab_hdf5(fixture_path, dmrpp_cli):
+def test_matlab_hdf5(fixture_path: str, dmrpp_cli: DMRPPGenerator) -> None:
     """
     Testing command generation for matlab files
     """
@@ -31,7 +33,7 @@ def test_matlab_hdf5(fixture_path, dmrpp_cli):
     )
 
 
-def test_option(fixture_path, dmrpp_cli):
+def test_option(fixture_path: str, dmrpp_cli: DMRPPGenerator) -> None:
     """
     Testing command generation with options
     """
