@@ -53,6 +53,20 @@ class TestDMRPPFileGeneration(TestCase):
                         "key": f"{granule_name}.cmr.json",
                         "size": 1381,
                         "type": "metadata",
+                    },
+                    {
+                        "bucket": "fake-cumulus-protected",
+                        "fileName": f"{granule_name}.dmrpp",
+                        "key": f"{granule_name}.dmrpp",
+                        "size": 18232,
+                        "type": "metadata",
+                    },
+                    {
+                        "bucket": "fake-cumulus-protected",
+                        "fileName": f"{granule_name}_mvs.h5",
+                        "key": f"fakepath/2020/001/{granule_name}_mvs.h5",
+                        "size": 11645,
+                        "type": "metadata",
                     }
                     ],
                     "version": "2019.0"
@@ -118,9 +132,6 @@ class TestDMRPPFileGeneration(TestCase):
             assert bool(extra_dict) and extra_dict['RequestPayer'] == 'requester'
 
     # Test 6 Prep
-    process_instance = DMRPPGenerator(input=get_input_file(granule_id, hdf_granule_name), config=payload_data['config'], path=fixture_path)
-    process_instance.path = fixture_path
-
     @patch('dmrpp_generator.main.DMRPPGenerator.upload_file_to_s3',
         return_value={granule_id:f's3://{hdf_granule_name}.dmrpp'})
     @patch('cumulus_process.Process.fetch_all',
@@ -138,3 +149,26 @@ class TestDMRPPFileGeneration(TestCase):
         with pytest.raises(Exception) as exception_test:
             StorageValues.processing_output = self.process_instance.process()
         assert str(exception_test.value) == "File 'ISS_LIS_BG_V3.0_20170702_000346_FIN.hdf_mvs.h5' does not match any file regex defined within the collection definition."
+
+    # Test 7 Prep
+    hdf_input = get_input_file(granule_id, hdf_granule_name)
+    @patch('dmrpp_generator.main.DMRPPGenerator.upload_file_to_s3',
+        return_value={granule_id:f's3://{hdf_granule_name}.dmrpp'})
+    @patch('cumulus_process.Process.fetch_all',
+        return_value={'input_key': [os.path.join(os.path.dirname(__file__), f"fixtures/{hdf_granule_name}")]})
+    @patch('os.remove', return_value=hdf_granule_name)
+    @patch('cumulus_process.s3.download', return_value=f"{process_instance.path}/{hdf_granule_name}")
+    def test_7_strip_old_inputs(self, mock_upload, mock_fetch, mock_remove, mock_download):
+        _ = mock_upload, mock_fetch, mock_remove, mock_download
+
+        local_payload = self.payload_data
+        local_payload['config']['collection']['files'].append({
+            "bucket": "protected",
+            "regex": "^ISS_LIS_BG_V3.\\d_.*_mvs\\.h5$",
+            "sampleFileName": "ISS_LIS_BG_V3.0_20231116_203042_FIN.hdf_mvs.h5"
+        })
+
+        local_process_instance = DMRPPGenerator(input=self.hdf_input, config=local_payload['config'], path=self.fixture_path)
+
+        StorageValues.processing_output = local_process_instance.process()
+        self.assertEqual(len(StorageValues.processing_output['granules'][0]['files']), 6)

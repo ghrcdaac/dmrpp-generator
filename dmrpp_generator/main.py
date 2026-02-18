@@ -37,7 +37,7 @@ class DMRPPGenerator(Process):
             **config.get('collection', {}).get('meta', {}).get('dmrpp', {}),  # from collection
         }
         self.processing_regex = self.dmrpp_meta.get(
-            'dmrpp_regex', '.*\.(?i:(((hd?f?e?)|(nc))(4|5)?)(\.((b|g)z2?|(Z)))?)'
+            'dmrpp_regex', '.*\.(?i:(((hd?f?e?)|(nc))(4|5)?)(\.((b|g)z2?|(Z)))?)(?<!_mvs\.h5)$'
         )
         super().__init__(**kwargs)
         self.path = self.path.rstrip('/') + "/"
@@ -225,7 +225,7 @@ class DMRPPGenerator(Process):
         i = 0
         while i < len(granule['files']):
             temp = granule['files'][i]
-            if str(temp.get('fileName')).endswith('dmrpp'):
+            if str(temp.get('fileName')).endswith('dmrpp') or str(temp.get('fileName')).endswith('_mvs.h5'):
                 granule['files'].pop(i)
             else:
                 i += 1
