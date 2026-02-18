@@ -171,5 +171,4 @@ class TestDMRPPFileGeneration(TestCase):
         local_process_instance = DMRPPGenerator(input=self.hdf_input, config=local_payload['config'], path=self.fixture_path)
 
         StorageValues.processing_output = local_process_instance.process()
-        print(StorageValues.processing_output['granules'][0]['files'])
         self.assertEqual(len(StorageValues.processing_output['granules'][0]['files']), 6)
