@@ -188,7 +188,6 @@ class DMRPPGenerator(Process):
                                         f" matches filename to process {file_['fileName']}")
                 input_file_path = f's3://{file_["bucket"]}/{file_["key"]}'
                 output_file_paths = self.dmrpp_generate(input_file=input_file_path, dmrpp_meta=self.dmrpp_meta)
-
                 if not output_generated and len(output_file_paths) > 0:
                     output_generated = True
 
@@ -206,18 +205,19 @@ class DMRPPGenerator(Process):
                         upload_location = f's3://{dmrpp_file["bucket"]}/{dmrpp_file["key"]}'
                         self.logger_to_cw.info(f'upload_location: {upload_location}')
                         self.upload_file_to_s3(output_file_path, f's3://{dmrpp_file["bucket"]}/{dmrpp_file["key"]}')
+                        os.remove(output_file_path)
             
                 if len(dmrpp_files) == 0:
                     self.logger_to_cw.warning(f'No dmrpp files were produced for {granule}')
 
             self.strip_old_dmrpp_files(granule)
+
             granule['files'].extend(dmrpp_files)
 
         if self.verify_output and not output_generated:
             raise Exception('No dmrpp files were produced and verify_output was enabled.')
                     
         return self.input
-    
 
     @staticmethod
     def strip_old_dmrpp_files(granule):
