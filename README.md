@@ -239,11 +239,11 @@ Find the version you want to use and get the asset URL for the .whl file and ins
 pip install https://github.com/ghrcdaac/dmrpp-generator/releases/download/v<release_version>/dmrpp_file_generator-<dmrpp_version>-py3-none-any.whl
 ```
 
-# Supported get_dmrpp configuration
+# Supported gen_dmrpp_side_car configuration
 ## Via env vars
 Create a PAYLOAD environment variable holding dmrpp options
 ```
-PAYLOAD='{"dmrpp_regex": "^.*.nc4", "options":[{"flag": "-M"}, {"flag": "-s", "opt": "s3://ghrcsbxw-public/dmrpp_config/file.config","download": "true"}]}'
+PAYLOAD='{"dmrpp_regex": "^.*.nc4", "options":[{"flag": "-c"}]}'
 ```
 `dmrpp_regex` is optional to override the DMRPP-Generator regex
 
@@ -267,7 +267,7 @@ optional arguments:
   -prt PORT, --port PORT
                         Port number to Hyrax local server
   -pyld PAYLOAD, --payload PAYLOAD
-                        Payload to pass to the besd get_dmrpp call. If not set, will check for PAYLOAD environment variable, or default to '{}'
+                        Payload to pass to the besd gen_dmrpp_side_car call. If not set, will check for PAYLOAD environment variable, or default to '{}'
   --validate            Validate netCDF4 and HDF5 files against OPeNDAP local server. This is the default behavior
   --no-validate         Do not validate netCDF4 and HDF5 files against OPeNDAP local server. The default behavior is --validate.
 
