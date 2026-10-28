@@ -33,3 +33,7 @@ override.tf.json
 dist/
 .DS_Store
 env.sh
+build/
+__pycache__/
+*.egg-info/
+.vscode/
