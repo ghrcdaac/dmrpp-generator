@@ -8,7 +8,7 @@ from re import search
 import subprocess
 from cumulus_process import Process, s3
 from cumulus_logger import CumulusLogger
-from .version import __version__
+
 from .dmrpp_options import DMRppOptions
 
 LOGGER_TO_CW = CumulusLogger(name="DMRPP-Generator")

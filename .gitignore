@@ -37,3 +37,7 @@ build/
 __pycache__/
 *.egg-info/
 .vscode/
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache

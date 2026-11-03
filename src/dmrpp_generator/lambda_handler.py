@@ -1,6 +1,6 @@
 from run_cumulus_task import run_cumulus_task
 
-from dmrpp_generator.main import main
+from .main import main
 
 
 def handler(event, context):

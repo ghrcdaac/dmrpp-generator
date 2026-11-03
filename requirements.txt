@@ -1,4 +1,0 @@
-boto3~=1.40.29
-cumulus_message_adapter_python~=2.4.0
-cumulus_process==1.7.0
-requests==2.33.0
