@@ -1,66 +1,79 @@
+"""Module for parsing DMRPP arguments and downloading files via HTTP and S3."""
+
 import logging
 import os
 import re
 from tempfile import mkdtemp
+from typing import Any
+
 import boto3
 import requests
 
 
 class DMRppOptions:
-    """
-    DMRpp Options
-    """
-    def __init__(self, host_path=mkdtemp()) -> None:
-        self.s3_client = boto3.client('s3')
+    """Manages incoming DMRPP arguments and downloads files."""
+
+    def __init__(self, host_path: str = mkdtemp()):
+        """Initialize S3 client, requests, and local path."""
+        self.s3_client = boto3.client("s3")
         self.session = requests.Session()
         self.host_path = host_path.rstrip("/")
 
-    def __download_files(self, link):
-        """
-        Calls the corresponding download function for the url's protocol.
-        :param link: Location to find the file to download
+    def _download_files(self, link: str) -> str:
+        """Call the corresponding download function for the url's protocol.
+        :param link: Location to find the file to download.
+        :return: Local path to which downloaded file is saved.
         """
         filename = os.path.basename(link)
-        local_path = f'{self.host_path}/{filename}'
-        protocol = re.match(r'.+?(?=:)', link).group()
-        switcher = {'http': self.__get_http_file, 'https': self.__get_http_file,
-                    's3': self.__get_s3_file}
+        local_path = f"{self.host_path}/{filename}"
+        protocol = ""
+        if p_match := re.match(r".+?(?=:)", link):
+            protocol = p_match.group()
+
         if not os.path.isfile(local_path):
-            switcher.get(protocol, self.__switcher_default)(link=link, local_path=local_path, protocol=protocol)
+            match protocol:
+                case "http" | "https":
+                    self._get_http_file(
+                        link=link, local_path=local_path, protocol=protocol
+                    )
+                case "s3":
+                    self._get_s3_file(
+                        link=link, local_path=local_path, protocol=protocol
+                    )
+                case _:
+                    self._switcher_default(protocol, link=link, local_path=local_path)
         return local_path
 
     @staticmethod
-    def __switcher_default(protocol, **kwargs):
-        """
-
-        """
-        message = f"The protocol {protocol} is not implemented yet: called using {kwargs}"
+    def _switcher_default(protocol: str, **kwargs) -> None:
+        """Log unsupported protocol and raises an exception."""
+        message = (
+            f"The protocol {protocol} is not implemented yet: called using {kwargs}"
+        )
         logging.error(message)
         raise Exception(message)
 
-    def __get_http_file(self, link, local_path, **kwargs):
-        """
-        Downloads the file at the url and stores it at the local path.
+    def _get_http_file(self, link: str, local_path: str, **kwargs) -> None:
+        """Download the file at the url and stores it at the local path.
         :param url: Url of the file to download.
-        :param local_path: Location to write the downloaded file to.
+        :param local_path: Location to which to write the downloaded file.
         """
         try:
             response = self.session.get(link)
-            with open(local_path, 'wb') as file:
+            with open(local_path, "wb") as file:
                 file.write(response.content)
         except Exception as err:
-            err_msg = f"called using {kwargs}, error : {err}"
+            err_msg = f"Called using {kwargs}, error : {err}"
             logging.error(msg=str(err_msg))
             raise err
         pass
 
-    def __get_s3_file(self, link, local_path, **kwargs):
-        """
-        Downloads the file at the s3_link and stores it at the local path.
+    def _get_s3_file(self, link: str, local_path: str, **kwargs) -> None:
+        """Download the file at the from the S3 link and stores it at the local path.
         :param s3_link: s3 link of the file to download.
-        :param local_path: Location to write the downloaded file to.
+        :param local_path: Location to which to write the downloaded file.
         """
-        reg_res = re.match(r'^.*://([^/]*)/(.*)', link)
+        reg_res = re.match(r"^.*://([^/]*)/(.*)", link)
         bucket_name = reg_res.group(1)
         key = reg_res.group(2)
         try:
@@ -71,23 +84,19 @@ class DMRppOptions:
             raise err
         pass
 
-    def get_dmrpp_option(self, dmrpp_meta):
+    def get_dmrpp_option(self, dmrpp_meta: dict[str, Any]) -> str:
+        """Parse DMRPP options and downloads file.
+        :param dmrpp_meta: DMR meta string.
+        :return A sequential string with the flags and URLs in order.
         """
-        :param dmrpp_meta: DMR meta string
-        :return A sequential string with the flags and URLs in order
-        """
-        res_str = ''
-        for option in dmrpp_meta.get('options', []):
-            flag = option.get('flag')
+        res_str = ""
+        for option in dmrpp_meta.get("options", []):
+            flag = option.get("flag")
             if not flag:
                 raise Exception("A DMRPP flag should be present")
-            res_str = f'{res_str} {flag}'
-            file_link = option.get('opt', '')
-            download = option.get('download') == 'true'
-            location = self.__download_files(file_link) if download else file_link
-            res_str = f'{res_str} {location}'
+            res_str = f"{res_str} {flag}"
+            file_link = option.get("opt", "")
+            download = option.get("download") == "true"
+            location = self._download_files(file_link) if download else file_link
+            res_str = f"{res_str} {location}"
         return " ".join(f"{res_str}".split())
-
-
-if __name__ == '__main__':
-    pass
