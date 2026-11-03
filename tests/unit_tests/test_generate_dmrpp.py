@@ -1,6 +1,7 @@
 import copy
 import os
-from typing import Any, Callable
+from collections.abc import Callable
+from typing import Any
 
 import pytest
 
@@ -8,6 +9,7 @@ from dmrpp_generator.main import DMRPPGenerator
 
 GRANULE_NAME = "ISS_LIS_BG_V3.0_20170702_000346_FIN.nc"
 HDF_GRANULE_NAME = "ISS_LIS_BG_V3.0_20170702_000346_FIN.hdf"
+EXPECTED_HDF_FILE_COUNT = 5
 
 
 @pytest.fixture
@@ -23,7 +25,9 @@ def dmrpp_output(
     return process_instance, process_instance.process()
 
 
-def test_dmrpp_file_created(dmrpp_output: tuple[DMRPPGenerator, dict[str, Any]]) -> None:
+def test_dmrpp_file_created(
+    dmrpp_output: tuple[DMRPPGenerator, dict[str, Any]],
+) -> None:
     """The generated .dmrpp file should exist on disk."""
     process_instance, _ = dmrpp_output
     expected_file_path = f"{process_instance.path}/{GRANULE_NAME}.dmrpp"
@@ -43,9 +47,7 @@ def test_dmrpp_file_present_in_output(
     _, output = dmrpp_output
     dmrpp_file = f"{GRANULE_NAME}.dmrpp"
     filenames = {
-        file["fileName"]
-        for granule in output["granules"]
-        for file in granule["files"]
+        file["fileName"] for granule in output["granules"] for file in granule["files"]
     }
     assert dmrpp_file in filenames
 
@@ -98,12 +100,6 @@ def test_strip_old_inputs(
 ) -> None:
     """Old dmrpp/mvs.h5 file entries already on the granule should be stripped
     and replaced by the newly generated ones.
-
-    The granule starts with 5 files: data, .md5, .cmr.json, plus 2 stale
-    entries (an old .dmrpp and an old _mvs.h5) that strip_old_dmrpp_files()
-    removes before appending the freshly generated outputs. With the regex
-    below added, the hdf4 binary produces both a .dmrpp and a _mvs.h5 for
-    this granule, so the final count is 3 (untouched) + 2 (new outputs) = 5.
     """
     working_dir = isolated_granule(HDF_GRANULE_NAME)
     mock_process_pipeline(HDF_GRANULE_NAME, source_dir=working_dir)
@@ -139,4 +135,4 @@ def test_strip_old_inputs(
     )
 
     output = process_instance.process()
-    assert len(output["granules"][0]["files"]) == 5
+    assert len(output["granules"][0]["files"]) == EXPECTED_HDF_FILE_COUNT

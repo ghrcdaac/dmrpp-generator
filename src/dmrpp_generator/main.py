@@ -161,7 +161,7 @@ class DMRPPGenerator(Process):
             print(f"Granule Count: {len(contents.get('granules'))}")
             granules = {"granules": contents.get("granules")}
 
-        for granule in granules.get("granules"):
+        for granule in granules.get("granules") or []:
             dmrpp_files = []
             for file in granule.get("files"):
                 filename = file.get("fileName")
@@ -301,7 +301,7 @@ class DMRPPGenerator(Process):
             else:
                 raise ValueError(
                     f"Unable to determine if {filename} is HDF4 or HDF5. "
-                    f"File Signature: {bts}"
+                    f"File Signature: {bts!r}"
                 )
 
         return ret

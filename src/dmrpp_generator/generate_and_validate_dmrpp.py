@@ -10,7 +10,6 @@ import tempfile
 from dataclasses import dataclass
 from pathlib import Path
 from time import sleep
-from typing import Any
 
 # The only docker compose invocation forms this tool will ever execute.
 # Used for validation to meet S603.
@@ -26,7 +25,7 @@ _VALID_DMRPP_SERVICES = frozenset({"dmrpp-generator", ""})
 
 
 def _resolve_docker_compose_command() -> list[str]:
-    """Resolve the docker executable(s) needed to run `docker compose`.
+    """Resolve the docker executable needed to run`docker compose.
     :return: Argument list prefix, e.g. ["docker", "compose"] or ["docker-compose"].
     :raises FileNotFoundError: If neither docker nor docker-compose is installed.
     """
@@ -58,7 +57,7 @@ def check_docker_version(log_file_path: str) -> list[str]:
 class DockerComposeRequest:
     """Parameters needed to start the DMRPP generator docker container."""
 
-    payload: dict[str, Any]
+    payload: str
     dmrpp_args: str
     nc_hdf_path: str
     port: str | int
@@ -118,7 +117,7 @@ def _run_docker_compose(request: DockerComposeRequest) -> None:
             )
 
             for line in compose_ps.stdout:
-                line_strip = line.decode().strip()
+                line_strip = line.strip()
                 output.write(f"{line_strip}\n")
                 print(line_strip)
 

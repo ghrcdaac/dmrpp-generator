@@ -2,9 +2,7 @@ from dmrpp_generator.main import _GEN_DMRPP_SIDE_CAR_EXECUTABLE, DMRPPGenerator
 
 
 def test_hdf4(fixture_path: str, dmrpp_cli: DMRPPGenerator) -> None:
-    """
-    Test command generation for hdf4 files
-    """
+    """Test command generation for hdf4 files."""
     file_full_path = f"{fixture_path}/test_file.hdf4"
     assert dmrpp_cli.get_dmrpp_command(
         dmrpp_meta={}, file_full_path=file_full_path
@@ -12,9 +10,7 @@ def test_hdf4(fixture_path: str, dmrpp_cli: DMRPPGenerator) -> None:
 
 
 def test_hdf5(fixture_path: str, dmrpp_cli: DMRPPGenerator) -> None:
-    """
-    Test command generation for hdf5 files
-    """
+    """Test command generation for hdf5 files."""
     file_full_path = f"{fixture_path}/test_file.hdf5"
     assert dmrpp_cli.get_dmrpp_command(
         dmrpp_meta={}, file_full_path=file_full_path
@@ -22,9 +18,7 @@ def test_hdf5(fixture_path: str, dmrpp_cli: DMRPPGenerator) -> None:
 
 
 def test_matlab_hdf5(fixture_path: str, dmrpp_cli: DMRPPGenerator) -> None:
-    """
-    Test command generation for matlab files
-    """
+    """Test command generation for matlab files."""
     file_full_path = f"{fixture_path}/test_file.matlab.hdf5"
     assert dmrpp_cli.get_dmrpp_command(
         dmrpp_meta={}, file_full_path=file_full_path
@@ -32,9 +26,7 @@ def test_matlab_hdf5(fixture_path: str, dmrpp_cli: DMRPPGenerator) -> None:
 
 
 def test_option(fixture_path: str, dmrpp_cli: DMRPPGenerator) -> None:
-    """
-    Testing command generation with options
-    """
+    """Testing command generation with options."""
     file_full_path = f"{fixture_path}/test_file.matlab.hdf5"
     test_meta = {"options": [{"flag": "-c"}]}
     assert dmrpp_cli.get_dmrpp_command(

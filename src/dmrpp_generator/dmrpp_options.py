@@ -74,6 +74,8 @@ class DMRppOptions:
         :param local_path: Location to which to write the downloaded file.
         """
         reg_res = re.match(r"^.*://([^/]*)/(.*)", link)
+        if reg_res is None:
+            raise ValueError(f"Could not parse S3 link: {link!r}")
         bucket_name = reg_res.group(1)
         key = reg_res.group(2)
         try:

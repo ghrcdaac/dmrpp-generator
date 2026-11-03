@@ -1,8 +1,10 @@
-from typing import Any, Callable
-import pytest
-import os
 import json
+import os
 import shutil
+from collections.abc import Callable
+from typing import Any
+
+import pytest
 
 from dmrpp_generator.main import DMRPPGenerator
 
@@ -112,7 +114,9 @@ def isolated_granule(tmp_path, fixture_path: str) -> Callable[[str], str]:
 def mock_process_pipeline(mocker) -> Callable[..., None]:
     """Patch the external (non-filesystem) calls made during process()."""
 
-    def _apply(granule_name: str, source_dir: str, dmrpp_name: str | None = None) -> None:
+    def _apply(
+        granule_name: str, source_dir: str, dmrpp_name: str | None = None
+    ) -> None:
         dmrpp_name = dmrpp_name or f"{granule_name}.dmrpp"
         mocker.patch(
             "dmrpp_generator.main.DMRPPGenerator.upload_file_to_s3",
@@ -120,9 +124,7 @@ def mock_process_pipeline(mocker) -> Callable[..., None]:
         )
         mocker.patch(
             "cumulus_process.Process.fetch_all",
-            return_value={
-                "input_key": [os.path.join(source_dir, granule_name)]
-            },
+            return_value={"input_key": [os.path.join(source_dir, granule_name)]},
         )
         mocker.patch("os.remove", return_value=granule_name)
         mocker.patch(
