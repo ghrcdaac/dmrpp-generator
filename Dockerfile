@@ -29,6 +29,6 @@ COPY README.md .
 RUN uv sync --all-groups
 ENV PATH="${BUILD}/.venv/bin:$PATH"
 
-RUN uv run pytest
+RUN uv run pytest --cov=src --cov-report=lcov:coverage/lcov.info
 CMD ["python", "./src/generate_dmrpp.py"]
 ENTRYPOINT []
