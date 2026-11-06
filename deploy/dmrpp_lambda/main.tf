@@ -13,7 +13,7 @@ resource "aws_lambda_function" "dmrpp_generator" {
   memory_size = var.memory_size
 
   image_config {
-    entry_point = ["/home/worker/miniconda/bin/python", "-m", "awslambdaric"]
+    entry_point = ["/home/worker/build/.venv/bin/python", "-m", "awslambdaric"]
     command = ["dmrpp_generator.lambda_handler.handler"]
   }
 
