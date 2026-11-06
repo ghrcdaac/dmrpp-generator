@@ -4,13 +4,20 @@ export VERSION=$1
 export RELEASE_NAME=$(basename "$GITHUB_REPO")
 
 ## Create Release
- export RELEASE_URL=$(curl -H\
-"Authorization: token $GITHUB_TOKEN"\
- -d "{\"tag_name\": \"$VERSION\", \"target_commitsh\": \"$VERSION\", \"name\": \"$VERSION\", \"body\": \"Release $VERSION\" }"\
- -H "Content-Type: application/json"\
- -X POST\
- https://api.github.com/repos/"$GITHUB_REPO"/releases \
- | grep \"url\" | grep releases | sed -e 's/.*\(https.*\)\"\,/\1/' | sed -e 's/api/uploads/')
+response=$(curl -s \
+  -H "Authorization: token $GITHUB_TOKEN" \
+  -d "{\"tag_name\": \"$VERSION\", \"target_commitish\": \"$VERSION\", \"name\": \"$VERSION\", \"body\": \"Release $VERSION\" }" \
+  -H "Content-Type: application/json" \
+  -X POST \
+  https://api.github.com/repos/"$GITHUB_REPO"/releases)
+
+export RELEASE_URL=$(echo "$response" | jq -r '.upload_url | sub("\\{.*$"; "")')
+
+if [[ -z "$RELEASE_URL" || "$RELEASE_URL" == "null" ]]; then
+  echo "Failed to create GitHub release. API response:"
+  echo "$response"
+  exit 1
+fi
 
 
 
