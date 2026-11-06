@@ -1,0 +1,122 @@
+[project]
+name = "dmrpp-generator"
+version = "6.2.6"
+description = "Generates DMRPP files from HDF-EOS5 granules."
+readme = "README.md"
+requires-python = ">=3.12.0"
+dependencies = [
+    "awslambdaric~=4.2.3",
+    "boto3~=1.40.29",
+    "cumulus-process~=1.7.0",
+    "requests==2.33.0"
+]
+
+[dependency-groups]
+dev = [
+    "build==1.0.3",
+    "mypy~=1.19.0",
+    "pytest~=9.0.2",
+    "pytest-cov~=7.0.0",
+    "pytest-mock~=3.15.1",
+]
+lint = [
+    "ruff~=0.14.0"
+]
+
+[project.urls]
+homepage = "https://github.com/ghrcdaac/dmrpp-generator"
+repository = "https://github.com/ghrcdaac/dmrpp-generator.git"
+documentation = "https://github.com/ghrcdaac/dmrpp-generator/blob/master/README.md"
+
+[tool.uv]
+package = true
+
+[build-system]
+requires = ["uv_build>=0.10.1,<0.14.0"]
+build-backend = "uv_build"
+
+[project.scripts]
+dmrpp = "dmrpp_generator.generate_and_validate_dmrpp:main"
+dmrpp-process = "dmrpp_generator.main:DMRPPGenerator.cli"
+
+[tool.pytest]
+minversion = "9.0"
+addopts = [
+    "--maxfail=1",
+    "-ra",
+]
+pythonpath = [
+    "src"
+]
+testpaths = [
+    "tests"
+]
+
+[tool.ruff.lint]
+# https://docs.astral.sh/ruff/rules/
+# can be removed for Cumulus core PR
+select = [
+  # pycodestyle errors, ignore lints that are covered by the ruff formatter
+  "E4", "E7", "E9",
+  # line-too-long - the formatter doesn't always fix these
+  "E501",
+  # Pyflakes
+  "F",
+  # isort
+  "I",
+  # pylint
+  "PL",
+  # pyupgrade
+  "UP",
+  # bandit
+  "S",
+  # pep8-naming
+  "N",
+  # pydoclint
+  "DOC",
+  # pydocstyle
+  "D",
+]
+
+ignore = [
+  # undocumented-magic-method
+  "D105",
+  # blank-line-after-function
+  "D202",
+  # incorrect-blank-line-before-class - incompatible with D211
+  "D203",
+  # missing-blank-line-after-summary - false positives
+  "D205",
+  # multi-line-summary-second-line - incompatible with D212
+  "D213",
+  # error-suffix-on-exception-name
+  "N818",
+  # assert
+  "S101",
+  # start-process-with-partial-path
+  "S607",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Ignore missing docstring rules for non-exported python code
+"**/example/**.py" = ["D1"]
+"**/migrations/**.py" = ["D1", "E501"]
+"**/tests/**.py" = ["D1", "PLR0913"]
+"scripts/**.py" = ["D1"]
+"__init__.py" = ["D104"]
+
+[tool.mypy]
+check_untyped_defs = true
+disallow_any_unimported = true
+follow_untyped_imports = true
+local_partial_types = true
+strict_bytes = true
+strict_equality = true
+warn_redundant_casts = true
+warn_unreachable = true
+warn_unused_ignores = true
+exclude = ["^build/"]
+
+[[tool.mypy.overrides]]
+module = ["cumulus_logger", "run_cumulus_task"]
+ignore_missing_imports = true
