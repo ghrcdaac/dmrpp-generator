@@ -1,7 +1,7 @@
 {
     "name": "dmrpp-generator",
     "private": true,
-    "version": "6.2.3",
+    "version": "6.2.6",
     "description": "Generates DMRPP files from HDF-EOS5 granules.",
     "homepage": "https://github.com/ghrcdaac/dmrpp-generator",
     "repository": {

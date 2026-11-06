@@ -20,8 +20,7 @@ function create_zip_file() {
   DESTINATION_DIR=${PWD}/dist
   rm -rf "${DESTINATION_DIR}"
   mkdir -p "${BUILD_DIR}" "${DESTINATION_DIR}"
-  cp -r modules "${BUILD_DIR}"
-  cp -- *tf "${BUILD_DIR}"
+  cp -r deploy/. "${BUILD_DIR}"
   cd "${BUILD_DIR}"
   sed -i "s/VERSION_SUB/${VERSION}/g" variables.tf
   zip -r9 "${RELEASE_NAME}".zip .
@@ -31,8 +30,7 @@ function create_zip_file() {
 }
 
 function create_wheel() {
-  pip install -r requirements_dev.txt
-  python -m build --wheel --outdir . .
+  uv build --wheel --out-dir .
 }
 
 #### Release package
@@ -45,10 +43,9 @@ curl -X POST \
   "$RELEASE_URL"/assets?name="${RELEASE_NAME}".zip
 
 ### Create and post the wheel
-cd ../
 create_wheel
-content=$(cat ./dmrpp_generator/version.py)
-[[ $content =~ ([0-9]+.[0-9]+.[0-9]+) ]]
+content=$(grep -m1 '^version' pyproject.toml)
+[[ $content =~ ([0-9]+\.[0-9]+\.[0-9]+) ]]
 curl -L \
   -X POST \
   -H "Accept: application/vnd.github+json" \
