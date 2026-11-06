@@ -6,7 +6,7 @@ export RELEASE_NAME=$(basename "$GITHUB_REPO")
 ## Create Release
 response=$(curl -s \
   -H "Authorization: token $GITHUB_TOKEN" \
-  -d "{\"tag_name\": \"$VERSION\", \"target_commitish\": \"$VERSION\", \"name\": \"$VERSION\", \"body\": \"Release $VERSION\" }" \
+  -d "{\"tag_name\": \"$VERSION\", \"name\": \"$VERSION\", \"body\": \"Release $VERSION\" }" \
   -H "Content-Type: application/json" \
   -X POST \
   https://api.github.com/repos/"$GITHUB_REPO"/releases)
