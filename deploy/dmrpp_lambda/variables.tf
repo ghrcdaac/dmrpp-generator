@@ -43,5 +43,4 @@ variable "get_dmrpp_timeout" {
 variable "docker_image" {
     description = "ECR Lambda docker image"
     type    = string
-    default = "ghrcdaac/dmrpp-generator:VERSION_SUB"
 }
