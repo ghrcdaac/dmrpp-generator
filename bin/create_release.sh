@@ -2,6 +2,7 @@
 set -ex
 export VERSION=$1
 export RELEASE_NAME=$(basename "$GITHUB_REPO")
+REPO_ROOT=${PWD}
 
 ## Create Release
 response=$(curl -s \
@@ -37,7 +38,7 @@ function create_zip_file() {
 }
 
 function create_wheel() {
-  uv build --wheel --out-dir .
+  uv build --wheel --out-dir dist
 }
 
 #### Release package
@@ -47,17 +48,19 @@ create_zip_file
 curl -X POST \
   -H "Authorization: token $GITHUB_TOKEN" --data-binary "@${RELEASE_NAME}.zip" \
   -H "Content-type: application/octet-stream" \
-  "$RELEASE_URL"/assets?name="${RELEASE_NAME}".zip
+  "${RELEASE_URL}?name=${RELEASE_NAME}.zip"
 
 ### Create and post the wheel
+cd "$REPO_ROOT"
 create_wheel
 content=$(grep -m1 '^version' pyproject.toml)
 [[ $content =~ ([0-9]+\.[0-9]+\.[0-9]+) ]]
+cd dist
 curl -L \
   -X POST \
   -H "Accept: application/vnd.github+json" \
   -H "Authorization: Bearer $GITHUB_TOKEN" \
   -H "X-GitHub-Api-Version: 2022-11-28" \
   -H "Content-Type: application/octet-stream" \
-  "$RELEASE_URL/assets?name=dmrpp_generator-${BASH_REMATCH[1]}-py3-none-any.whl" \
+  "${RELEASE_URL}?name=dmrpp_generator-${BASH_REMATCH[1]}-py3-none-any.whl" \
   --data-binary "@dmrpp_generator-${BASH_REMATCH[1]}-py3-none-any.whl"
