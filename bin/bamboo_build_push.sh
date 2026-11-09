@@ -51,7 +51,7 @@ echo $bamboo_GITHUB_REGISTRY_READ_TOKEN_SECRET | docker login ghcr.io -u bamboo_
 if [[ $(uname -m) == arm64* ]]; then
   docker_build="docker buildx build --push --platform linux/arm64,linux/amd64 -t"
 else
- docker_build="docker build -t"
+ docker_build="docker build --provenance=false -t"
 fi
 ${docker_build} $1 .
 
