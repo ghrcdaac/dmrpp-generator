@@ -49,9 +49,9 @@ function push_to_ecr() {
 function build_docker {
 echo $bamboo_GITHUB_REGISTRY_READ_TOKEN_SECRET | docker login ghcr.io -u bamboo_login --password-stdin
 if [[ $(uname -m) == arm64* ]]; then
-  docker_build="docker buildx build --push --platform linux/arm64,linux/amd64 -t"
+  docker_build="docker buildx build --push --provenance=false --platform linux/amd64 -t"
 else
- docker_build="docker build --provenance=false -t"
+ docker_build="docker build --provenance=false --platform=linux/amd64 -t"
 fi
 ${docker_build} $1 .
 
